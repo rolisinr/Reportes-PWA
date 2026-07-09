@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Reportes TGA</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Reportes TGA">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0A1520">
+<link rel="manifest" href="manifest.json">
+<style>
+:root {
+  --bg: #0A1520;
+  --surface: #111E2E;
+  --card: #172437;
+  --card2: #1D2F45;
+  --border: #243650;
+  --text: #D8E8F5;
+  --muted: #5A7A96;
+  --accent: #3DA9FC;
+  --c-vias:       #43D68A;
+  --c-obras:      #FFB830;
+  --c-incidencia: #F05454;
+  --c-demanda:    #AB47BC;
+  --c-servicio:   #3DA9FC;
+  --c-respuesta:  #6B8FA8;
+  --r: 14px;
+  --rs: 9px;
+  --safe: env(safe-area-inset-bottom, 0px);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100dvh;
+  display: flex; flex-direction: column;
+  overflow-x: hidden;
+}
+/* HEADER */
+.hdr {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 13px 18px 11px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.hdr-left { display: flex; align-items: center; gap: 8px; }
+.hdr-logo { font-size: 22px; }
+.hdr-title { font-size: 17px; font-weight: 700; }
+.hdr-title span { color: var(--accent); }
+.hdr-right { text-align: right; }
+.hdr-clock { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text); }
+.hdr-date { font-size: 11px; color: var(--muted); }
+
+/* MAIN */
+main { flex: 1; padding: 16px; max-width: 540px; margin: 0 auto; width: 100%; }
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* BREADCRUMB */
+.bread { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.bread-item { font-size: 12px; color: var(--muted); }
+.bread-item.active { color: var(--text); font-weight: 600; }
+.bread-sep { font-size: 12px; color: var(--border); }
+.bread-btn { background: none; border: none; cursor: pointer; padding: 0; font-size: 12px; color: var(--accent); font-family: inherit; }
+.bread-btn:hover { text-decoration: underline; }
+
+/* CATEGORY GRID */
+.sec-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px; }
+.cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cat-btn {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--r); padding: 16px 14px;
+  text-align: left; cursor: pointer;
+  transition: border-color .15s, background .1s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.cat-btn:active { transform: scale(.97); background: var(--card2); }
+.cat-icon { font-size: 24px; line-height: 1; }
+.cat-name { font-size: 14px; font-weight: 700; line-height: 1.2; }
+.cat-sub  { font-size: 11px; color: var(--muted); }
+.cat-strip { height: 3px; border-radius: 2px; margin-top: 3px; }
+.cat-btn[data-cat="vias"]       { --cc: var(--c-vias); }
+.cat-btn[data-cat="obras"]      { --cc: var(--c-obras); }
+.cat-btn[data-cat="incidencia"] { --cc: var(--c-incidencia); }
+.cat-btn[data-cat="demanda"]    { --cc: var(--c-demanda); }
+.cat-btn[data-cat="servicio"]   { --cc: var(--c-servicio); }
+.cat-btn[data-cat="respuesta"]  { --cc: var(--c-respuesta); }
+.cat-btn:hover { border-color: var(--cc, var(--accent)); }
+.cat-strip { background: var(--cc, var(--accent)); }
+
+/* TEMPLATE LIST */
+.tpl-list { display: flex; flex-direction: column; gap: 8px; }
+.tpl-card {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--r); padding: 14px 16px;
+  cursor: pointer; display: flex; align-items: center; gap: 12px;
+  transition: border-color .15s, background .1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.tpl-card:active { background: var(--card2); }
+.tpl-card:hover { border-color: var(--cc, var(--accent)); }
+.ti { font-size: 22px; flex-shrink: 0; }
+.ti-info { flex: 1; min-width: 0; }
+.ti-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.ti-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.ti-arr  { color: var(--muted); font-size: 20px; flex-shrink: 0; }
+
+/* BADGE */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 14px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 12px;
+}
+
+/* FORM */
+.form-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+.fields { display: flex; flex-direction: column; gap: 11px; margin-bottom: 18px; }
+.fg { display: flex; flex-direction: column; gap: 5px; }
+.fl { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .7px; }
+.fl.optional::after { content: ' (opcional)'; font-weight: 400; text-transform: none; opacity: .7; }
+.fi, .fs, .fta {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--rs); padding: 11px 13px;
+  font-size: 15px; color: var(--text); width: 100%;
+  outline: none; font-family: inherit;
+  transition: border-color .15s; -webkit-appearance: none;
+}
+.fi:focus, .fs:focus, .fta:focus { border-color: var(--accent); }
+.fs { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A7A96' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; padding-right: 34px; cursor: pointer; }
+.fta { resize: vertical; min-height: 72px; line-height: 1.5; }
+.fi::placeholder, .fta::placeholder { color: var(--muted); opacity: .7; }
+
+/* PREVIEW */
+.prev-lbl { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
+.prev-wrap {
+  background: #0F2133;
+  border: 1px solid #1E3A56;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--r) var(--r) 0;
+  padding: 14px 15px; margin-bottom: 14px;
+  max-height: 260px; overflow-y: auto;
+}
+.prev-text {
+  font-size: 13.5px; line-height: 1.65; color: var(--text);
+  white-space: pre-wrap; word-break: break-word; font-family: inherit;
+}
+.prev-text.empty { color: var(--muted); font-style: italic; font-size: 13px; }
+
+/* COPY BTN */
+.copy-btn {
+  width: 100%; padding: 15px; border-radius: var(--r); border: none;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity .15s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+  margin-bottom: calc(12px + var(--safe));
+}
+.copy-btn:active { transform: scale(.98); opacity: .85; }
+.copy-btn.ok { background: var(--c-vias); }
+.copy-btn svg { width: 17px; height: 17px; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: calc(22px + var(--safe)); left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--c-vias); color: #fff;
+  padding: 9px 20px; border-radius: 20px;
+  font-size: 13px; font-weight: 600;
+  opacity: 0; transition: opacity .2s, transform .2s;
+  pointer-events: none; z-index: 999;
+  box-shadow: 0 4px 18px rgba(0,0,0,.4);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media(min-width:600px){
+  main { padding: 22px 20px; }
+  .cat-grid { grid-template-columns: repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-logo">🛣️</div>
+    <div class="hdr-title">Reportes <span>TGA</span></div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-clock" id="clock">--:--</div>
+    <div class="hdr-date" id="hdrdate"></div>
+  </div>
+</header>
+
+<main>
+  <!-- SCREEN 1: CATEGORÍAS -->
+  <div class="screen active" id="s-cat">
+    <div class="sec-label">Selecciona el tipo de reporte</div>
+    <div class="cat-grid">
+      <button class="cat-btn" data-cat="vias" onclick="showTpl('vias')">
+        <div class="cat-icon">🛣️</div>
+        <div class="cat-name">Informe de Vías</div>
+        <div class="cat-sub">3 plantillas</div>
+        <div class="cat-strip"></div>
+      </button>
+      <button class="cat-btn" data-cat="obras" onclick="showTpl('obras')">
+        <div class="cat-icon">🏗️</div>
+        <div class="cat-name">Obras en Vía</div>
+        <div class="cat-sub">2 plantillas</div>
+        <div class="cat-strip"></div>
+      </button>
+      <button class="cat-btn" data-cat="incidencia" onclick="showTpl('incidencia')">
+        <div class="cat-icon">🚨</div>
+        <div class="cat-name">Incidencias</div>
+        <div class="cat-sub">3 plantillas</div>
+        <div class="cat-strip"></div>
+      </button>
+      <button class="cat-btn" data-cat="demanda" onclick="showTpl('demanda')">
+        <div class="cat-icon">📊</div>
+        <div class="cat-name">Demanda</div>
+        <div class="cat-sub">2 plantillas</div>
+        <div class="cat-strip"></div>
+      </button>
+      <button class="cat-btn" data-cat="servicio" onclick="showTpl('servicio')">
+        <div class="cat-icon">👤</div>
+        <div class="cat-name">Servicio COV</div>
+        <div class="cat-sub">3 plantillas</div>
+        <div class="cat-strip"></div>
+      </button>
+      <button class="cat-btn" data-cat="respuesta" onclick="showTpl('respuesta')">
+        <div class="cat-icon">✅</div>
+        <div class="cat-name">Respuestas</div>
+        <div class="cat-sub">2 plantillas</div>
+        <div class="cat-strip"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: PLANTILLAS -->
+  <div class="screen" id="s-tpl">
+    <div class="bread">
+      <button class="bread-btn" onclick="go('s-cat')">Inicio</button>
+      <span class="bread-sep">›</span>
+      <span class="bread-item active" id="b-cat"></span>
+    </div>
+    <div class="sec-label" id="tpl-label"></div>
+    <div class="tpl-list" id="tpl-list"></div>
+  </div>
+
+  <!-- SCREEN 3: FORMULARIO -->
+  <div class="screen" id="s-form">
+    <div class="bread">
+      <button class="bread-btn" onclick="go('s-cat')">Inicio</button>
+      <span class="bread-sep">›</span>
+      <button class="bread-btn" id="b-back-cat" onclick="go('s-tpl')"></button>
+      <span class="bread-sep">›</span>
+      <span class="bread-item active" id="b-tpl"></span>
+    </div>
+    <div id="form-badge"></div>
+    <div class="form-title" id="form-title"></div>
+    <div class="fields" id="fields"></div>
+    <div class="prev-lbl">📋 Vista previa</div>
+    <div class="prev-wrap"><div class="prev-text empty" id="prev">Completa los campos para ver la vista previa…</div></div>
+    <button class="copy-btn" id="copybtn" onclick="doCopy()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      Copiar mensaje
+    </button>
+  </div>
+</main>
+
+<div class="toast" id="toast">✓ Mensaje copiado</div>
+
+<script>
+// ── HELPERS ──
+const today = () => {
+  const d = new Date();
+  return d.toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
+};
+const todayLong = () => {
+  const d = new Date();
+  return d.toLocaleDateString('es-PE', { weekday:'long', day:'2-digit', month:'2-digit', year:'numeric' });
+};
+const now = () => new Date().toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' });
+
+// ── TEMPLATES DATA ──
+const CAT = {
+  vias:       { label:'Informe de Vías',   color:'var(--c-vias)',       cc:'#43D68A' },
+  obras:      { label:'Obras en Vía',      color:'var(--c-obras)',      cc:'#FFB830' },
+  incidencia: { label:'Incidencias',       color:'var(--c-incidencia)', cc:'#F05454' },
+  demanda:    { label:'Demanda',           color:'var(--c-demanda)',    cc:'#AB47BC' },
+  servicio:   { label:'Servicio COV',      color:'var(--c-servicio)',   cc:'#3DA9FC' },
+  respuesta:  { label:'Respuestas',        color:'var(--c-respuesta)',  cc:'#6B8FA8' },
+};
+
+const TPLS = {
+  vias: [
+    {
+      id:'informe-via', icon:'🛣️', name:'Informe de Vías TGA',
+      desc:'Reporte estándar de estado de vía, semáforos y segregado',
+      fields:[
+        { id:'cov',       label:'COV – Nombre completo', type:'text', ph:'Ej: Mamani Cuadros Ana' },
+        { id:'ubicacion', label:'Ubicación / Paradero',  type:'text', ph:'Ej: Av. Tacna Cdra 3 – Segunda Tranquera' },
+        { id:'ns',  label:'Tránsito N/S', type:'sel', opts:['fluido','moderado','cargado','detenido'] },
+        { id:'sn',  label:'Tránsito S/N', type:'sel', opts:['fluido','moderado','cargado','detenido'] },
+        { id:'sem', label:'Semáforos',    type:'sel', opts:['OPERATIVOS','NO OPERATIVOS','ALGUNOS INOPERATIVOS'] },
+        { id:'pnp', label:'Efectivo policial', type:'sel', opts:['SÍ contamos','NO contamos'] },
+        { id:'pnp_detalle', label:'Detalle PNP (si hay)', type:'text', ph:'Ej: en intersección Jr. Ica con Av. Tacna', opt:true },
+        { id:'seg', label:'Segregado',    type:'sel', opts:['con normalidad','cerrado, unidades por vía alterna','con algunas dificultades'] },
+        { id:'rec', label:'Personal de recaudo', type:'sel', opts:['SÍ, en punto','NO en el punto'] },
+        { id:'rec_paradero', label:'Paradero de recaudo', type:'text', ph:'Ej: VIRÚ', opt:true },
+        { id:'extra', label:'Novedad adicional', type:'text', ph:'Ej: sin novedad al momento', opt:true },
+      ],
+      gen: f => {
+        const pnp = f.pnp === 'SÍ contamos'
+          ? `🔹${f.pnp} con presencia de EFECTIVO POLICIAL${f.pnp_detalle ? ' 👮🏻‍♂️\n(' + f.pnp_detalle + ')' : ' 👮🏻‍♂️'}`
+          : `🔹${f.pnp} con presencia de EFECTIVO POLICIAL`;
+        const rec = f.rec === 'SÍ, en punto'
+          ? `🔹Personal de recaudo${f.rec_paradero ? ' en paradero ' + f.rec_paradero.toUpperCase() : ' en el punto'}`
+          : `🔹NO contamos con personal de recaudo en el punto`;
+        const extra = f.extra ? `🔹${f.extra}\n` : '';
+        return `🛣️INFORME DE VIAS TGA🛣️
+📆 Fecha: ${today()}
+👮🏻‍♀ COV: ${f.cov}
+📝 Lo que respecta a ${f.ubicacion}
+🔹Tenemos el tránsito ${f.ns} N/S y ${f.sn} S/N 🛣️
+🔹Semáforos ${f.sem} 🚦
+${pnp}
+🔹Unidades del corredor entrando al *SEGREGADO* ${f.seg} 🚎
+${rec}
+${extra}📸ADJUNTO FOTOS📸`;
+      }
+    },
+    {
+      id:'situacion-actual', icon:'🚨', name:'Situación Actual – Corredor Azul',
+      desc:'Reporte rápido de situación con observación puntual',
+      fields:[
+        { id:'cov',   label:'Personal COV', type:'text', ph:'Ej: Mario José' },
+        { id:'sent',  label:'Sentido', type:'sel', opts:['N/S','S/N','Ambos'] },
+        { id:'obs',   label:'Observación / Detalle', type:'ta', ph:'Describe la situación...' },
+        { id:'media', label:'Adjunto', type:'sel', opts:['FOTO 📷','VIDEO 📷','FOTO Y VIDEO 📷','sin adjunto'] },
+      ],
+      gen: f => `🚨 SITUACIÓN ACTUAL - 𝗖𝗢𝗥𝗥𝗘𝗗𝗢𝗥 AZUL - TGA
+👤  𝗣𝗘𝗥𝗦𝗢𝗡𝗔𝗟 𝗖𝗢𝗩: 
+       ${f.cov}
+🔁  𝗦𝗘𝗡𝗧𝗜𝗗𝗢: ${f.sent}
+
+✍🏼  𝗢𝗕𝗦𝗘𝗥𝗩𝗔𝗖𝗜Ó𝗡: 
+▪️${f.obs}
+${f.media !== 'sin adjunto' ? '📷 ADJUNTO ' + f.media : ''}`
+    },
+    {
+      id:'informe-paradero', icon:'🚏', name:'Informe de Vía – Paradero',
+      desc:'Informe detallado con checklist por paradero específico',
+      fields:[
+        { id:'cov',       label:'COV – Nombre', type:'text', ph:'Ej: Cerrillo Molina Jessica Betzabeth' },
+        { id:'av',        label:'Avenida y Cuadra', type:'text', ph:'Ej: Av. Garcilaso Cuadra #11' },
+        { id:'paradero',  label:'Paradero', type:'text', ph:'Ej: URUGUAY' },
+        { id:'sent',      label:'Sentido', type:'sel', opts:['N/S','S/N','Ambos sentidos'] },
+        { id:'jersey',    label:'Jersey / Segregación', type:'sel', opts:['alineados correctamente','desalineados','movidos'] },
+        { id:'ns',        label:'Tránsito N/S', type:'sel', opts:['fluido','moderado','cargado','detenido'] },
+        { id:'sn',        label:'Tránsito S/N (vía mixta)', type:'sel', opts:['fluido','moderado','cargado','detenido'] },
+        { id:'sem',       label:'Semáforos', type:'sel', opts:['operativos','no operativos'] },
+        { id:'pnp',       label:'Efectivos policiales', type:'sel', opts:['SÍ','NO'] },
+        { id:'rec',       label:'Personal de recaudo', type:'sel', opts:['SÍ','NO'] },
+        { id:'corredor',  label:'Corredor en segregado', type:'sel', opts:['ingresando con normalidad','circulando por vía alterna','con dificultades'] },
+        { id:'novedad',   label:'Novedad', type:'sel', opts:['sin mayor novedad relevante en el servicio','CON novedad, ver observación'] },
+        { id:'obs_extra', label:'Observación extra', type:'text', ph:'Solo si hay novedad', opt:true },
+      ],
+      gen: f => {
+        const extra = f.obs_extra ? `\n✍🏻 OBSERVACIÓN: ${f.obs_extra}` : '';
+        return `🚨 🚧INFORME DE VIAS TGA 🚧🚨
+📆 Fecha: ${today()}
+👮 COV: ${f.cov}
+📝 Lo que respecta: ${f.av}
+🚏PARADERO: ${f.paradero.toUpperCase()}
+✍🏻 Sentido: ${f.sent}
+✍🏻 Contamos con Segregación de Jersey ${f.jersey}.
+✍🏻 El tránsito vehicular ${f.ns.toUpperCase()} N/S y ${f.sn.toUpperCase()} S/N EN LA VÍA MIXTA.
+✍🏻 Contamos con semáforos ${f.sem}.
+✍🏻 ${f.pnp === 'SÍ' ? 'SÍ' : 'NO'} contamos con presencia de efectivos policiales.
+✍🏻 ${f.rec === 'SÍ' ? 'SÍ' : 'NO'} contamos con personal de recaudo en el punto.
+✍🏻 Unidades del corredor azul ${f.corredor} al segregado.
+✍🏻 Al momento, ${f.novedad}.${extra}
+📸 ADJUNTO EVIDENCIA 📸`;
+      }
+    },
+  ],
+
+  obras: [
+    {
+      id:'obras-via', icon:'🏗️', name:'Obras en Vía TGA',
+      desc:'Reporte de obras de construcción o mantenimiento vial',
+      fields:[
+        { id:'zonal',    label:'Zonal / COV a cargo', type:'text', ph:'Ej: Arturo Panta Rumiche' },
+        { id:'ubicacion',label:'Ubicación de la obra', type:'text', ph:'Ej: Av. Arequipa Cuadra 18 sentido N/S' },
+        { id:'empresa',  label:'Empresa ejecutora', type:'text', ph:'Ej: Proyectos MIDGO' },
+        { id:'contrat',  label:'Contratante', type:'text', ph:'Ej: Desarrollo Lince S.A.C' },
+        { id:'duracion', label:'Duración / Horario', type:'text', ph:'Ej: 22/10/2025 al 22/01/2027 / 14:00 – 17:00' },
+        { id:'desc',     label:'Descripción de la obra', type:'ta', ph:'Describe qué se está realizando...' },
+        { id:'transito', label:'Estado del tránsito', type:'sel', opts:['fluido en ambos sentidos','moderado N/S y fluido S/N','cargado N/S y moderado S/N','ligero moderado en ambos sentidos'] },
+        { id:'afecta',   label:'¿Afecta carril del corredor?', type:'sel', opts:['NO afecta carril del corredor','SÍ, ocupa 1 carril del corredor','SÍ, ocupa el carril derecho'] },
+      ],
+      gen: f => `🏗 *OBRAS EN VIA TGA*
+*${today()}*
+
+*👨🏼‍✈️ZONAL:* ${f.zonal}
+*UBICACIÓN DE LA OBRA:* ${f.ubicacion}
+*EMPRESA QUE LO REALIZA:* ${f.empresa}
+*CONTRATANTE:* ${f.contrat}
+*DURACIÓN DE LA OBRA:* ${f.duracion}
+
+*DESCRIPCION:*
+${f.desc}
+
+*TRÁNSITO:* ${f.transito.toUpperCase()}
+*AFECTACIÓN AL CORREDOR:* ${f.afecta.toUpperCase()}
+
+*SE ADJUNTA IMAGENES ✍️*`
+    },
+    {
+      id:'obras-paradero', icon:'🚏', name:'Obras / Remodelación de Paradero',
+      desc:'Reporte de trabajos ATU en paradero con cierre temporal',
+      fields:[
+        { id:'cov',      label:'COV – Nombre', type:'text', ph:'Ej: Quispe Herrera Maribel' },
+        { id:'asunto',   label:'Asunto', type:'sel', opts:['REMODELACIÓN DE PARADERO','MANTENIMIENTO DE PARADERO','INSTALACIÓN DE SARDINEL','VACEADO DE CONCRETO','TRABAJOS ATU'] },
+        { id:'paradero', label:'Paradero afectado', type:'text', ph:'Ej: VIRÚ' },
+        { id:'empresa',  label:'Empresa / Área', type:'text', ph:'Ej: ATU – Área de Infraestructura' },
+        { id:'desc',     label:'Descripción del trabajo', type:'ta', ph:'Describe qué se realizará...' },
+        { id:'accion',   label:'Acción para usuarios', type:'text', ph:'Ej: atender usuarios en paradero PIZARRO' },
+        { id:'duracion', label:'Duración estimada', type:'text', ph:'Ej: 2 horas aproximadamente' },
+      ],
+      gen: f => `🛣️INFORMES /TGA
+⚠️OBRAS🚧
+
+✍️• ASUNTO: 🚏${f.asunto}
+✍️• 📆 FECHA: ${today()}
+✍️• 📍UBICACIÓN: PARADERO ${f.paradero.toUpperCase()}
+✍️• 👮‍♂️COV: ${f.cov}
+
+• OBSERVACION:
+${f.desc}
+
+➡️ INDICAR A OPERADORES: ${f.accion}.
+⏱️ DURACIÓN ESTIMADA: ${f.duracion}.
+
+SE ADJUNTAN IMAGENES 📷📸`
+    },
+  ],
+
+  incidencia: [
+    {
+      id:'incidencia-via', icon:'🚦', name:'Reporte de Incidencia en Vía',
+      desc:'Accidente, obstrucción u otro evento con detalle completo',
+      fields:[
+        { id:'cov',     label:'COV – Nombre', type:'text', ph:'Ej: Aylas Jessica' },
+        { id:'ubi',     label:'Ubicación', type:'text', ph:'Ej: Av. Arequipa Cdra 3 / Madre de Dios' },
+        { id:'sent',    label:'Sentido', type:'sel', opts:['N/S','S/N','Ambos sentidos'] },
+        { id:'hora',    label:'Hora del evento', type:'text', ph:'Ej: 11:15' },
+        { id:'tipo',    label:'Tipo de evento', type:'sel', opts:['Accidente vehicular','Accidente en ciclovía','Caída de usuario','Vehículo varado','Árbol caído','Persona herida','Otro'] },
+        { id:'desc',    label:'Descripción del hecho', type:'ta', ph:'Describe lo ocurrido con detalle...' },
+        { id:'pnp',     label:'Presencia policial', type:'sel', opts:['Sí, PNP en el punto','Sí, PNP en camino','No hay PNP'] },
+        { id:'samu',    label:'SAMU / Emergencias', type:'sel', opts:['SAMU en el lugar','SAMU en camino','Serenazgo en el punto','No se requirió','PNP + SAMU'] },
+        { id:'accion',  label:'Acciones tomadas', type:'text', ph:'Ej: PNP acelerando tránsito N/S' },
+        { id:'estado',  label:'Estado actual de la vía', type:'sel', opts:['vía liberada, tránsito normal','vía parcialmente afectada','vía cerrada'] },
+      ],
+      gen: f => `🚦 REPORTE DE INCIDENCIAS EN VÍA TGA
+👮 COV: ${f.cov}
+
+📆 FECHA: ${today()}
+📍 UBICACIÓN: ${f.ubi}
+🔁 SENTIDO: ${f.sent}
+🕒 HORA: ${f.hora}
+
+🚨 DETALLE DE LA INCIDENCIA:
+- Tipo de evento: ${f.tipo}
+- Descripción: ${f.desc}
+- Presencia policial: ${f.pnp}
+- Emergencias: ${f.samu}
+- Acciones tomadas: ${f.accion}
+- Estado de la vía: ${f.estado}
+
+- Se adjunta imágenes`
+    },
+    {
+      id:'incidencia-cc3', icon:'🚧', name:'Incidencia CC.3 – Reporte Rápido',
+      desc:'Formato simplificado para reporte de incidencia con observación',
+      fields:[
+        { id:'cov',   label:'COV / Zonal', type:'text', ph:'Ej: Benites / Giancarlo Flores' },
+        { id:'lugar', label:'Lugar', type:'text', ph:'Ej: Alcázar (Segregado Risco)' },
+        { id:'hora',  label:'Hora', type:'text', ph:'Ej: 6:30 PM' },
+        { id:'sent',  label:'Sentido', type:'sel', opts:['N/S','S/N','Ambos'] },
+        { id:'obs',   label:'Observación detallada', type:'ta', ph:'Describe la situación y acciones tomadas...' },
+      ],
+      gen: f => `🚦REPORTE DE INCIDENCIAS EN VIA CC.3 -TGA
+👮🏾‍♂COV: ${f.cov}
+🌍 LUGAR: ${f.lugar}
+🧭HORA: ${f.hora}
+🔃SENTIDO: ${f.sent}
+
+🚨OBSERVACIÓN🚨:
+${f.obs}
+
+- SE ADJUNTA IMAGENES.`
+    },
+    {
+      id:'accidente-bus', icon:'🚌', name:'Accidente de Bus / Caída de Usuario',
+      desc:'Reporte detallado de incidente con usuario afectado a bordo',
+      fields:[
+        { id:'turno',   label:'Turno', type:'sel', opts:['MAÑANA','TARDE','NOCHE','MADRUGADA'] },
+        { id:'cov',     label:'COV – Nombre', type:'text', ph:'Ej: Cristian Quispe' },
+        { id:'ubi',     label:'Ubicación', type:'text', ph:'Ej: Jr. Saco Oliveros' },
+        { id:'sent',    label:'Sentido', type:'sel', opts:['N/S','S/N'] },
+        { id:'placa',   label:'Placa del bus', type:'text', ph:'Ej: ATJ-780' },
+        { id:'ruta',    label:'Ruta / Bus N°', type:'text', ph:'Ej: 301' },
+        { id:'padron',  label:'Padrón', type:'text', ph:'Ej: 103' },
+        { id:'conductor',label:'Nombre del conductor', type:'text', ph:'Ej: Jorge Ovalle Palomino' },
+        { id:'trasbordo',label:'Trasbordo realizado', type:'sel', opts:['SÍ','NO'] },
+        { id:'usuario', label:'Nombre del usuario afectado', type:'text', ph:'Ej: Leyla Carolina Vela' },
+        { id:'dni',     label:'DNI del usuario', type:'text', ph:'Ej: 10321217' },
+        { id:'hora',    label:'Hora del evento', type:'text', ph:'Ej: 6:48 PM' },
+        { id:'clinica', label:'Clínica / Hospital', type:'text', ph:'Ej: Clínica Internacional' },
+        { id:'comisaria',label:'Comisaría a cargo', type:'text', ph:'Ej: Alfonso Ugarte' },
+        { id:'obs',     label:'Descripción del hecho', type:'ta', ph:'Describe detalladamente lo ocurrido...' },
+      ],
+      gen: f => `*REPORTE ACCIDENTE DE BUS - CAÍDA DE USUARIO - TGA T. ${f.turno}*
+👨🏼‍✈️ COV: ${f.cov}
+🚏 UBICACIÓN: ${f.ubi}
+🔃 SENTIDO: ${f.sent}
+🚾 PLACA: ${f.placa}
+🚍 BUS: ${f.ruta}
+🔢 PADRÓN: ${f.padron}
+👨🏻‍💼 CONDUCTOR: ${f.conductor}
+TRASBORDO: ${f.trasbordo}
+
+*DATOS DEL USUARIO AFECTADO:*
+Nombre: ${f.usuario}
+DNI: ${f.dni}
+🕰 HORA: ${f.hora}
+🌞 DÍA: ${today()}
+CLÍNICA: ${f.clinica}
+COMISARÍA: ${f.comisaria}
+
+🔍 OBSERVACIÓN:
+${f.obs}`
+    },
+  ],
+
+  demanda: [
+    {
+      id:'demanda-norte', icon:'📊', name:'Demanda – Centro de Control Zona Norte',
+      desc:'Reporte de demanda y código para rutas 301, 305, 336, 371',
+      fields:[
+        { id:'cov',     label:'COV – Nombre', type:'text', ph:'Ej: Rosales Monzón' },
+        { id:'paradero',label:'Paradero', type:'text', ph:'Ej: VIRÚ' },
+        { id:'sent',    label:'Sentido', type:'sel', opts:['N/S','S/N'] },
+        { id:'ruta',    label:'Ruta', type:'sel', opts:['301','303','305','336','371','305 / 336'] },
+        { id:'padron',  label:'Padrón de la unidad próxima', type:'text', ph:'Ej: 50' },
+        { id:'codigo',  label:'Código', type:'sel', opts:['01','02','03','04','05'] },
+        { id:'estado',  label:'Estado de la demanda', type:'sel', opts:['controlada','ATENDIDA','alta, pendiente de atención','en aumento'] },
+        { id:'obs',     label:'Observación (opcional)', type:'text', ph:'Ej: se cuenta en piso con 23 usuarios', opt:true },
+      ],
+      gen: f => {
+        const obs = f.obs ? `\n✍🏻 OBSERVACIÓN: ${f.obs.toUpperCase()}` : '';
+        return `CENTRO DE CONTROL  ZONA NORTE
+  
+🗓️ FECHA: ${today()}
+👮COV: ${f.cov.toUpperCase()}
+🚉PARADERO: ${f.paradero.toUpperCase()}
+♻️ SENTIDO: ${f.sent}
+🆎 RUTA: ${f.ruta}
+🅿️PADRON: ${f.padron}
+✅ CÓDIGO: ${f.codigo}
+🟡 DEMANDA: ${f.estado}${obs}`;
+      }
+    },
+    {
+      id:'demanda-corredor', icon:'🚍', name:'Demanda – Corredor Azul TGA',
+      desc:'Reporte de demanda con formato Corredor Azul / TGA',
+      fields:[
+        { id:'turno',   label:'Turno', type:'sel', opts:['MAÑANA','TARDE','NOCHE','MADRUGADA'] },
+        { id:'cov',     label:'COV – Nombre', type:'text', ph:'Ej: Ayala Yucra' },
+        { id:'paradero',label:'Paradero', type:'text', ph:'Ej: AMANCAES' },
+        { id:'sent',    label:'Sentido', type:'sel', opts:['N/S','S/N'] },
+        { id:'ruta',    label:'Ruta', type:'sel', opts:['301','303','305','336','371'] },
+        { id:'padron',  label:'Padrón de la unidad próxima', type:'text', ph:'Ej: 152' },
+        { id:'freq',    label:'Frecuencia', type:'text', ph:'Ej: 8 min / según cuadro', opt:true },
+        { id:'codigo',  label:'Código', type:'sel', opts:['01','02','03','04','05'] },
+        { id:'obs',     label:'Observación', type:'text', ph:'Ej: Demanda atendida / 23 usuarios en piso' },
+      ],
+      gen: f => `🛑 CORREDOR AZUL🚍 
+🔷TURNO ${f.turno} 🔷 🔶TGA🔶 
+👮COV: ${f.cov.toUpperCase()}
+🚏 PARADERO: ${f.paradero.toUpperCase()}
+♻️ SENTIDO: ${f.sent}
+🔢 FECHA: ${today()}
+🚍 RUTA: ${f.ruta}
+🔢 PADRÓN: ${f.padron}
+🕐 FRECUENCIA: ${f.freq || '—'}
+🔢 CÓDIGO: ${f.codigo}
+
+✍🏻 OBSERVACIÓN: ${f.obs.toUpperCase()}`
+    },
+  ],
+
+  servicio: [
+    {
+      id:'inicio-serv', icon:'🟢', name:'Inicio de Servicio COV',
+      desc:'Mensaje de inicio de turno del COV',
+      fields:[
+        { id:'nombre', label:'Nombre del COV', type:'text', ph:'Ej: Robles Marcelo Carlos Luis' },
+        { id:'turno',  label:'Turno', type:'sel', opts:['mañana','tarde','noche','madrugada'] },
+      ],
+      gen: f => {
+        const sal = { mañana:'Buenas días', tarde:'Buenas tardes', noche:'Buenas noches', madrugada:'Buenas noches' };
+        return `${sal[f.turno]} inicio de servicio COV ${f.nombre}`;
+      }
+    },
+    {
+      id:'fin-serv', icon:'🔴', name:'Término de Servicio COV',
+      desc:'Mensaje de fin de turno del COV',
+      fields:[
+        { id:'nombre', label:'Nombre del COV', type:'text', ph:'Ej: Portal Galindo Adilia Silvia' },
+        { id:'relevo', label:'¿Hay relevo?', type:'sel', opts:['sin relevo','con relevo conforme'] },
+      ],
+      gen: f => `Término de servicio COV ${f.nombre}${f.relevo !== 'sin relevo' ? ' – ' + f.relevo : ''}`
+    },
+    {
+      id:'inicio-fin', icon:'🔄', name:'Inicio y Fin de Términos de Servicio',
+      desc:'Bloque completo con salida y entrada de COV',
+      fields:[
+        { id:'sale',  label:'COV que termina servicio', type:'text', ph:'Ej: Silvestre Rojas Roli' },
+        { id:'entra', label:'COV que inicia servicio',  type:'text', ph:'Ej: Juan Valle Carlos' },
+      ],
+      gen: f => `INICIO FIN DE TÉRMINOS DE SERVICIO
+-------------------------------------
+
+Término de servicio
+COV: ${f.sale}
+
+Inicio de servicio
+COV: ${f.entra}`
+    },
+  ],
+
+  respuesta: [
+    {
+      id:'acuse', icon:'✅', name:'Acuse de Información',
+      desc:'Respuestas rápidas de confirmación al reporte',
+      fields:[
+        { id:'tipo', label:'Tipo de acuse', type:'sel', opts:[
+          'COPIADO, SE AGRADECE LA INFORMACIÓN',
+          'COPIADO, SE INFORMA A LOS OPERADORES',
+          'COPIADO, SE PEDIRÁ EL APOYO CORRESPONDIENTE',
+          'COPIADO, SE REPORTA AL ÁREA CORRESPONDIENTE',
+          'SE AGRADECE EL APOYO',
+          'ACTUALIZAR CUANDO SE NORMALICE EL PUNTO, POR FAVOR',
+        ]},
+        { id:'extra', label:'Comentario adicional (opcional)', type:'text', ph:'Ej: se envía personal al punto', opt:true },
+      ],
+      gen: f => {
+        let msg = f.tipo;
+        if (f.extra) msg += `.\n${f.extra.charAt(0).toUpperCase() + f.extra.slice(1)}.`;
+        return msg;
+      }
+    },
+    {
+      id:'segregado-risco', icon:'🛣️', name:'Cierre / Apertura de Segregado',
+      desc:'Informar cierre o apertura del segregado con motivo',
+      fields:[
+        { id:'nombre', label:'Nombre del segregado', type:'text', ph:'Ej: Cecilia Risco / España S/N' },
+        { id:'estado', label:'Estado', type:'sel', opts:['se CIERRA','se APERTURA','está CERRADO','está ABIERTO'] },
+        { id:'motivo', label:'Motivo', type:'text', ph:'Ej: salida de alumnos del Colegio Leoncio Prado' },
+        { id:'unidades',label:'Unidades del corredor', type:'sel', opts:['circulan por el 2do carril','circulan por vía alterna','ingresan con normalidad'] },
+        { id:'sent',   label:'Sentido', type:'sel', opts:['N/S','S/N','Ambos'] },
+      ],
+      gen: f => `Para informar que ${f.estado} el segregado ${f.nombre} sentido ${f.sent} por ${f.motivo}.
+Por tal motivo los buses del corredor ${f.unidades}.
+
+- SE ADJUNTA IMAGENES.`
+    },
+  ],
+};
+
+// ── STATE ──
+let curCat = null, curTpl = null;
+
+// ── CLOCK ──
+function tick() {
+  const d = new Date();
+  document.getElementById('clock').textContent = d.toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' });
+  document.getElementById('hdrdate').textContent = d.toLocaleDateString('es-PE', { weekday:'short', day:'2-digit', month:'short' });
+}
+tick(); setInterval(tick, 1000);
+
+// ── NAV ──
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showTpl(cat) {
+  curCat = cat;
+  const meta = CAT[cat];
+  document.getElementById('b-cat').textContent = meta.label;
+  document.getElementById('tpl-label').textContent = meta.label;
+
+  const list = document.getElementById('tpl-list');
+  list.innerHTML = TPLS[cat].map(t => `
+    <div class="tpl-card" style="--cc:${meta.cc}" onclick="showForm('${cat}','${t.id}')">
+      <div class="ti">${t.icon}</div>
+      <div class="ti-info">
+        <div class="ti-name">${t.name}</div>
+        <div class="ti-desc">${t.desc}</div>
+      </div>
+      <div class="ti-arr">›</div>
+    </div>`).join('');
+  go('s-tpl');
+}
+
+function showForm(cat, id) {
+  curCat = cat;
+  const meta = CAT[cat];
+  const tpl = TPLS[cat].find(t => t.id === id);
+  curTpl = tpl;
+
+  document.getElementById('b-back-cat').textContent = meta.label;
+  document.getElementById('b-tpl').textContent = tpl.name;
+  document.getElementById('form-badge').innerHTML =
+    `<div class="badge" style="background:${meta.cc}22;color:${meta.cc};border:1px solid ${meta.cc}44">${tpl.icon} ${meta.label}</div>`;
+  document.getElementById('form-title').textContent = tpl.name;
+
+  const container = document.getElementById('fields');
+  container.innerHTML = tpl.fields.map(f => {
+    let inp = '';
+    if (f.type === 'sel') {
+      inp = `<select class="fs" id="f-${f.id}" onchange="upd()">
+        ${f.opts.map(o => `<option>${o}</option>`).join('')}
+      </select>`;
+    } else if (f.type === 'ta') {
+      inp = `<textarea class="fta" id="f-${f.id}" placeholder="${f.ph||''}" oninput="upd()"></textarea>`;
+    } else {
+      inp = `<input class="fi" type="text" id="f-${f.id}" placeholder="${f.ph||''}" oninput="upd()">`;
+    }
+    return `<div class="fg">
+      <div class="fl${f.opt?' optional':''}">${f.label}</div>
+      ${inp}
+    </div>`;
+  }).join('');
+
+  upd();
+  go('s-form');
+}
+
+function getVals() {
+  const v = {};
+  curTpl.fields.forEach(f => {
+    const el = document.getElementById('f-' + f.id);
+    v[f.id] = el ? el.value.trim() : '';
+  });
+  return v;
+}
+
+function upd() {
+  const v = getVals();
+  const el = document.getElementById('prev');
+  try {
+    const msg = curTpl.gen(v);
+    el.textContent = msg || '…';
+    el.classList.remove('empty');
+  } catch(e) {
+    el.textContent = 'Completa los campos…';
+    el.classList.add('empty');
+  }
+}
+
+function doCopy() {
+  const txt = document.getElementById('prev').textContent;
+  if (!txt || document.getElementById('prev').classList.contains('empty')) return;
+  const copy = () => {
+    const ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+    document.body.appendChild(ta);
+    ta.select(); ta.setSelectionRange(0, 99999);
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  };
+  (navigator.clipboard ? navigator.clipboard.writeText(txt).catch(copy) : Promise.resolve(copy()));
+  const btn = document.getElementById('copybtn');
+  const toast = document.getElementById('toast');
+  btn.classList.add('ok');
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg> ¡Copiado!`;
+  toast.classList.add('show');
+  setTimeout(() => {
+    btn.classList.remove('ok');
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar mensaje`;
+    toast.classList.remove('show');
+  }, 2300);
+}
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
