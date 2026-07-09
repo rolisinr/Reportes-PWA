@@ -8,24 +8,24 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Reportes TGA">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0A1520">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="manifest" href="manifest.json">
 <style>
 :root {
-  --bg: #0A1520;
-  --surface: #111E2E;
-  --card: #172437;
-  --card2: #1D2F45;
-  --border: #243650;
-  --text: #D8E8F5;
+  --bg: #EEF2F7;
+  --surface: #FFFFFF;
+  --card: #FFFFFF;
+  --card2: #F0F5FB;
+  --border: #C8D8E8;
+  --text: #0F1E2E;
   --muted: #5A7A96;
-  --accent: #3DA9FC;
-  --c-vias:       #43D68A;
-  --c-obras:      #FFB830;
-  --c-incidencia: #F05454;
-  --c-demanda:    #AB47BC;
-  --c-servicio:   #3DA9FC;
-  --c-respuesta:  #6B8FA8;
+  --accent: #1A6FC4;
+  --c-vias:       #16A34A;
+  --c-obras:      #C07800;
+  --c-incidencia: #DC2626;
+  --c-demanda:    #7C3AED;
+  --c-servicio:   #1A6FC4;
+  --c-respuesta:  #4B6880;
   --r: 14px;
   --rs: 9px;
   --safe: env(safe-area-inset-bottom, 0px);
@@ -139,8 +139,8 @@ main { flex: 1; padding: 16px; max-width: 540px; margin: 0 auto; width: 100%; }
 /* PREVIEW */
 .prev-lbl { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
 .prev-wrap {
-  background: #0F2133;
-  border: 1px solid #1E3A56;
+  background: #E8F0FA;
+  border: 1px solid #B8CCE0;
   border-left: 3px solid var(--accent);
   border-radius: 0 var(--r) var(--r) 0;
   padding: 14px 15px; margin-bottom: 14px;
@@ -175,7 +175,7 @@ main { flex: 1; padding: 16px; max-width: 540px; margin: 0 auto; width: 100%; }
   font-size: 13px; font-weight: 600;
   opacity: 0; transition: opacity .2s, transform .2s;
   pointer-events: none; z-index: 999;
-  box-shadow: 0 4px 18px rgba(0,0,0,.4);
+  box-shadow: 0 4px 18px rgba(0,0,0,.2);
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 

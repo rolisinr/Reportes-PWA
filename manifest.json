@@ -4,8 +4,8 @@
   "description": "Generador de reportes para COVs del Corredor TGA – Lima",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0A1520",
-  "theme_color": "#0A1520",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
   "orientation": "portrait-primary",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
