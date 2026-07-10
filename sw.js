@@ -1,4 +1,4 @@
-const CACHE = 'reportes-cta-v2';
+const CACHE = 'reportes-cta-v3';
 const ASSETS = [
   './',
   './index.html',
