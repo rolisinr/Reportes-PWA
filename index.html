@@ -334,6 +334,43 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 .add-field-btn:hover{border-color:var(--acc);color:var(--acc)}
 .tpl-preview-box{background:#EBF3FF;border-left:3px solid var(--acc);border-radius:0 var(--rs) var(--rs) 0;padding:10px 12px;font-size:12px;color:var(--mut);margin-bottom:10px;font-style:italic;line-height:1.5}
 .resumen-box{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:10px}
+/* === FASE 6 === */
+.fav-section{margin-bottom:9px}
+.fav-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.fav-btn{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);
+  padding:10px 11px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  display:flex;align-items:center;gap:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);
+  transition:border-color .15s;font-family:inherit;position:relative}
+.fav-btn:active{transform:scale(.97)}
+.fav-btn:hover{border-color:var(--acc)}
+.fav-icon{font-size:18px;flex-shrink:0}
+.fav-name{font-size:12px;font-weight:700;color:var(--txt);text-align:left;line-height:1.3}
+.fav-cat{font-size:10px;color:var(--mut)}
+.fav-del{position:absolute;top:4px;right:5px;font-size:12px;color:var(--mut);
+  background:none;border:none;cursor:pointer;padding:2px;line-height:1;
+  -webkit-tap-highlight-color:transparent;display:none}
+.fav-btn:hover .fav-del{display:block}
+.fav-edit-mode .fav-del{display:block}
+.fav-add{background:var(--bg);border:1.5px dashed var(--brd);border-radius:var(--r);
+  padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  gap:6px;font-size:12px;color:var(--mut);font-family:inherit;
+  -webkit-tap-highlight-color:transparent;transition:border-color .15s}
+.fav-add:hover{border-color:var(--acc);color:var(--acc)}
+.fav-picker-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;
+  display:none;align-items:flex-end;justify-content:center}
+.fav-picker-ov.open{display:flex}
+.fav-picker{background:#fff;border-radius:20px 20px 0 0;
+  padding:16px 14px calc(14px + var(--safe));width:100%;max-width:520px;
+  max-height:70vh;overflow-y:auto}
+.fav-picker-title{font-size:13px;font-weight:700;margin-bottom:12px}
+.fav-pick-item{display:flex;align-items:center;gap:10px;padding:11px 12px;
+  border-radius:var(--rs);cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:background .15s}
+.fav-pick-item:hover{background:var(--bg)}
+.fav-pick-icon{font-size:18px;flex-shrink:0}
+.fav-pick-info{flex:1}
+.fav-pick-name{font-size:13px;font-weight:700}
+.fav-pick-cat{font-size:11px;color:var(--mut)}
 </style>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -440,6 +477,15 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     <button class="ed-save" onclick="saveProfile()">Guardar</button>
   </div>
 
+  <!-- ACCESO RÁPIDO -->
+  <div class="fav-section" id="fav-section" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div class="sec-lbl" style="margin-bottom:0">Acceso rápido</div>
+      <button id="fav-edit-btn" onclick="toggleFavEdit()"
+        style="background:none;border:none;font-size:11px;color:var(--mut);cursor:pointer;font-family:inherit">Editar</button>
+    </div>
+    <div class="fav-grid" id="fav-grid"></div>
+  </div>
   <div class="sec-lbl">Reportes</div>
   <div class="cat-grid">
     <button class="cat-btn" onclick="showTpl('vias')" style="--cc:var(--gr)">
@@ -750,6 +796,13 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     <button class="guide-close" onclick="document.getElementById('guide-mic-ov').classList.remove('open')">Entendido</button>
   </div>
 </div>
+<!-- FAV PICKER -->
+<div class="fav-picker-ov" id="fav-picker-ov" onclick="closeFavPicker(event)">
+  <div class="fav-picker">
+    <div class="fav-picker-title">⭐ Agregar acceso rápido</div>
+    <div id="fav-pick-list"></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -858,9 +911,10 @@ function showScreen(id){
   document.getElementById(id).classList.add("active");
   window.scrollTo({top:0,behavior:"instant"});
 }
-function go(id){ navStack.push(id); showScreen(id); }
+function go(id){ navStack.push(id); showScreen(id); history.pushState({s:id},'',location.href); }
 function goBack(){
   if(navStack.length>1){ navStack.pop(); showScreen(navStack[navStack.length-1]); }
+  history.pushState({s:navStack[navStack.length-1]},'',location.href);
 }
 history.pushState(null,"",location.href);
 window.addEventListener("popstate",()=>{ history.pushState(null,"",location.href); goBack(); });
@@ -1581,6 +1635,7 @@ function init(){
   getDeviceId();
   updateHistCount();
   updateMisTplBtn();
+  renderFavs();
 }
 
 if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -2392,10 +2447,10 @@ function renderCustomTplList(){
 
 function updateMisTplBtn(){
   var tpls=getCustomTpls();
-  var btn=document.getElementById('mis-tpl-main-btn');
   var lbl=document.getElementById('mis-tpl-count-lbl');
-  if(btn) btn.style.display=tpls.length?'flex':'none';
-  if(lbl) lbl.textContent=tpls.length+' plantilla'+(tpls.length!==1?'s':'');
+  if(lbl) lbl.textContent=tpls.length
+    ? tpls.length+' plantilla'+(tpls.length!==1?'s':'')
+    : 'Crea tus propias plantillas';
 }
 
 function deleteCustomTpl(idx){
@@ -2516,6 +2571,120 @@ function generarResumen(){
     '<button onclick="copyText(this.previousElementSibling.textContent);haptic(50)" '+
     'style="width:100%;background:var(--acc);color:#fff;border:none;border-radius:var(--rs);'+
     'padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px">📋 Copiar resumen</button></div>';
+}
+
+
+// =============================================
+// FASE 6 - ACCESO RÁPIDO (FAVORITOS)
+// =============================================
+
+function getFavs() { return S.get('favs') || []; }
+function saveFavs(arr) { S.set('favs', arr); }
+
+var favEditMode = false;
+
+function renderFavs() {
+  var favs = getFavs();
+  var sec = document.getElementById('fav-section');
+  var grid = document.getElementById('fav-grid');
+  if(!sec || !grid) return;
+  sec.style.display = (favs.length > 0 || true) ? 'block' : 'none';
+  var html2 = '';
+  favs.forEach(function(f, i) {
+    html2 += '<button class="fav-btn' + (favEditMode ? ' fav-edit-mode' : '') + '" onclick="useFav(' + i + ')">' +
+      '<div class="fav-icon">' + f.icon + '</div>' +
+      '<div><div class="fav-name">' + f.name + '</div>' +
+      '<div class="fav-cat">' + f.catName + '</div></div>' +
+      '<button class="fav-del" onclick="delFav(event,' + i + ')">×</button>' +
+      '</button>';
+  });
+  html2 += '<button class="fav-add" onclick="openFavPicker()">' +
+    '<span style="font-size:16px">+</span><span>Agregar</span></button>';
+  grid.innerHTML = html2;
+}
+
+function toggleFavEdit() {
+  favEditMode = !favEditMode;
+  var btn = document.getElementById('fav-edit-btn');
+  if(btn) btn.textContent = favEditMode ? 'Listo' : 'Editar';
+  renderFavs();
+}
+
+function delFav(e, idx) {
+  e.stopPropagation();
+  var favs = getFavs();
+  favs.splice(idx, 1);
+  saveFavs(favs);
+  renderFavs();
+  if(!favs.length) { favEditMode = false; var b = document.getElementById('fav-edit-btn'); if(b) b.textContent='Editar'; }
+}
+
+function useFav(idx) {
+  if(favEditMode) return;
+  var fav = getFavs()[idx];
+  if(!fav) return;
+  if(fav.catId === 'custom') {
+    useCustomTpl(fav.tplIdx);
+  } else if(fav.direct) {
+    goDirectForm(fav.catId, fav.tplId);
+  } else {
+    showForm(fav.catId, fav.tplId);
+  }
+}
+
+function openFavPicker() {
+  var el = document.getElementById('fav-pick-list');
+  var existing = getFavs().map(function(f){ return f.catId+'_'+f.tplId; });
+  var items = '';
+  var catNames = {vias:'Informe de Vías',obras:'Obras en Vía',incidencia:'Incidencias',demanda:'Demanda'};
+  Object.keys(TPLS).forEach(function(cat) {
+    TPLS[cat].forEach(function(t) {
+      var key = cat+'_'+t.id;
+      var already = existing.indexOf(key) >= 0;
+      if(!already) {
+        items += '<div class="fav-pick-item" onclick="addFav(\''+cat+'\',\''+t.id+'\',\''+t.name+'\',\''+t.icon+'\',\''+
+          (catNames[cat]||cat)+'\',false)">' +
+          '<div class="fav-pick-icon">'+t.icon+'</div>' +
+          '<div class="fav-pick-info"><div class="fav-pick-name">'+t.name+'</div>' +
+          '<div class="fav-pick-cat">'+(catNames[cat]||cat)+'</div></div></div>';
+      }
+    });
+  });
+  getCustomTpls().forEach(function(t, i) {
+    var key = 'custom_ct'+i;
+    var already = existing.indexOf(key) >= 0;
+    if(!already) {
+      items += '<div class="fav-pick-item" onclick="addFavCustom('+i+',\''+t.name+'\',\''+t.icon+'\')">' +
+        '<div class="fav-pick-icon">'+(t.icon||'📝')+'</div>' +
+        '<div class="fav-pick-info"><div class="fav-pick-name">'+t.name+'</div>' +
+        '<div class="fav-pick-cat">Mis Plantillas</div></div></div>';
+    }
+  });
+  el.innerHTML = items || '<div style="color:var(--mut);text-align:center;padding:20px;font-size:13px">Todas las plantillas ya están agregadas</div>';
+  document.getElementById('fav-picker-ov').classList.add('open');
+}
+
+function closeFavPicker(e) {
+  if(e.target === document.getElementById('fav-picker-ov'))
+    document.getElementById('fav-picker-ov').classList.remove('open');
+}
+
+function addFav(cat, tplId, name, icon, catName, direct) {
+  var favs = getFavs();
+  favs.push({catId:cat, tplId:tplId, name:name, icon:icon, catName:catName, direct:direct||false});
+  saveFavs(favs);
+  document.getElementById('fav-picker-ov').classList.remove('open');
+  renderFavs();
+  showToast('⭐ Agregado al acceso rápido');
+}
+
+function addFavCustom(idx, name, icon) {
+  var favs = getFavs();
+  favs.push({catId:'custom', tplId:'ct'+idx, tplIdx:idx, name:name, icon:icon||'📝', catName:'Mis Plantillas'});
+  saveFavs(favs);
+  document.getElementById('fav-picker-ov').classList.remove('open');
+  renderFavs();
+  showToast('⭐ Agregado al acceso rápido');
 }
 
 function toggleGemVis(){
