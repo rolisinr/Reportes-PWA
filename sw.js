@@ -1,4 +1,4 @@
-const CACHE = 'reportes-tga-v4';
+const CACHE = 'reportes-tga-v5';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
