@@ -289,6 +289,9 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 .admin-send-btn:disabled{opacity:.5;cursor:default}
 .sheet-badge{font-size:10px;color:var(--mut);display:flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:3px 8px}
 </style>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 </head>
 <body>
 
@@ -552,7 +555,8 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       <select class="fs" id="admin-aviso-para" style="flex:1">
         <option value="todos">Todos los COVs</option>
       </select>
-      <button class="admin-send-btn" id="send-aviso-btn" onclick="sendAdminAviso()" style="flex:none;width:auto;padding:11px 16px">✉️ Enviar</button>
+      <button class="admin-send-btn" id="send-aviso-btn" onclick="sendAdminAviso()" style="flex:none;width:auto;padding:11px 14px">📢 Aviso</button>
+      <button class="admin-send-btn" id="send-push-btn" onclick="sendAdminPush()" style="flex:none;width:auto;padding:11px 14px;background:var(--rd)">🔔 Push</button>
     </div>
   </div>
 
@@ -585,6 +589,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 <div class="drawer" id="dw-settings">
   <div class="drawer-handle"></div>
   <div class="drawer-title">⚙️ Configuración</div>
+
   <div class="dw-sec">
     <div class="dw-sec-title">Tamaño de letra</div>
     <div class="dw-row">
@@ -596,21 +601,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       </div>
     </div>
   </div>
-  <div class="dw-sec">
-    <div class="dw-sec-title">Grupos de Telegram</div>
-    <div class="dw-row">
-      <span class="dw-lbl" style="font-size:12px">QAP / Ingreso</span>
-      <input class="dw-input" id="tg-qap" placeholder="@grupo o t.me/...">
-    </div>
-    <div class="dw-row">
-      <span class="dw-lbl" style="font-size:12px">Demandas CC3</span>
-      <input class="dw-input" id="tg-dem" placeholder="@grupo o t.me/...">
-    </div>
-    <div class="dw-row">
-      <span class="dw-lbl" style="font-size:12px">Incidencias CC3</span>
-      <input class="dw-input" id="tg-inc" placeholder="@grupo o t.me/...">
-    </div>
-  </div>
+
   <div class="dw-sec">
     <div class="dw-sec-title">Notificaciones</div>
     <div class="dw-row">
@@ -626,39 +617,20 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       <input class="dw-input" id="notif-h2" type="time" value="16:00">
     </div>
   </div>
-  <div class="dw-sec">
-    <div class="dw-sec-title">📊 Google Sheets</div>
-    <button onclick="testSheetConn()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">🔗 Verificar conexión</button>
-    <div id="sheet-test-result" style="font-size:11px;margin-top:6px;display:none"></div>
-    <div style="font-size:10px;color:var(--mut);margin-top:6px;line-height:1.5">Conector integrado • ID: ...fyPuwFDyYv6...</div>
-  </div>
+
   <div class="dw-sec">
     <div class="dw-sec-title">🤖 Inteligencia Artificial</div>
-    <div style="font-size:11px;color:var(--mut);margin-bottom:7px">Clave API de Google AI Studio</div>
     <div style="display:flex;gap:6px;margin-bottom:6px">
       <input class="dw-input" id="gem-key" type="password" placeholder="AIzaSy..." style="flex:1;font-family:monospace;font-size:11px" oninput="autoSaveGemKey(this)">
       <button onclick="toggleGemVis()" style="background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);padding:0 10px;cursor:pointer;font-size:14px">👁</button>
     </div>
-    <button id="test-api-btn" onclick="testGeminiAPI()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit;margin-bottom:7px;transition:all .15s">🔗 Verificar conexión</button>
-    <div id="test-api-result" style="font-size:11px;margin-bottom:6px;display:none"></div>
-    <div style="font-size:10px;color:var(--mut);line-height:1.5">Obtén tu clave en <b>aistudio.google.com</b>. Restringe el dominio a <b>rolisinr.github.io</b>.</div>
+    <button id="test-api-btn" onclick="testGeminiAPI()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit;margin-bottom:5px">🔗 Verificar</button>
+    <div id="test-api-result" style="font-size:11px;display:none"></div>
   </div>
+
   <button class="dw-save" onclick="saveSettings()">Guardar configuración</button>
 </div>
 
-<!-- MINI IA OVERLAY -->
-<div class="mini-ov" id="mini-ov">
-  <div class="mini-sheet">
-    <div class="ms-title">🤖 IA — <span id="ms-tpl-name"></span></div>
-    <div class="ms-sub">Describe brevemente la situación. Gemini completará los campos del formulario.</div>
-    <div class="ms-rec-area">
-      <button class="ms-mic" id="ms-mic" onclick="msToggleRec()">🎤</button>
-      <div class="ms-status" id="ms-status">Toca para grabar</div>
-      <div class="ms-timer" id="ms-timer">00:00</div>
-    </div>
-    <button class="ms-cancel" onclick="closeMiniIA()">Cancelar</button>
-  </div>
-</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1486,6 +1458,8 @@ function init(){
     checkNotifBanner();
     if(cfg.notif) scheduleNotifications(cfg);
     initSheetConnection();
+    initFirebase();
+    if(Notification.permission==='granted') registerFCMToken();
   } else {
     navStack.length=0; navStack.push("s-welcome");
     showScreen("s-welcome");
@@ -1832,54 +1806,28 @@ async function testGeminiAPI() {
   var resEl = document.getElementById('test-api-result');
   var btn = document.getElementById('test-api-btn');
   if(!key) {
-    resEl.style.display = 'block';
-    resEl.style.color = 'var(--rd)';
-    resEl.textContent = '⚠️ Ingresa tu clave API primero';
-    return;
+    resEl.style.display='block'; resEl.style.color='var(--rd)';
+    resEl.textContent='⚠️ Sin clave API'; return;
   }
-  btn.textContent = '⏳ Verificando…';
-  btn.style.color = 'var(--or)';
-  resEl.style.display = 'none';
-  var tested = [];
+  btn.textContent='⏳ Verificando…'; btn.style.color='var(--or)';
+  resEl.style.display='none';
   for(var mi=0; mi<GEMINI_MODELS.length; mi++) {
-    var model = GEMINI_MODELS[mi];
+    var model=GEMINI_MODELS[mi];
     try {
-      var r = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + key,
-        {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({
-            contents:[{parts:[{text:'Responde solo la palabra: OK'}]}],
-            generationConfig:{temperature:0, maxOutputTokens:5}
-          })
-        }
-      );
+      var r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+key,
+        {method:'POST',headers:{'Content-Type':'application/json'},
+         body:JSON.stringify({contents:[{parts:[{text:'di OK'}]}],generationConfig:{temperature:0,maxOutputTokens:5}})});
       if(r.ok) {
-        btn.textContent = '✅ Conexión OK';
-        btn.style.color = 'var(--gr)';
-        btn.style.borderColor = 'var(--gr)';
-        resEl.style.display = 'block';
-        resEl.style.color = 'var(--gr)';
-        resEl.textContent = 'Modelo activo: ' + model + ' ✓';
-        setTimeout(function(){
-          btn.textContent = '🔗 Verificar conexión';
-          btn.style.color = '';
-          btn.style.borderColor = '';
-        }, 4000);
+        resEl.style.display='block'; resEl.style.color='var(--gr)';
+        resEl.textContent='✓ OK · '+model;
+        btn.textContent='🔗 Verificar'; btn.style.color='';
         return;
-      } else {
-        var ej = await r.json();
-        tested.push(model + ': ' + (ej.error&&ej.error.message ? ej.error.message.substring(0,40) : 'Error '+r.status));
       }
-    } catch(e) {
-      tested.push(model + ': ' + e.message.substring(0,40));
-    }
+    } catch(e) {}
   }
-  btn.textContent = '🔗 Verificar conexión';
-  btn.style.color = '';
-  resEl.style.display = 'block';
-  resEl.style.color = 'var(--rd)';
-  resEl.textContent = '⚠️ Sin conexión: ' + tested[0];
+  resEl.style.display='block'; resEl.style.color='var(--rd)';
+  resEl.textContent='⚠️ Sin conexión con Gemini';
+  btn.textContent='🔗 Verificar'; btn.style.color='';
 }
 
 // =============================================
@@ -1891,7 +1839,7 @@ var sheetConnected = false;
 var pendingAvisos = [];
 
 function getSheetURL() {
-  return 'https://script.google.com/macros/s/AKfycbzdD5WE_AVmpqlp97t1Kgd8Y6q3yrx5gVLJFvXdSHePpU4gXQz8XFpcOhuhxTWdx5lOsQ/exec';
+  return 'https://script.google.com/macros/s/AKfycbx-g2KIsgN0RuC0813Z2Skntd5ne5XN07Nv_kT0aSJSa12PAH3yY5lznz_cttUQx09PqA/exec';
 }
 
 function autoSaveSheetUrl(el) { /* URL fija en código */ }
@@ -2023,6 +1971,18 @@ function renderCOVList(covs) {
     '<div style="color:var(--mut);text-align:center;padding:20px">Sin COVs registrados</div>';
 }
 
+
+async function sendAdminPush() {
+  var msg = document.getElementById('admin-aviso-txt').value.trim();
+  if(!msg) { showToast('Escribe el mensaje primero'); return; }
+  var btn = document.getElementById('send-push-btn');
+  btn.textContent = 'Enviando…'; btn.disabled = true;
+  try {
+    await sendPushToAll('🛡️ Aviso TGA', msg);
+  } finally {
+    btn.textContent = '🔔 Push'; btn.disabled = false;
+  }
+}
 async function sendAdminAviso() {
   var msg = document.getElementById('admin-aviso-txt').value.trim();
   var para = document.getElementById('admin-aviso-para').value;
@@ -2064,6 +2024,103 @@ async function testSheetConn() {
   } catch(e) {
     res_el.style.color='var(--rd)';
     res_el.textContent='⚠️ Error: ' + e.message;
+  }
+}
+// =============================================
+// FASE 4 - FIREBASE PUSH NOTIFICATIONS
+// =============================================
+
+var FB_CONFIG = {
+  apiKey: 'AIzaSyBIj8aYFt-vkVc55atTgfYVtZI2iWVvTI4',
+  authDomain: 'covapp-3fe9d.firebaseapp.com',
+  projectId: 'covapp-3fe9d',
+  messagingSenderId: '1056777477300',
+  appId: '1:1056777477300:web:d4b64af6fb85f8a7e54be1'
+};
+var VAPID_KEY = 'BI5F6tQLAO_FeTItDV7xlVkCTWZ1Ea07ZHkH8rpavqkVWxTE4w2lvA8Djlg3NKyeREk-HUW6SedammdhfDu5CCo';
+var fbMessaging = null;
+var fcmToken = null;
+
+function initFirebase() {
+  try {
+    if(typeof firebase === 'undefined') return;
+    if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    fbMessaging = firebase.messaging();
+    fbMessaging.onMessage(function(payload) {
+      var n = payload.notification || {};
+      showToast((n.title||'Aviso') + (n.body ? ': ' + n.body : ''));
+      var banner = document.getElementById('aviso-banner');
+      var txt = document.getElementById('aviso-msg-txt');
+      if(banner && txt) {
+        txt.textContent = (n.title ? n.title + ': ' : '') + (n.body||'');
+        banner.dataset.id = 'fcm_' + Date.now();
+        banner.classList.add('show');
+      }
+    });
+    console.log('Firebase OK');
+  } catch(e) {
+    console.log('Firebase init error:', e.message);
+  }
+}
+
+async function registerFCMToken() {
+  if(!fbMessaging) return;
+  if(Notification.permission !== 'granted') return;
+  try {
+    var token = await fbMessaging.getToken({vapidKey: VAPID_KEY});
+    if(token && token !== fcmToken) {
+      fcmToken = token;
+      localStorage.setItem('fcm_token', token);
+      await saveFCMTokenToSheet(token);
+    }
+  } catch(e) {
+    console.log('FCM token error:', e.message);
+  }
+}
+
+async function saveFCMTokenToSheet(token) {
+  try {
+    await sheetPost({
+      action: 'update',
+      did: getDeviceId(),
+      fcmToken: token
+    });
+  } catch(e) {}
+}
+
+async function requestNotifPerm() {
+  if(!('Notification' in window)) { showToast('Este navegador no soporta notificaciones'); return; }
+  var perm = await Notification.requestPermission();
+  if(perm === 'granted') {
+    document.getElementById('notif-banner').classList.remove('show');
+    showToast('✓ Notificaciones activadas');
+    var cfg = getSettings2();
+    scheduleNotifications(cfg);
+    await registerFCMToken();
+  } else {
+    showToast('⚠️ Permiso denegado');
+  }
+}
+
+// Admin: enviar notificación push vía FCM REST API
+async function sendPushToAll(title, body) {
+  var cfg = getSettings2();
+  var key = (cfg.gemKey||'').trim();
+  try {
+    var tokensRes = await sheetGet('tokens', {did: getDeviceId()});
+    if(!tokensRes || !tokensRes.tokens || !tokensRes.tokens.length) {
+      showToast('⚠️ Sin dispositivos registrados'); return;
+    }
+    var res = await sheetPost({
+      action: 'pushall',
+      did: getDeviceId(),
+      title: title,
+      body: body
+    });
+    if(res && res.ok) showToast('✓ Push enviado a ' + (res.count||'todos') + ' dispositivos');
+    else showToast('⚠️ ' + (res&&res.error||'Error'));
+  } catch(e) {
+    showToast('⚠️ ' + e.message);
   }
 }
 function toggleGemVis(){
