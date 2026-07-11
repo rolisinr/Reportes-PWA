@@ -4,7 +4,7 @@
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-const CACHE = 'reportes-tga-v14';
+const CACHE = 'reportes-tga-v15';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 // Firebase init en SW
@@ -38,7 +38,7 @@ self.addEventListener('notificationclick', function(e) {
   e.waitUntil(
     clients.matchAll({type:'window', includeUncontrolled:true}).then(function(list) {
       for(var i=0; i<list.length; i++) {
-        if(list[i].url.includes('covapp') && 'focus' in list[i]) return list[i].focus();
+        if((list[i].url.includes('covapp.online')||list[i].url.includes('covapp')) && 'focus' in list[i]) return list[i].focus();
       }
       return clients.openWindow('./');
     })
