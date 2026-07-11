@@ -1444,10 +1444,9 @@ init();
 // ═══════════════════════════════════════════
 
 const GEMINI_MODELS = [
-  'gemini-2.5-flash',       // Mejor calidad (RPD: 20/día)
-  'gemini-3.5-flash',       // Nuevo, fresco (RPD: 20/día)
-  'gemini-3.1-flash-lite',  // Mayor capacidad (RPD: 500/día)
-  'gemini-2.5-flash-lite',  // Respaldo final (RPD: 20/día)
+  'gemini-2.5-flash',
+  'gemini-3.1-flash-lite',
+  'gemini-2.5-flash-lite',
 ];
 
 async function callGemini(audioB64, mimeType, prompt) {
