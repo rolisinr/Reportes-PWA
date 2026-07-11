@@ -219,6 +219,58 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 /* TOAST */
 .toast{position:fixed;bottom:calc(18px + var(--safe));left:50%;transform:translateX(-50%) translateY(14px);background:#16A34A;color:#fff;padding:8px 18px;border-radius:18px;font-size:13px;font-weight:600;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:999;box-shadow:0 3px 14px rgba(0,0,0,.18);white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ═══ FASE 2 — IA ═══ */
+.ia-main-btn{width:100%;background:linear-gradient(135deg,#EBF3FF 0%,#fff 100%);border:1.5px solid #B0CCE8;border-radius:var(--r);padding:11px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.06);font-family:inherit;transition:border-color .15s;margin-bottom:9px}
+.ia-main-btn:hover{border-color:var(--acc)}
+.ia-main-btn:active{transform:scale(.98)}
+.ia-mb-icon{font-size:22px;flex-shrink:0}
+.ia-mb-txt{flex:1;text-align:left}
+.ia-mb-name{font-size:13px;font-weight:700;color:var(--txt)}
+.ia-mb-sub{font-size:11px;color:var(--mut)}
+.ia-mb-arr{color:var(--mut);font-size:16px}
+.ia-form-btn{background:#EBF3FF;border:1px solid #B0CCE8;border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--acc);cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.ia-tabs{display:flex;background:var(--bg);border-radius:var(--r);padding:3px;gap:3px;margin-bottom:12px}
+.ia-tab{flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--mut);background:none;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.ia-tab.on{background:#fff;color:var(--acc);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.ia-hint{font-size:12px;color:var(--mut);text-align:center;margin-bottom:16px;line-height:1.55;padding:0 10px}
+.ia-record-area{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 0}
+.ia-mic-btn{width:80px;height:80px;border-radius:50%;border:none;background:var(--acc);color:#fff;font-size:32px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .2s;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(26,111,196,.35);font-family:inherit}
+.ia-mic-btn.recording{background:var(--rd);box-shadow:0 4px 16px rgba(220,38,38,.4);animation:mpulse 1s ease-in-out infinite}
+.ia-mic-btn.processing{background:var(--or);cursor:default;animation:none}
+@keyframes mpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
+.ia-status{font-size:13px;font-weight:600;color:var(--txt)}
+.ia-timer{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--acc);letter-spacing:2px;display:none}
+.ia-stop-hint{font-size:11px;color:var(--mut);display:none}
+.ia-result{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:12px;margin-top:8px}
+.ia-r-title{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+.ia-tpl-card{background:var(--bg);border-radius:var(--rs);padding:9px 11px;margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.ia-tpl-name{font-size:13px;font-weight:700;flex:1}
+.ia-conf{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+.ia-conf.alta{background:#D1FAE5;color:#065F46}
+.ia-conf.media{background:#FEF3C7;color:#92400E}
+.ia-conf.baja{background:#FEE2E2;color:#991B1B}
+.ia-flist{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.ia-fitem{background:var(--bg);border-radius:6px;padding:6px 9px;border-left:3px solid var(--gr)}
+.ia-flbl{font-size:10px;color:var(--mut)}
+.ia-fval{font-size:12px;font-weight:600;color:var(--txt)}
+.ia-rbtns{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.ia-rbtn{padding:10px;border-radius:var(--rs);border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.ia-rbtn.pri{background:var(--acc);color:#fff}
+.ia-rbtn.sec{background:var(--bg);border:1px solid var(--brd);color:var(--txt)}
+.ia-narr-prev{font-size:13px;line-height:1.7;color:var(--txt);background:var(--bg);border-radius:var(--rs);padding:11px;margin-bottom:10px;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto}
+.mini-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:700;display:none;align-items:flex-end;justify-content:center}
+.mini-ov.open{display:flex}
+.mini-sheet{background:#fff;border-radius:20px 20px 0 0;padding:18px 16px calc(16px + var(--safe));width:100%;max-width:520px}
+.ms-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.ms-sub{font-size:11px;color:var(--mut);margin-bottom:14px;line-height:1.4}
+.ms-rec-area{display:flex;flex-direction:column;align-items:center;gap:9px;padding:8px 0 16px}
+.ms-mic{width:64px;height:64px;border-radius:50%;border:none;background:var(--acc);color:#fff;font-size:26px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .2s;box-shadow:0 3px 12px rgba(26,111,196,.35);font-family:inherit}
+.ms-mic.recording{background:var(--rd);animation:mpulse 1s ease-in-out infinite}
+.ms-mic.processing{background:var(--or);cursor:default;animation:none}
+.ms-status{font-size:12px;font-weight:600;color:var(--txt)}
+.ms-timer{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--acc);letter-spacing:2px;display:none}
+.ms-cancel{width:100%;background:none;border:1px solid var(--brd);border-radius:var(--rs);padding:10px;font-size:13px;color:var(--mut);cursor:pointer;font-family:inherit}
 </style>
 </head>
 <body>
@@ -344,6 +396,14 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </button>
   </div>
 
+  <button class="ia-main-btn" onclick="go('s-ia')">
+    <div class="ia-mb-icon">🤖</div>
+    <div class="ia-mb-txt">
+      <div class="ia-mb-name">Generar reporte con IA</div>
+      <div class="ia-mb-sub">Habla y Gemini redacta el reporte</div>
+    </div>
+    <span class="ia-mb-arr">›</span>
+  </button>
   <div class="srv-block">
     <div class="srv-title">Servicio COV</div>
     <div class="srv-btns">
@@ -399,6 +459,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   <div id="form-badge"></div>
   <div class="form-hdr">
     <div class="form-title" id="form-title"></div>
+    <button class="ia-form-btn" onclick="openMiniIA()">🎤 IA</button>
     <button class="reset-btn" onclick="resetForm()">🗑 Vaciar</button>
   </div>
   <div id="cache-note" class="cache-note" style="margin-bottom:8px;display:none"></div>
@@ -429,6 +490,26 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   <div class="hist-list" id="hist-list"></div>
 </div>
 
+
+<!-- IA SCREEN -->
+<div class="screen" id="s-ia">
+  <div class="back-row" onclick="goBack()">
+    <span class="back-icon">&#8249;</span><span class="back-lbl">Inicio</span>
+  </div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px">🤖 Asistente IA <span style="font-size:11px;color:var(--mut);font-weight:400">Gemini</span></div>
+  <div class="ia-tabs">
+    <button class="ia-tab on" id="ia-tab-libre" onclick="setIAMode('libre')">Detectar plantilla</button>
+    <button class="ia-tab" id="ia-tab-narr" onclick="setIAMode('narrador')">Solo texto</button>
+  </div>
+  <div class="ia-hint" id="ia-hint">Habla describiendo la situación y Gemini detectará el tipo de reporte y completará los campos automáticamente.</div>
+  <div class="ia-record-area">
+    <button class="ia-mic-btn" id="ia-mic" onclick="iaToggleRec()">🎤</button>
+    <div class="ia-status" id="ia-status">Toca para grabar</div>
+    <div class="ia-timer" id="ia-timer">00:00</div>
+    <div class="ia-stop-hint" id="ia-stop-hint">Toca de nuevo para detener</div>
+  </div>
+  <div id="ia-result" style="display:none"></div>
+</div>
 </main>
 
 <!-- QUICK PREVIEW (servicio) -->
@@ -495,9 +576,31 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       <input class="dw-input" id="notif-h2" type="time" value="16:00">
     </div>
   </div>
+  <div class="dw-sec">
+    <div class="dw-sec-title">🤖 Inteligencia Artificial</div>
+    <div style="font-size:11px;color:var(--mut);margin-bottom:7px">Clave API de Google AI Studio (Gemini)</div>
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <input class="dw-input" id="gem-key" type="password" placeholder="AIzaSy..." style="flex:1;font-family:monospace;font-size:11px">
+      <button onclick="toggleGemVis()" style="background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);padding:0 10px;cursor:pointer;font-size:14px;-webkit-tap-highlight-color:transparent">👁</button>
+    </div>
+    <div style="font-size:10px;color:var(--mut);line-height:1.5">Obtén tu clave en <b>aistudio.google.com</b>. Para seguridad, restringe el dominio a <b>rolisinr.github.io</b> en la configuración de la clave.</div>
+  </div>
   <button class="dw-save" onclick="saveSettings()">Guardar configuración</button>
 </div>
 
+<!-- MINI IA OVERLAY -->
+<div class="mini-ov" id="mini-ov">
+  <div class="mini-sheet">
+    <div class="ms-title">🤖 IA — <span id="ms-tpl-name"></span></div>
+    <div class="ms-sub">Describe brevemente la situación. Gemini completará los campos del formulario.</div>
+    <div class="ms-rec-area">
+      <button class="ms-mic" id="ms-mic" onclick="msToggleRec()">🎤</button>
+      <div class="ms-status" id="ms-status">Toca para grabar</div>
+      <div class="ms-timer" id="ms-timer">00:00</div>
+    </div>
+    <button class="ms-cancel" onclick="closeMiniIA()">Cancelar</button>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1335,6 +1438,329 @@ function init(){
 
 if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
 init();
+
+// ═══════════════════════════════════════════
+// FASE 2 — GEMINI IA
+// ═══════════════════════════════════════════
+
+const GEMINI_MODELS = [
+  'gemini-2.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-8b'
+];
+
+async function callGemini(audioB64, mimeType, prompt) {
+  const key = (getSettings2().gemKey||'').trim();
+  if(!key) throw new Error('Configura tu clave API en ⚙️');
+  let lastErr = null;
+  for(const model of GEMINI_MODELS) {
+    try {
+      const r = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+        {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            contents:[{parts:[
+              {inline_data:{mime_type:mimeType, data:audioB64}},
+              {text:prompt}
+            ]}],
+            generationConfig:{temperature:0.1, maxOutputTokens:2000}
+          })
+        }
+      );
+      if(r.status===429||r.status===503){lastErr=new Error('Cuota agotada: '+model); continue;}
+      if(!r.ok){const e=await r.json(); throw new Error(e.error?.message||'Error '+r.status);}
+      const d=await r.json();
+      const text=d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+      if(!text) throw new Error('Respuesta vacía de la IA');
+      return {text, model};
+    } catch(e) {
+      lastErr=e;
+      if(model===GEMINI_MODELS[GEMINI_MODELS.length-1]) throw lastErr;
+    }
+  }
+  throw lastErr;
+}
+
+function parseGemJSON(text) {
+  let s=text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+  const i=s.indexOf('{'), j=s.lastIndexOf('}');
+  if(i<0||j<0) throw new Error('La IA no devolvió JSON válido');
+  return JSON.parse(s.slice(i,j+1));
+}
+
+// ── RECORDING ENGINE ──
+let mRec=null, aChunks=[], rTimer=null, rSecs=0;
+const fmtTime = s => String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+
+async function startRec(micId, timerId, statusId) {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    const mimeType = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4']
+      .find(m=>{ try{return MediaRecorder.isTypeSupported(m);}catch{return false;} })||'';
+    mRec = new MediaRecorder(stream, mimeType?{mimeType}:{});
+    aChunks=[];
+    mRec.ondataavailable = e=>{ if(e.data.size>0) aChunks.push(e.data); };
+    mRec.start(200);
+    rSecs=0;
+    const tEl=document.getElementById(timerId);
+    if(tEl){tEl.style.display='';tEl.textContent='00:00';}
+    rTimer=setInterval(()=>{rSecs++; const t=document.getElementById(timerId); if(t) t.textContent=fmtTime(rSecs);},1000);
+    document.getElementById(micId).classList.add('recording');
+    const sEl=document.getElementById(statusId);
+    if(sEl) sEl.textContent='Grabando… toca para detener';
+    const hint=document.getElementById('ia-stop-hint');
+    if(hint) hint.style.display='';
+    return true;
+  } catch(e) { showToast('⚠️ Sin acceso al micrófono'); return false; }
+}
+
+async function stopRecGetAudio() {
+  clearInterval(rTimer);
+  return new Promise(resolve=>{
+    mRec.onstop = async ()=>{
+      const blob=new Blob(aChunks,{type:mRec.mimeType||'audio/webm'});
+      const fr=new FileReader();
+      fr.onload=()=>resolve({b64:fr.result.split(',')[1], mime:blob.type});
+      fr.readAsDataURL(blob);
+    };
+    mRec.stop();
+    mRec.stream.getTracks().forEach(t=>t.stop());
+  });
+}
+
+// ── IA SCREEN ──
+let iaRecording=false, iaCurrentMode='libre', iaCurrentResult=null;
+
+function setIAMode(mode) {
+  iaCurrentMode=mode;
+  document.getElementById('ia-tab-libre').classList.toggle('on',mode==='libre');
+  document.getElementById('ia-tab-narr').classList.toggle('on',mode==='narrador');
+  document.getElementById('ia-hint').textContent = mode==='libre'
+    ? 'Habla describiendo la situación y Gemini detectará el tipo de reporte y completará los campos automáticamente.'
+    : 'Describe la situación como puedas. Gemini ordenará tus ideas en un texto claro y profesional para copiar.';
+  document.getElementById('ia-result').style.display='none';
+}
+
+async function iaToggleRec() {
+  if(iaRecording) {
+    iaRecording=false;
+    const mic=document.getElementById('ia-mic');
+    mic.classList.remove('recording'); mic.classList.add('processing'); mic.textContent='⏳';
+    document.getElementById('ia-status').textContent='Procesando con Gemini…';
+    document.getElementById('ia-stop-hint').style.display='none';
+    try {
+      const {b64,mime}=await stopRecGetAudio();
+      const prompt=iaCurrentMode==='libre'?buildDetectPrompt():buildNarradorPrompt();
+      const {text,model}=await callGemini(b64,mime,prompt);
+      if(iaCurrentMode==='libre') renderLibreResult(text);
+      else renderNarradorResult(text);
+      showToast('✓ '+model);
+    } catch(e){ showToast('⚠️ '+e.message); }
+    finally {
+      const m=document.getElementById('ia-mic');
+      m.classList.remove('processing','recording'); m.textContent='🎤';
+      document.getElementById('ia-status').textContent='Toca para grabar';
+      document.getElementById('ia-timer').style.display='none';
+    }
+  } else {
+    const ok=await startRec('ia-mic','ia-timer','ia-status');
+    if(ok){iaRecording=true; document.getElementById('ia-result').style.display='none';}
+  }
+}
+
+function buildDetectPrompt() {
+  const p=getProfile();
+  const tplList=[
+    {id:'informe-via',cat:'vias',name:'Informe de Vías TGA',desc:'estado de tráfico N/S y S/N, semáforos, PNP, segregado, recaudo'},
+    {id:'situacion',cat:'vias',name:'Situación Actual Corredor Azul',desc:'reporte rápido de situación puntual'},
+    {id:'obras-via',cat:'obras',name:'Obras en Vía TGA',desc:'trabajos de construcción o mantenimiento en calzada'},
+    {id:'inc-via',cat:'incidencia',name:'Incidencia en Vía',desc:'accidente, choque, caída de persona, árbol caído'},
+    {id:'inc-cc3',cat:'incidencia',name:'Incidencia CC3 Rápido',desc:'incidencia puntual breve'},
+    {id:'accidente-bus',cat:'incidencia',name:'Accidente Bus / Caída de Usuario',desc:'usuario herido a bordo, caída por frenada brusca'},
+    {id:'demanda',cat:'demanda',name:'Demanda Corredor Azul',desc:'paradero con usuarios esperando buses'},
+  ];
+  return `Eres asistente del Corredor Azul TGA Lima, Peru. COV: ${p.nombre||'COV'}, punto: ${p.ubi||'no especificado'}.
+
+Escucha el audio y determina el tipo de reporte. Extrae todos los datos mencionados.
+
+Plantillas disponibles:
+${tplList.map(t=>`- "${t.id}": ${t.name} — ${t.desc}`).join('
+')}
+
+Responde UNICAMENTE con JSON valido, sin markdown, sin explicaciones:
+{
+  "plantilla": "id_de_la_plantilla",
+  "confianza": "alta",
+  "campos": {
+    "campo_id": "valor extraido"
+  }
+}
+
+Reglas importantes:
+- Mantener nombres de calles, paraderos, placas y numeros EXACTAMENTE como se escuchen
+- Si no se menciona un campo, omitirlo del JSON
+- Para campos de descripcion, redactar de forma clara y profesional
+- confianza: alta (claro), media (probable), baja (dudoso)`;
+}
+
+function buildFillPrompt(tpl) {
+  const p=getProfile();
+  const textFields=tpl.fields.filter(f=>f.type!=='sel');
+  return `Eres asistente del Corredor Azul TGA Lima, Peru. COV: ${p.nombre||'COV'}, punto: ${p.ubi||'no especificado'}.
+
+Escucha el audio y extrae informacion para el formulario: "${tpl.name}".
+
+Responde UNICAMENTE con JSON valido, sin markdown:
+{
+${textFields.map(f=>`  "${f.id}": ""`).join(',
+')}
+}
+
+Descripcion de cada campo:
+${textFields.map(f=>`- "${f.id}": ${f.label}`).join('
+')}
+
+Si no se menciona un campo, dejarlo como string vacio "". Redactar de forma clara y profesional. La hora se inserta automaticamente, no incluirla.`;
+}
+
+function buildNarradorPrompt() {
+  return `Eres asistente de redaccion para reportes de transito del Corredor Azul TGA Lima, Peru.
+
+Escucha el audio y organiza las ideas en un texto claro, ordenado y profesional para un reporte operativo.
+
+Reglas:
+- Mantener exactamente los nombres de calles, paraderos, placas y numeros de padron
+- Ordenar cronologicamente si hay secuencia de eventos
+- Usar lenguaje formal de reporte operativo de transito peruano
+- Solo texto plano, sin formato especial ni listas
+- Si faltan datos, redactar lo que se pueda inferir`;
+}
+
+function renderLibreResult(text) {
+  let data;
+  try{data=parseGemJSON(text);}catch(e){showToast('⚠️ No se pudo interpretar la respuesta'); return;}
+  const {plantilla, confianza='media', campos={}}=data;
+  let foundTpl=null, foundCat=null;
+  for(const [cat,tpls] of Object.entries(TPLS)){
+    const t=tpls.find(x=>x.id===plantilla);
+    if(t){foundTpl=t; foundCat=cat; break;}
+  }
+  if(!foundTpl){showToast('⚠️ Plantilla no reconocida: '+plantilla); return;}
+  iaCurrentResult={tpl:foundTpl, cat:foundCat, campos};
+  const cf=(['alta','media','baja'].includes(confianza)?confianza:'media');
+  const filledFields=Object.entries(campos).filter(([k,v])=>v).map(([k,v])=>{
+    const f=foundTpl.fields.find(x=>x.id===k);
+    return f?`<div class="ia-fitem"><div class="ia-flbl">${f.label}</div><div class="ia-fval">${v}</div></div>`:'';
+  }).join('');
+  const el=document.getElementById('ia-result');
+  el.innerHTML=`<div class="ia-result">
+    <div class="ia-r-title">Plantilla detectada</div>
+    <div class="ia-tpl-card">
+      <div class="ia-tpl-name">${foundTpl.icon} ${foundTpl.name}</div>
+      <span class="ia-conf ${cf}">${cf}</span>
+    </div>
+    ${filledFields?'<div class="ia-r-title">Campos extraídos</div><div class="ia-flist">'+filledFields+'</div>':'<p style="font-size:12px;color:var(--mut);margin-bottom:10px">No se detectaron campos específicos. Puedes completarlos manualmente.</p>'}
+    <div class="ia-rbtns">
+      <button class="ia-rbtn pri" onclick="applyIAResult()">✓ Usar plantilla</button>
+      <button class="ia-rbtn sec" onclick="document.getElementById('ia-result').style.display='none'">↩ Reintentar</button>
+    </div>
+  </div>`;
+  el.style.display='block';
+}
+
+function renderNarradorResult(text) {
+  const el=document.getElementById('ia-result');
+  el.innerHTML=`<div class="ia-result">
+    <div class="ia-r-title">Texto organizado por Gemini</div>
+    <div class="ia-narr-prev" id="narr-txt">${text}</div>
+    <div class="ia-rbtns">
+      <button class="ia-rbtn pri" onclick="copyText(document.getElementById('narr-txt').innerText)">📋 Copiar</button>
+      <button class="ia-rbtn sec" onclick="document.getElementById('ia-result').style.display='none'">↩ Reintentar</button>
+    </div>
+  </div>`;
+  el.style.display='block';
+}
+
+function applyIAResult() {
+  if(!iaCurrentResult) return;
+  const {tpl,cat,campos}=iaCurrentResult;
+  showForm(cat,tpl.id,true);
+  setTimeout(()=>fillFieldsFromAI(tpl,campos), 180);
+}
+
+function fillFieldsFromAI(tpl, campos) {
+  tpl.fields.forEach(f=>{
+    const val=campos[f.id];
+    if(!val) return;
+    const el=document.getElementById('f-'+f.id);
+    if(!el) return;
+    if(el.tagName==='SELECT'){
+      const m=Array.from(el.options).find(o=>
+        o.value.toLowerCase().includes(val.toLowerCase())||
+        val.toLowerCase().includes(o.value.toLowerCase())
+      );
+      if(m) el.value=m.value;
+    } else {
+      el.value=val;
+      el.style.transition='border-color .3s';
+      el.style.borderColor='var(--gr)';
+      setTimeout(()=>{el.style.borderColor='';},1800);
+    }
+  });
+  upd();
+  showToast('✓ Campos completados por IA');
+}
+
+// ── MINI IA (desde formulario) ──
+let msRecording=false;
+
+function openMiniIA() {
+  if(!curTpl){showToast('⚠️ Selecciona una plantilla'); return;}
+  document.getElementById('ms-tpl-name').textContent=curTpl.name;
+  document.getElementById('ms-status').textContent='Toca para grabar';
+  document.getElementById('ms-timer').style.display='none';
+  const m=document.getElementById('ms-mic');
+  m.className='ms-mic'; m.textContent='🎤';
+  msRecording=false;
+  document.getElementById('mini-ov').classList.add('open');
+}
+
+function closeMiniIA() {
+  if(msRecording&&mRec){mRec.stop(); mRec.stream.getTracks().forEach(t=>t.stop()); clearInterval(rTimer); msRecording=false;}
+  document.getElementById('mini-ov').classList.remove('open');
+}
+
+async function msToggleRec() {
+  if(msRecording) {
+    msRecording=false;
+    const mic=document.getElementById('ms-mic');
+    mic.classList.remove('recording'); mic.classList.add('processing'); mic.textContent='⏳';
+    document.getElementById('ms-status').textContent='Procesando…';
+    try {
+      const {b64,mime}=await stopRecGetAudio();
+      const {text,model}=await callGemini(b64,mime,buildFillPrompt(curTpl));
+      const campos=parseGemJSON(text);
+      closeMiniIA();
+      fillFieldsFromAI(curTpl,campos);
+    } catch(e) {
+      showToast('⚠️ '+e.message);
+      const m=document.getElementById('ms-mic');
+      m.classList.remove('processing'); m.textContent='🎤';
+      document.getElementById('ms-status').textContent='Error — toca para reintentar';
+    }
+  } else {
+    const ok=await startRec('ms-mic','ms-timer','ms-status');
+    if(ok) msRecording=true;
+  }
+}
+
+function toggleGemVis(){
+  const i=document.getElementById('gem-key');
+  if(i) i.type=i.type==='password'?'text':'password';
+}
+
 </script>
 </body>
 </html>
