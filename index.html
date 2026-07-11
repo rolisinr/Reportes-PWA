@@ -578,9 +578,11 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     <div class="dw-sec-title">🤖 Inteligencia Artificial</div>
     <div style="font-size:11px;color:var(--mut);margin-bottom:7px">Clave API de Google AI Studio</div>
     <div style="display:flex;gap:6px;margin-bottom:6px">
-      <input class="dw-input" id="gem-key" type="password" placeholder="AIzaSy..." style="flex:1;font-family:monospace;font-size:11px">
+      <input class="dw-input" id="gem-key" type="password" placeholder="AIzaSy..." style="flex:1;font-family:monospace;font-size:11px" oninput="autoSaveGemKey(this)">
       <button onclick="toggleGemVis()" style="background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);padding:0 10px;cursor:pointer;font-size:14px">👁</button>
     </div>
+    <button id="test-api-btn" onclick="testGeminiAPI()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit;margin-bottom:7px;transition:all .15s">🔗 Verificar conexión</button>
+    <div id="test-api-result" style="font-size:11px;margin-bottom:6px;display:none"></div>
     <div style="font-size:10px;color:var(--mut);line-height:1.5">Obtén tu clave en <b>aistudio.google.com</b>. Restringe el dominio a <b>rolisinr.github.io</b>.</div>
   </div>
   <button class="dw-save" onclick="saveSettings()">Guardar configuración</button>
@@ -1756,6 +1758,69 @@ async function msToggleRec() {
     var ok2=await startRec('ms-mic','ms-timer','ms-status');
     if(ok2) msRecording=true;
   }
+}
+
+
+function autoSaveGemKey(el) {
+  var cfg = getSettings2();
+  cfg.gemKey = el.value.trim();
+  S.set('settings2', cfg);
+}
+
+async function testGeminiAPI() {
+  var cfg = getSettings2();
+  var key = (cfg.gemKey||'').trim();
+  var resEl = document.getElementById('test-api-result');
+  var btn = document.getElementById('test-api-btn');
+  if(!key) {
+    resEl.style.display = 'block';
+    resEl.style.color = 'var(--rd)';
+    resEl.textContent = '⚠️ Ingresa tu clave API primero';
+    return;
+  }
+  btn.textContent = '⏳ Verificando…';
+  btn.style.color = 'var(--or)';
+  resEl.style.display = 'none';
+  var tested = [];
+  for(var mi=0; mi<GEMINI_MODELS.length; mi++) {
+    var model = GEMINI_MODELS[mi];
+    try {
+      var r = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + key,
+        {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            contents:[{parts:[{text:'Responde solo la palabra: OK'}]}],
+            generationConfig:{temperature:0, maxOutputTokens:5}
+          })
+        }
+      );
+      if(r.ok) {
+        btn.textContent = '✅ Conexión OK';
+        btn.style.color = 'var(--gr)';
+        btn.style.borderColor = 'var(--gr)';
+        resEl.style.display = 'block';
+        resEl.style.color = 'var(--gr)';
+        resEl.textContent = 'Modelo activo: ' + model + ' ✓';
+        setTimeout(function(){
+          btn.textContent = '🔗 Verificar conexión';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 4000);
+        return;
+      } else {
+        var ej = await r.json();
+        tested.push(model + ': ' + (ej.error&&ej.error.message ? ej.error.message.substring(0,40) : 'Error '+r.status));
+      }
+    } catch(e) {
+      tested.push(model + ': ' + e.message.substring(0,40));
+    }
+  }
+  btn.textContent = '🔗 Verificar conexión';
+  btn.style.color = '';
+  resEl.style.display = 'block';
+  resEl.style.color = 'var(--rd)';
+  resEl.textContent = '⚠️ Sin conexión: ' + tested[0];
 }
 
 function toggleGemVis(){
