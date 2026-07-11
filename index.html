@@ -288,6 +288,52 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 .admin-send-btn{width:100%;background:var(--acc);color:#fff;border:none;border-radius:var(--rs);padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}
 .admin-send-btn:disabled{opacity:.5;cursor:default}
 .sheet-badge{font-size:10px;color:var(--mut);display:flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:3px 8px}
+/* === PERMISOS === */
+.perm-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:800;display:none;align-items:flex-end;justify-content:center}
+.perm-ov.open{display:flex}
+.perm-sheet{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px calc(20px + var(--safe));width:100%;max-width:520px;text-align:center}
+.perm-icon{font-size:44px;margin-bottom:10px}
+.perm-title{font-size:17px;font-weight:800;color:var(--txt);margin-bottom:8px}
+.perm-body{font-size:13px;color:var(--mut);line-height:1.6;margin-bottom:20px}
+.perm-btn-main{width:100%;background:var(--acc);color:#fff;border:none;border-radius:var(--r);padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;-webkit-tap-highlight-color:transparent}
+.perm-btn-skip{width:100%;background:none;border:none;color:var(--mut);font-size:13px;cursor:pointer;font-family:inherit;padding:6px;-webkit-tap-highlight-color:transparent}
+.guide-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;display:none;align-items:center;justify-content:center;padding:20px}
+.guide-ov.open{display:flex}
+.guide-card{background:#fff;border-radius:var(--r);padding:20px;width:100%;max-width:360px;max-height:80vh;overflow-y:auto}
+.guide-icon{font-size:36px;text-align:center;margin-bottom:8px}
+.guide-title{font-size:15px;font-weight:800;color:var(--txt);margin-bottom:12px;text-align:center}
+.guide-step{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.guide-num{background:var(--acc);color:#fff;border-radius:50%;width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px}
+.guide-txt{font-size:13px;color:var(--txt);line-height:1.5}
+.guide-txt b{color:var(--acc)}
+.guide-close{width:100%;background:var(--acc);color:#fff;border:none;border-radius:var(--rs);padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:12px}
+/* === FASE 5 === */
+.perm-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bg)}
+.perm-row:last-child{border-bottom:none}
+.perm-info{flex:1}
+.perm-lbl{font-size:13px;color:var(--txt);font-weight:600}
+.perm-state{font-size:11px;margin-top:2px}
+.perm-state.granted{color:var(--gr)}
+.perm-state.denied{color:var(--rd)}
+.perm-state.prompt{color:var(--mut)}
+.perm-req-btn{background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--txt);white-space:nowrap;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.perm-req-btn.granted{border-color:var(--gr);color:var(--gr)}
+.perm-req-btn.denied{border-color:var(--rd);color:var(--rd)}
+.ctpl-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.ctpl-item{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:11px 13px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.ctpl-item-info{flex:1;cursor:pointer}
+.ctpl-item-name{font-size:13px;font-weight:700}
+.ctpl-item-sub{font-size:11px;color:var(--mut);margin-top:1px}
+.ctpl-del{background:none;border:none;font-size:16px;cursor:pointer;padding:4px;color:var(--rd);-webkit-tap-highlight-color:transparent}
+.add-ctpl-btn{width:100%;background:var(--acc);color:#fff;border:none;border-radius:var(--r);padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;-webkit-tap-highlight-color:transparent}
+.builder-field-row{display:flex;gap:7px;align-items:center;margin-bottom:7px}
+.builder-field-inp{flex:1;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:8px 10px;font-size:13px;color:var(--txt);font-family:inherit;outline:none}
+.builder-field-inp:focus{border-color:var(--acc)}
+.del-field-btn{background:none;border:none;color:var(--rd);font-size:18px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.add-field-btn{background:none;border:1.5px dashed var(--brd);border-radius:var(--rs);padding:9px;width:100%;font-size:12px;color:var(--mut);cursor:pointer;font-family:inherit;margin-bottom:10px;transition:border-color .15s}
+.add-field-btn:hover{border-color:var(--acc);color:var(--acc)}
+.tpl-preview-box{background:#EBF3FF;border-left:3px solid var(--acc);border-radius:0 var(--rs) var(--rs) 0;padding:10px 12px;font-size:12px;color:var(--mut);margin-bottom:10px;font-style:italic;line-height:1.5}
+.resumen-box{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:10px}
 </style>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -364,10 +410,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </div>
     <button class="aviso-dismiss" onclick="dismissAviso()">✓ Leí</button>
   </div>
-  <div id="notif-banner" class="notif-banner">
-    <span class="nb-txt" id="nb-txt">Activa notificaciones para recordatorios</span>
-    <button class="nb-btn" onclick="requestNotifPerm()">Activar</button>
-  </div>
+  <!-- notif banner removido - ahora usa permission sheet -->
 
   <div class="prof-card">
     <div class="prof-info" id="prof-display"></div>
@@ -517,6 +560,8 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   </div>
   <div class="sec-lbl">Historial del turno</div>
   <div class="hist-list" id="hist-list"></div>
+  <div id="resumen-area" style="display:none;margin-top:10px"></div>
+  <button onclick="generarResumen()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--r);padding:11px;font-size:13px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit;margin-top:10px">📋 Resumen del turno</button>
 </div>
 
 
@@ -564,6 +609,34 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   <button onclick="loadAdminCOVs()" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;color:var(--mut);cursor:pointer;font-family:inherit;margin-bottom:10px">🔄 Actualizar lista</button>
   <div id="admin-covs"><div style="color:var(--mut);font-size:13px;text-align:center;padding:20px">Toca "Actualizar lista" para cargar los COVs</div></div>
 </div>
+
+<!-- MIS PLANTILLAS -->
+<div class="screen" id="s-mis-tpl">
+  <div class="back-row" onclick="goBack()"><span class="back-icon">‹</span><span class="back-lbl">Inicio</span></div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px">⭐ Mis Plantillas</div>
+  <div class="ctpl-list" id="ctpl-list"></div>
+  <button class="add-ctpl-btn" onclick="openBuilder(-1)">+ Nueva plantilla</button>
+</div>
+
+<!-- CONSTRUCTOR -->
+<div class="screen" id="s-builder">
+  <div class="back-row" onclick="goBack()"><span class="back-icon">‹</span><span class="back-lbl">Mis Plantillas</span></div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:14px" id="builder-title">Nueva Plantilla</div>
+  <div class="fields">
+    <div class="fg"><div class="fl">Nombre de la plantilla</div>
+    <input class="fi" id="b-name" type="text" oninput="previewBuilder()"></div>
+    <div class="fg"><div class="fl">Emoji</div>
+    <input class="fi" id="b-icon" type="text" maxlength="4" style="width:80px" placeholder="📝"></div>
+  </div>
+  <div class="sec-lbl">Campos del formulario</div>
+  <div id="b-fields-list"></div>
+  <button class="add-field-btn" onclick="addBuilderField()">+ Agregar campo</button>
+  <div class="sec-lbl">Mensaje plantilla</div>
+  <div style="font-size:11px;color:var(--mut);margin-bottom:6px">Usa {nombre_campo} para insertar valores. También puedes usar {hora_auto}, {fecha_auto} y {cov}.</div>
+  <textarea class="fta" id="b-template" rows="5" oninput="previewBuilder()" style="margin-bottom:10px"></textarea>
+  <div class="tpl-preview-box" id="b-preview">La vista previa aparece aquí…</div>
+  <button class="add-ctpl-btn" onclick="saveCustomTpl()" style="margin-bottom:calc(12px + var(--safe))">✓ Guardar plantilla</button>
+</div>
 </main>
 
 <!-- QUICK PREVIEW (servicio) -->
@@ -603,34 +676,80 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   </div>
 
   <div class="dw-sec">
-    <div class="dw-sec-title">Notificaciones</div>
-    <div class="dw-row">
-      <span class="dw-lbl">Recordatorio de informe de vías</span>
-      <button class="toggle-sw" id="notif-toggle" onclick="toggleNotif(this)"></button>
+    <div class="dw-sec-title">Permisos</div>
+    <div class="perm-row">
+      <div class="perm-info">
+        <div class="perm-lbl">🔔 Notificaciones</div>
+        <div class="perm-state prompt" id="perm-notif-state">Comprobando…</div>
+      </div>
+      <button class="perm-req-btn" id="perm-notif-btn" onclick="handleNotifPerm()">Activar</button>
     </div>
-    <div class="dw-row" id="notif-times-row" style="display:none">
+    <div class="perm-row">
+      <div class="perm-info">
+        <div class="perm-lbl">🎤 Micrófono</div>
+        <div class="perm-state prompt" id="perm-mic-state">Comprobando…</div>
+      </div>
+      <button class="perm-req-btn" id="perm-mic-btn" onclick="handleMicPerm()">Activar</button>
+    </div>
+  </div>
+  <div class="dw-sec">
+    <div class="dw-sec-title">Recordatorio de informe de vías</div>
+    <div class="dw-row">
       <span class="dw-lbl" style="font-size:12px">Hora 1er aviso</span>
       <input class="dw-input" id="notif-h1" type="time" value="10:00">
     </div>
-    <div class="dw-row" id="notif-times-row2" style="display:none">
+    <div class="dw-row" style="margin-top:4px">
       <span class="dw-lbl" style="font-size:12px">Hora 2do aviso</span>
       <input class="dw-input" id="notif-h2" type="time" value="16:00">
     </div>
   </div>
 
-  <div class="dw-sec">
-    <div class="dw-sec-title">🤖 Inteligencia Artificial</div>
-    <div style="display:flex;gap:6px;margin-bottom:6px">
-      <input class="dw-input" id="gem-key" type="password" placeholder="AIzaSy..." style="flex:1;font-family:monospace;font-size:11px" oninput="autoSaveGemKey(this)">
-      <button onclick="toggleGemVis()" style="background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);padding:0 10px;cursor:pointer;font-size:14px">👁</button>
-    </div>
-    <button id="test-api-btn" onclick="testGeminiAPI()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit;margin-bottom:5px">🔗 Verificar</button>
-    <div id="test-api-result" style="font-size:11px;display:none"></div>
-  </div>
-
   <button class="dw-save" onclick="saveSettings()">Guardar configuración</button>
 </div>
 
+<!-- PERMISSION SHEETS -->
+<div class="perm-ov" id="perm-notif-ov">
+  <div class="perm-sheet">
+    <div class="perm-icon">🔔</div>
+    <div class="perm-title">Activa las notificaciones</div>
+    <div class="perm-body">El supervisor puede enviarte avisos urgentes directamente a tu celular aunque la app esté cerrada. También recibirás recordatorios de informe de vías en tu turno.</div>
+    <button class="perm-btn-main" onclick="doRequestNotif()">🔔 Activar notificaciones</button>
+    <button class="perm-btn-skip" onclick="skipPermNotif()">Ahora no</button>
+  </div>
+</div>
+<div class="perm-ov" id="perm-mic-ov">
+  <div class="perm-sheet">
+    <div class="perm-icon">🎤</div>
+    <div class="perm-title">Acceso al micrófono</div>
+    <div class="perm-body">El Asistente IA necesita escucharte para redactar el reporte. Tu voz solo se procesa en el momento de grabar y no se almacena.</div>
+    <button class="perm-btn-main" onclick="doRequestMic()">🎤 Permitir micrófono</button>
+    <button class="perm-btn-skip" onclick="closePermMic()">Cancelar</button>
+  </div>
+</div>
+<div class="guide-ov" id="guide-notif-ov">
+  <div class="guide-card">
+    <div class="guide-icon">🛠️</div>
+    <div class="guide-title">Cómo activar notificaciones</div>
+    <div class="guide-step"><div class="guide-num">1</div><div class="guide-txt">Abre <b>Chrome</b> → toca los tres puntos <b>⋮</b> arriba a la derecha</div></div>
+    <div class="guide-step"><div class="guide-num">2</div><div class="guide-txt">Ve a <b>Configuración</b> → <b>Configuración del sitio</b></div></div>
+    <div class="guide-step"><div class="guide-num">3</div><div class="guide-txt">Toca <b>Notificaciones</b></div></div>
+    <div class="guide-step"><div class="guide-num">4</div><div class="guide-txt">Busca <b>covapp</b> en la lista y cambia a <b>Permitir</b></div></div>
+    <div class="guide-step"><div class="guide-num">5</div><div class="guide-txt">Vuelve a la app y recarga</div></div>
+    <button class="guide-close" onclick="document.getElementById('guide-notif-ov').classList.remove('open')">Entendido</button>
+  </div>
+</div>
+<div class="guide-ov" id="guide-mic-ov">
+  <div class="guide-card">
+    <div class="guide-icon">🎤</div>
+    <div class="guide-title">Cómo activar el micrófono</div>
+    <div class="guide-step"><div class="guide-num">1</div><div class="guide-txt">Abre <b>Chrome</b> → toca los tres puntos <b>⋮</b> arriba</div></div>
+    <div class="guide-step"><div class="guide-num">2</div><div class="guide-txt">Ve a <b>Configuración</b> → <b>Configuración del sitio</b></div></div>
+    <div class="guide-step"><div class="guide-num">3</div><div class="guide-txt">Toca <b>Micrófono</b></div></div>
+    <div class="guide-step"><div class="guide-num">4</div><div class="guide-txt">Busca <b>covapp</b> y cambia a <b>Permitir</b></div></div>
+    <div class="guide-step"><div class="guide-num">5</div><div class="guide-txt">Vuelve a la app y vuelve a intentarlo</div></div>
+    <button class="guide-close" onclick="document.getElementById('guide-mic-ov').classList.remove('open')">Entendido</button>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1315,6 +1434,7 @@ function doCopy(){
   const txt=document.getElementById("prev").innerText;
   if(!txt.trim()) return;
   copyText(txt);
+  haptic(60);
   addToHistory(curTpl.name, curCat, txt);
   const btn=document.getElementById("copy-btn");
   btn.classList.add("ok");
@@ -1334,18 +1454,14 @@ function doTelegram(){
 // SETTINGS
 // ═══════════════════════════════════════════
 function openSettings(){
+  updatePermStates();
   const cfg=getSettings2();
-  document.getElementById("tg-qap").value=cfg.tgQap||"";
-  document.getElementById("tg-dem").value=cfg.tgDem||"";
-  document.getElementById("tg-inc").value=cfg.tgInc||"";
-  document.getElementById("fs-val").textContent=cfg.fs+"px";
-  document.getElementById("notif-toggle").classList.toggle("on",cfg.notif);
-  document.getElementById("notif-h1").value=cfg.h1||"10:00";
-  document.getElementById("notif-h2").value=cfg.h2||"16:00";
-  document.getElementById("notif-times-row").style.display=cfg.notif?"flex":"none";
-  document.getElementById("notif-times-row2").style.display=cfg.notif?"flex":"none";
-  document.getElementById("dw-overlay").classList.add("open");
-  document.getElementById("dw-settings").classList.add("open");
+  document.getElementById('fs-val').textContent=cfg.fs+'px';
+  document.getElementById('notif-h1').value=cfg.h1||'10:00';
+  document.getElementById('notif-h2').value=cfg.h2||'16:00';
+  var gkload=document.getElementById('gem-key'); if(gkload) gkload.value=cfg.gemKey||'';
+  document.getElementById('dw-overlay').classList.add('open');
+  document.getElementById('dw-settings').classList.add('open');
 }
 function closeSettings(){
   document.getElementById("dw-overlay").classList.remove("open");
@@ -1367,17 +1483,14 @@ function toggleNotif(btn){
 }
 function saveSettings(){
   const cfg=getSettings2();
-  cfg.tgQap=document.getElementById("tg-qap").value.trim();
-  cfg.tgDem=document.getElementById("tg-dem").value.trim();
-  cfg.tgInc=document.getElementById("tg-inc").value.trim();
-  cfg.notif=document.getElementById("notif-toggle").classList.contains("on");
-  cfg.h1=document.getElementById("notif-h1").value;
-  cfg.h2=document.getElementById("notif-h2").value;
-  S.set("settings2",cfg);
-  document.documentElement.style.setProperty("--fs",cfg.fs+"px");
+  cfg.h1=document.getElementById('notif-h1').value;
+  cfg.h2=document.getElementById('notif-h2').value;
+  var gkel=document.getElementById('gem-key'); cfg.gemKey=gkel?gkel.value.trim():cfg.gemKey||'';
+  S.set('settings2',cfg);
+  document.documentElement.style.setProperty('--fs',cfg.fs+'px');
   if(cfg.notif) scheduleNotifications(cfg);
   closeSettings();
-  showToast("✓ Configuración guardada");
+  showToast('✓ Configuración guardada');
 }
 
 // ═══════════════════════════════════════════
@@ -1459,7 +1572,7 @@ function init(){
     if(cfg.notif) scheduleNotifications(cfg);
     initSheetConnection();
     initFirebase();
-    if(Notification.permission==='granted') registerFCMToken();
+    checkAndRequestPermissions();
   } else {
     navStack.length=0; navStack.push("s-welcome");
     showScreen("s-welcome");
@@ -1467,6 +1580,7 @@ function init(){
 
   getDeviceId();
   updateHistCount();
+  updateMisTplBtn();
 }
 
 if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -1531,6 +1645,9 @@ var mRec=null, aChunks=[], rTimer=null, rSecs=0;
 var fmtTime=function(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
 
 async function startRec(micId, timerId, statusId) {
+  // Verificar permiso de micrófono primero
+  var micOk = await checkMicPermission();
+  if(!micOk) return false;
   try {
     var stream = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
     var mimes = ['audio/webm;codecs=opus','audio/webm','audio/ogg','audio/mp4'];
@@ -2123,6 +2240,284 @@ async function sendPushToAll(title, body) {
     showToast('⚠️ ' + e.message);
   }
 }
+// =============================================
+// GESTIÓN DE PERMISOS
+// =============================================
+
+function checkAndRequestPermissions() {
+  // Notificaciones: mostrar solo si no se ha pedido en las últimas 24h
+  var lastAsked = parseInt(localStorage.getItem('perm_notif_asked')||'0');
+  var hoursSince = (Date.now() - lastAsked) / 3600000;
+  if(Notification.permission === 'granted') {
+    registerFCMToken();
+  } else if(Notification.permission === 'denied') {
+    // No pedir de nuevo, pero mostrar badge en settings
+    document.getElementById('notif-banner').classList.remove('show');
+  } else if(hoursSince > 24 || lastAsked === 0) {
+    // Primera vez o pasaron 24h: mostrar el sheet
+    setTimeout(function(){
+      document.getElementById('perm-notif-ov').classList.add('open');
+    }, 2000);
+  }
+}
+
+async function doRequestNotif() {
+  document.getElementById('perm-notif-ov').classList.remove('open');
+  localStorage.setItem('perm_notif_asked', Date.now().toString());
+  var perm = await Notification.requestPermission();
+  if(perm === 'granted') {
+    showToast('✓ Notificaciones activadas');
+    var cfg = getSettings2();
+    scheduleNotifications(cfg);
+    await registerFCMToken();
+  } else if(perm === 'denied') {
+    setTimeout(function(){
+      document.getElementById('guide-notif-ov').classList.add('open');
+    }, 400);
+  }
+}
+
+function skipPermNotif() {
+  document.getElementById('perm-notif-ov').classList.remove('open');
+  localStorage.setItem('perm_notif_asked', Date.now().toString());
+}
+
+// Verificar micrófono antes de grabar
+async function checkMicPermission() {
+  try {
+    var result = await navigator.permissions.query({name: 'microphone'});
+    if(result.state === 'denied') {
+      document.getElementById('guide-mic-ov').classList.add('open');
+      return false;
+    }
+    if(result.state === 'prompt') {
+      document.getElementById('perm-mic-ov').classList.add('open');
+      return false;
+    }
+    return true; // granted
+  } catch(e) {
+    return true; // Si no soporta query, dejar que getUserMedia lo maneje
+  }
+}
+
+async function doRequestMic() {
+  document.getElementById('perm-mic-ov').classList.remove('open');
+  try {
+    var stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    stream.getTracks().forEach(function(t){t.stop();});
+    showToast('✓ Micrófono habilitado');
+  } catch(e) {
+    setTimeout(function(){
+      document.getElementById('guide-mic-ov').classList.add('open');
+    }, 400);
+  }
+}
+
+function closePermMic() {
+  document.getElementById('perm-mic-ov').classList.remove('open');
+}
+
+// =============================================
+// FASE 5
+// =============================================
+
+function haptic(ms) { if(navigator.vibrate) navigator.vibrate(ms||50); }
+
+async function updatePermStates() {
+  var ns=document.getElementById('perm-notif-state'), nb=document.getElementById('perm-notif-btn');
+  if(ns&&nb){
+    var np=Notification.permission;
+    if(np==='granted'){ns.textContent='✓ Activadas';ns.className='perm-state granted';nb.textContent='✓ OK';nb.className='perm-req-btn granted';}
+    else if(np==='denied'){ns.textContent='✕ Bloqueadas – ve a Config. del navegador';ns.className='perm-state denied';nb.textContent='Bloqueado';nb.className='perm-req-btn denied';}
+    else{ns.textContent='No activadas';ns.className='perm-state prompt';nb.textContent='Activar';nb.className='perm-req-btn';}
+  }
+  var ms=document.getElementById('perm-mic-state'), mb=document.getElementById('perm-mic-btn');
+  if(ms&&mb){
+    try{
+      var mr=await navigator.permissions.query({name:'microphone'});
+      if(mr.state==='granted'){ms.textContent='✓ Activado';ms.className='perm-state granted';mb.textContent='✓ OK';mb.className='perm-req-btn granted';}
+      else if(mr.state==='denied'){ms.textContent='✕ Bloqueado – ve a Config. del navegador';ms.className='perm-state denied';mb.textContent='Bloqueado';mb.className='perm-req-btn denied';}
+      else{ms.textContent='No activado';ms.className='perm-state prompt';mb.textContent='Activar';mb.className='perm-req-btn';}
+    }catch(e){ms.textContent='No disponible';ms.className='perm-state prompt';}
+  }
+}
+
+async function handleNotifPerm() {
+  if(Notification.permission==='denied'){showToast('⚠️ Ve a Configuración del navegador > Notificaciones');return;}
+  if(Notification.permission==='granted'){showToast('✓ Ya están activadas');return;}
+  var p=await Notification.requestPermission();
+  if(p==='granted'){showToast('✓ Notificaciones activadas');await registerFCMToken();}
+  else showToast('⚠️ Permiso denegado');
+  updatePermStates();
+}
+
+async function handleMicPerm() {
+  try{
+    var r=await navigator.permissions.query({name:'microphone'});
+    if(r.state==='denied'){showToast('⚠️ Ve a Configuración del navegador > Micrófono');return;}
+    if(r.state==='granted'){showToast('✓ Ya está activado');return;}
+  }catch(e){}
+  try{
+    var stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    stream.getTracks().forEach(function(t){t.stop();});
+    showToast('✓ Micrófono activado');
+  }catch(e){showToast('⚠️ Permiso denegado');}
+  updatePermStates();
+}
+
+function getCustomTpls(){return S.get('custom_tpls')||[];}
+function saveCustomTpls(arr){S.set('custom_tpls',arr);}
+
+function openMisPlantillas(){renderCustomTplList();go('s-mis-tpl');}
+
+function renderCustomTplList(){
+  var tpls=getCustomTpls();
+  var el=document.getElementById('ctpl-list');
+  if(!tpls.length){
+    el.innerHTML='<div style="color:var(--mut);text-align:center;padding:20px;font-size:13px">Sin plantillas personalizadas.<br>Crea la primera con el botón de abajo.</div>';
+    return;
+  }
+  var html2='';
+  tpls.forEach(function(t,i){
+    html2+='<div class="ctpl-item">'+
+      '<div class="ctpl-item-info" onclick="useCustomTpl('+i+')">'+
+      '<div class="ctpl-item-name">'+(t.icon||'📝')+' '+t.name+'</div>'+
+      '<div class="ctpl-item-sub">'+t.fields.length+' campo'+(t.fields.length!==1?'s':'')+'</div>'+
+      '</div>'+
+      '<button class="ctpl-del" onclick="deleteCustomTpl('+i+')">🗑️</button>'+
+      '</div>';
+  });
+  el.innerHTML=html2;
+}
+
+function updateMisTplBtn(){
+  var tpls=getCustomTpls();
+  var btn=document.getElementById('mis-tpl-main-btn');
+  var lbl=document.getElementById('mis-tpl-count-lbl');
+  if(btn) btn.style.display=tpls.length?'flex':'none';
+  if(lbl) lbl.textContent=tpls.length+' plantilla'+(tpls.length!==1?'s':'');
+}
+
+function deleteCustomTpl(idx){
+  var tpls=getCustomTpls(); tpls.splice(idx,1); saveCustomTpls(tpls);
+  renderCustomTplList(); updateMisTplBtn(); showToast('Plantilla eliminada');
+}
+
+var builderFields=[], editingTplIdx=-1;
+
+function openBuilder(idx){
+  editingTplIdx=idx;
+  var isEdit=idx>=0;
+  document.getElementById('builder-title').textContent=isEdit?'Editar Plantilla':'Nueva Plantilla';
+  var tpl=isEdit?getCustomTpls()[idx]:null;
+  document.getElementById('b-name').value=tpl?tpl.name:'';
+  document.getElementById('b-icon').value=tpl?(tpl.icon||''):'';
+  document.getElementById('b-template').value=tpl?tpl.template:'';
+  builderFields=tpl?JSON.parse(JSON.stringify(tpl.fields)):[];
+  renderBuilderFields(); previewBuilder(); go('s-builder');
+}
+
+function renderBuilderFields(){
+  var el=document.getElementById('b-fields-list');
+  if(!builderFields.length){el.innerHTML='';return;}
+  var h='';
+  builderFields.forEach(function(f,i){
+    h+='<div class="builder-field-row">'+
+      '<input class="builder-field-inp" value="'+f.label+'" placeholder="Nombre del campo" '+
+      'oninput="builderFields['+i+'].label=this.value;'+
+      'builderFields['+i+'].id=this.value.toLowerCase().replace(/\s+/g,\'_\');previewBuilder()">'+
+      '<button class="del-field-btn" onclick="removeBuilderField('+i+')">×</button>'+
+      '</div>';
+  });
+  el.innerHTML=h;
+}
+
+function addBuilderField(){
+  builderFields.push({id:'campo_'+(builderFields.length+1),label:'Campo '+(builderFields.length+1)});
+  renderBuilderFields();
+}
+
+function removeBuilderField(idx){builderFields.splice(idx,1);renderBuilderFields();previewBuilder();}
+
+function previewBuilder(){
+  var tmpl=document.getElementById('b-template').value;
+  var prev=tmpl
+    .replace(/\{hora_auto\}/g,nowTime())
+    .replace(/\{fecha_auto\}/g,today())
+    .replace(/\{cov\}/g,getCOV()||'[COV]');
+  builderFields.forEach(function(f){
+    prev=prev.replace(new RegExp('\\{'+f.id+'\\}','g'),'['+f.label+']');
+  });
+  document.getElementById('b-preview').textContent=prev||'La vista previa aparece aquí…';
+}
+
+function saveCustomTpl(){
+  var name=document.getElementById('b-name').value.trim();
+  var icon=document.getElementById('b-icon').value.trim()||'📝';
+  var template=document.getElementById('b-template').value.trim();
+  if(!name){showToast('⚠️ Ingresa un nombre');return;}
+  if(!template){showToast('⚠️ Ingresa el mensaje plantilla');return;}
+  var tpl={name:name,icon:icon,fields:builderFields.slice(),template:template};
+  var tpls=getCustomTpls();
+  if(editingTplIdx>=0) tpls[editingTplIdx]=tpl;
+  else tpls.push(tpl);
+  saveCustomTpls(tpls); updateMisTplBtn();
+  showToast('✓ Plantilla guardada'); goBack(); renderCustomTplList();
+}
+
+function useCustomTpl(idx){
+  var tpl=getCustomTpls()[idx]; if(!tpl) return;
+  curCat='custom';
+  curTpl={
+    id:'custom_'+idx, name:tpl.name, icon:tpl.icon||'📝',
+    fields:tpl.fields.map(function(f){return {id:f.id,label:f.label,type:'text'};}),
+    gen:function(vals){
+      var msg=tpl.template
+        .replace(/\{hora_auto\}/g,nowTime())
+        .replace(/\{fecha_auto\}/g,today())
+        .replace(/\{cov\}/g,getCOV()||'');
+      tpl.fields.forEach(function(f){
+        msg=msg.replace(new RegExp('\\{'+f.id+'\\}','g'),vals[f.id]||'');
+      });
+      return msg;
+    }
+  };
+  document.getElementById('form-back-lbl').textContent='Mis Plantillas';
+  document.getElementById('form-badge').innerHTML='<div class="badge" style="background:#FF980022;color:#C07800;border:1px solid #FF980044">⭐ Mis Plantillas</div>';
+  document.getElementById('form-title').textContent=tpl.name;
+  var container=document.getElementById('fields');
+  container.innerHTML=tpl.fields.map(function(f){
+    return '<div class="fg"><div class="fl">'+f.label+'</div>'+
+      '<input class="fi" type="text" id="f-'+f.id+'" oninput="upd()"></div>';
+  }).join('');
+  upd(); go('s-form');
+}
+
+function generarResumen(){
+  var hist=S.get('history')||[];
+  if(!hist.length){showToast('Sin reportes en el historial');return;}
+  var p=getProfile(), counts={};
+  hist.forEach(function(h){counts[h.tplName]=(counts[h.tplName]||0)+1;});
+  var lines=[];
+  Object.keys(counts).forEach(function(k){lines.push('  • '+counts[k]+' '+k);});
+  var firstTime=new Date(hist[hist.length-1].ts).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
+  var lastTime=new Date(hist[0].ts).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
+  var msg='📋 RESUMEN TURNO '+p.turno+' — '+today()+'\n'+
+    '👤 COV: '+p.nombre+'\n'+
+    '📍 Punto: '+p.ubi+'\n\n'+
+    'Total reportes: '+hist.length+'\n'+
+    lines.join('\n')+'\n\n'+
+    'Primer reporte: '+firstTime+'\n'+
+    'Último reporte:  '+lastTime;
+  var el=document.getElementById('resumen-area');
+  el.style.display='block';
+  el.innerHTML='<div class="resumen-box">'+
+    '<div style="font-size:12px;white-space:pre-wrap;line-height:1.6;color:var(--txt)">'+msg+'</div>'+
+    '<button onclick="copyText(this.previousElementSibling.textContent);haptic(50)" '+
+    'style="width:100%;background:var(--acc);color:#fff;border:none;border-radius:var(--rs);'+
+    'padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px">📋 Copiar resumen</button></div>';
+}
+
 function toggleGemVis(){
   var inp=document.getElementById('gem-key');
   if(inp) inp.type=inp.type==='password'?'text':'password';
