@@ -867,14 +867,33 @@ function showScreen(id){
   document.getElementById(id).classList.add("active");
   window.scrollTo({top:0,behavior:"instant"});
 }
-function go(id){ navStack.push(id); showScreen(id); }
-function goBack(){
-  if(navStack.length>1){ navStack.pop(); showScreen(navStack[navStack.length-1]); }
+function go(id){
+  navStack.push(id);
+  history.pushState({covapp:true,len:navStack.length},'');
+  showScreen(id);
 }
-history.pushState(null,"",location.href);
-window.addEventListener("popstate",function(){
-  goBack();
-  history.pushState(null,"",location.href);
+function goBack(){
+  if(navStack.length>1){
+    navStack.pop();
+    showScreen(navStack[navStack.length-1]);
+    history.replaceState({covapp:true,len:navStack.length},'');
+  }
+}
+
+history.replaceState({covapp:true,len:1,guard:true},'');
+history.pushState({covapp:true,len:1},'');
+window.addEventListener('popstate',function(e){
+  if(e.state&&e.state.covapp){
+    if(navStack.length>1){
+      navStack.pop();
+      showScreen(navStack[navStack.length-1]);
+      history.replaceState({covapp:true,len:navStack.length},'');
+    } else {
+      history.pushState({covapp:true,len:1},'');
+    }
+  } else {
+    history.pushState({covapp:true,len:navStack.length},'');
+  }
 });
 
 // ═══════════════════════════════════════════
@@ -1467,19 +1486,13 @@ function doTelegram(){
 // ═══════════════════════════════════════════
 function openSettings(){
   updatePermStates();
-  updatePermStates();
-  const cfg=getSettings2();
-  document.getElementById("tg-qap").value=cfg.tgQap||"";
-  document.getElementById("tg-dem").value=cfg.tgDem||"";
-  document.getElementById("tg-inc").value=cfg.tgInc||"";
-  document.getElementById("fs-val").textContent=cfg.fs+"px";
-  document.getElementById("notif-toggle").classList.toggle("on",cfg.notif);
-  document.getElementById("notif-h1").value=cfg.h1||"10:00";
-  document.getElementById("notif-h2").value=cfg.h2||"16:00";
-  document.getElementById("notif-times-row").style.display=cfg.notif?"flex":"none";
-  document.getElementById("notif-times-row2").style.display=cfg.notif?"flex":"none";
-  document.getElementById("dw-overlay").classList.add("open");
-  document.getElementById("dw-settings").classList.add("open");
+  var cfg=getSettings2();
+  var fv=document.getElementById('fs-val'); if(fv) fv.textContent=(cfg.fs||14)+'px';
+  var h1=document.getElementById('notif-h1'); if(h1) h1.value=cfg.h1||'10:00';
+  var h2=document.getElementById('notif-h2'); if(h2) h2.value=cfg.h2||'16:00';
+  var gk=document.getElementById('gem-key'); if(gk) gk.value=cfg.gemKey||'';
+  document.getElementById('dw-overlay').classList.add('open');
+  document.getElementById('dw-settings').classList.add('open');
 }
 function closeSettings(){
   document.getElementById("dw-overlay").classList.remove("open");
@@ -1500,18 +1513,15 @@ function toggleNotif(btn){
   if(on) requestNotifPerm();
 }
 function saveSettings(){
-  const cfg=getSettings2();
-  cfg.tgQap=document.getElementById("tg-qap").value.trim();
-  cfg.tgDem=document.getElementById("tg-dem").value.trim();
-  cfg.tgInc=document.getElementById("tg-inc").value.trim();
-  cfg.notif=document.getElementById("notif-toggle").classList.contains("on");
-  cfg.h1=document.getElementById("notif-h1").value;
-  cfg.h2=document.getElementById("notif-h2").value;
-  S.set("settings2",cfg);
-  document.documentElement.style.setProperty("--fs",cfg.fs+"px");
+  var cfg=getSettings2();
+  var h1=document.getElementById('notif-h1'); if(h1) cfg.h1=h1.value;
+  var h2=document.getElementById('notif-h2'); if(h2) cfg.h2=h2.value;
+  var gk=document.getElementById('gem-key'); if(gk) cfg.gemKey=gk.value.trim();
+  S.set('settings2',cfg);
+  document.documentElement.style.setProperty('--fs',(cfg.fs||14)+'px');
   if(cfg.notif) scheduleNotifications(cfg);
   closeSettings();
-  showToast("✓ Configuración guardada");
+  showToast('✓ Configuración guardada');
 }
 
 // ═══════════════════════════════════════════
@@ -2286,20 +2296,22 @@ function renderCustomTplList(){
   var tpls=getCustomTpls();
   var el=document.getElementById('ctpl-list');
   if(!tpls.length){
-    el.innerHTML='<div style="color:var(--mut);text-align:center;padding:20px;font-size:13px">Sin plantillas personalizadas.<br>Crea la primera con el botón de abajo.</div>';
+    el.innerHTML='<div style="color:var(--mut);text-align:center;padding:20px;font-size:13px">Sin plantillas personalizadas.<br>Crea la primera con el bot\u00f3n de abajo.</div>';
     return;
   }
-  var html2='';
-  tpls.forEach(function(t,i){
-    html2+='<div class="ctpl-item">'+
-      '<div class="ctpl-item-info" onclick="useCustomTpl('+i+')">'+
-      '<div class="ctpl-item-name">'+(t.icon||'📝')+' '+t.name+'</div>'+
-      '<div class="ctpl-item-sub">'+t.fields.length+' campo'+(t.fields.length!==1?'s':'')+'</div>'+
-      '</div>'+
-      '<button class="ctpl-del" onclick="deleteCustomTpl('+i+')">🗑️</button>'+
-      '</div>';
-  });
-  el.innerHTML=html2;
+  var out='';
+  for(var i=0;i<tpls.length;i++){
+    var t=tpls[i];
+    out+='<div class="ctpl-item">';
+    out+='<div class="ctpl-item-info" onclick="useCustomTpl('+i+')">'
+        +'<div class="ctpl-item-name">'+(t.icon||'\U0001f4dd')+' '+t.name+'</div>'
+        +'<div class="ctpl-item-sub">'+t.fields.length+' campo'+(t.fields.length!==1?'s':'')+'</div>'
+        +'</div>';
+    out+='<button class="ctpl-del" onclick="deleteCustomTpl('+i+')" '
+        +'style="background:none;border:none;font-size:18px;cursor:pointer;padding:6px;color:var(--rd)">\U0001f5d1\ufe0f</button>';
+    out+='</div>';
+  }
+  el.innerHTML=out;
 }
 
 function updateMisTplBtn(){
