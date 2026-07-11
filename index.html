@@ -914,7 +914,6 @@ function showScreen(id){
 function go(id){ navStack.push(id); showScreen(id); history.pushState({s:id},'',location.href); }
 function goBack(){
   if(navStack.length>1){ navStack.pop(); showScreen(navStack[navStack.length-1]); }
-  history.pushState({s:navStack[navStack.length-1]},'',location.href);
 }
 history.pushState(null,"",location.href);
 window.addEventListener("popstate",()=>{ history.pushState(null,"",location.href); goBack(); });
