@@ -701,6 +701,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 <div class="drawer" id="dw-settings">
   <div class="drawer-handle"></div>
   <div class="drawer-title">⚙️ Configuración</div>
+
   <div class="dw-sec">
     <div class="dw-sec-title">Tamaño de letra</div>
     <div class="dw-row">
@@ -712,37 +713,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       </div>
     </div>
   </div>
-  <div class="dw-sec">
-    <div class="dw-sec-title">Grupos de Telegram</div>
-    <div class="dw-row">
-      <span class="dw-lbl" style="font-size:12px">QAP / Ingreso</span>
-      <input class="dw-input" id="tg-qap" placeholder="@grupo o t.me/...">
-    </div>
-    <div class="dw-row">
-      <span class="dw-lbl" style="font-size:12px">Demandas CC3</span>
-      <input class="dw-input" id="tg-dem" placeholder="@grupo o t.me/...">
-    </div>
-    <div class="dw-row">
-      <span class="dw-lbl" style="font-size:12px">Incidencias CC3</span>
-      <input class="dw-input" id="tg-inc" placeholder="@grupo o t.me/...">
-    </div>
-  </div>
-  <div class="dw-sec">
-    <div class="dw-sec-title">Corredor</div>
-    <div class="turno-seg" id="corr-sel" style="margin-bottom:0">
-      <button class="turno-opt" data-v="TGA" onclick="selCorredor(this)">TGA</button>
-      <button class="turno-opt" data-v="SJL" onclick="selCorredor(this)">SJL</button>
-      <button class="turno-opt" data-v="PAB" onclick="selCorredor(this)">PAB</button>
-    </div>
-  </div>
-  <div class="dw-sec">
-    <div class="dw-sec-title">Rutas del corredor</div>
-    <div class="rutas-wrap" id="rutas-wrap"></div>
-    <div class="add-ruta-row">
-      <input class="dw-input" id="nueva-ruta" type="text" placeholder="Ej: 307" style="flex:1;width:auto" onkeydown="if(event.key==='Enter')addRuta()">
-      <button onclick="addRuta()" style="background:var(--acc);color:#fff;border:none;border-radius:var(--rs);padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">+ Agregar</button>
-    </div>
-  </div>
+
   <div class="dw-sec">
     <div class="dw-sec-title">Permisos</div>
     <div class="perm-row">
@@ -760,6 +731,28 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       <button class="perm-req-btn" id="perm-mic-btn" onclick="handleMicPerm()">Activar</button>
     </div>
   </div>
+
+  <div class="dw-sec">
+    <div class="dw-sec-title">Corredor</div>
+    <div class="turno-seg" id="corr-sel" style="margin-bottom:0">
+      <button class="turno-opt" data-v="TGA" onclick="selCorredor(this)">TGA</button>
+      <button class="turno-opt" data-v="SJL" onclick="selCorredor(this)">SJL</button>
+      <button class="turno-opt" data-v="PAB" onclick="selCorredor(this)">PAB</button>
+    </div>
+  </div>
+
+  <div class="dw-sec">
+    <div class="dw-sec-title">Rutas del corredor</div>
+    <div class="rutas-wrap" id="rutas-wrap"></div>
+    <div class="add-ruta-row">
+      <input class="dw-input" id="nueva-ruta" type="text" placeholder="Ej: 307"
+        style="flex:1;width:auto" onkeydown="if(event.key==='Enter')addRuta()">
+      <button onclick="addRuta()" style="background:var(--acc);color:#fff;border:none;
+        border-radius:var(--rs);padding:9px 14px;font-size:12px;font-weight:700;
+        cursor:pointer;font-family:inherit">+ Agregar</button>
+    </div>
+  </div>
+
   <div class="dw-sec">
     <div class="dw-sec-title">Recordatorio de informe de vías</div>
     <div class="dw-row">
@@ -771,37 +764,22 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       <input class="dw-input" id="notif-h2" type="time" value="16:00">
     </div>
   </div>
+
   <div class="dw-sec">
-    <div class="dw-sec-title">🤖 Inteligencia Artificial</div>
-    <div style="font-size:11px;color:var(--mut);margin-bottom:7px">Clave API de Google AI Studio</div>
-    <div style="display:flex;gap:6px;margin-bottom:6px">
-      <input class="dw-input" id="gem-key" type="password" placeholder="AIzaSy..." style="flex:1;font-family:monospace;font-size:11px">
-      <button onclick="toggleGemVis()" style="background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);padding:0 10px;cursor:pointer;font-size:14px">👁</button>
+    <div class="dw-sec-title">Google Sheets</div>
+    <div style="font-size:11px;color:var(--mut);margin-bottom:8px;line-height:1.5">
+      La clave de IA y configuración global se leen automáticamente desde el Sheet.
     </div>
-    <div style="font-size:10px;color:var(--mut);line-height:1.5">Obtén tu clave en <b>aistudio.google.com</b>. Restringe el dominio a <b>rolisinr.github.io</b>.</div>
+    <button onclick="testSheetConn()" style="width:100%;background:var(--bg);
+      border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;
+      font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">
+      🔗 Verificar conexión</button>
+    <div id="sheet-test-result" style="font-size:11px;margin-top:6px;display:none"></div>
   </div>
+
   <button class="dw-save" onclick="saveSettings()">Guardar configuración</button>
 </div>
 
-<!-- MINI IA OVERLAY -->
-<div class="mini-ov" id="mini-ov">
-  <div class="mini-sheet">
-    <div class="ms-title">🤖 IA — <span id="ms-tpl-name"></span></div>
-    <div class="ms-sub">Describe brevemente la situación. Gemini completará los campos del formulario.</div>
-    <div class="ms-rec-area">
-      <button class="ms-mic" id="ms-mic" onclick="msToggleRec()">🎤</button>
-      <div class="ms-status" id="ms-status">Toca para grabar</div>
-      <div class="ms-timer" id="ms-timer">00:00</div>
-    </div>
-    <button class="ms-cancel" onclick="closeMiniIA()">Cancelar</button>
-  </div>
-</div>
-<div class="fav-picker-ov" id="fav-picker-ov" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="fav-picker">
-    <div class="fav-picker-title">⭐ Agregar acceso rápido</div>
-    <div id="fav-pick-list"></div>
-  </div>
-</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1531,13 +1509,13 @@ function doTelegram(){
 function openSettings(){
   updatePermStates();
   var cfg=getSettings2();
-  document.querySelectorAll('#corr-sel .turno-opt').forEach(function(b){b.classList.toggle('sel',b.dataset.v===cfg.corredor||(!cfg.corredor&&b.dataset.v==='TGA'));});
-  renderRutasChips(cfg.rutas||['301','303','305','336','372']);
-  updateCorredorBadge();
   var fv=document.getElementById('fs-val'); if(fv) fv.textContent=(cfg.fs||14)+'px';
   var h1=document.getElementById('notif-h1'); if(h1) h1.value=cfg.h1||'10:00';
   var h2=document.getElementById('notif-h2'); if(h2) h2.value=cfg.h2||'16:00';
-  var gk=document.getElementById('gem-key'); if(gk) gk.value=cfg.gemKey||'';
+  document.querySelectorAll('#corr-sel .turno-opt').forEach(function(b){
+    b.classList.toggle('sel',b.dataset.v===(cfg.corredor||'TGA'));
+  });
+  renderRutasChips(cfg.rutas||['301','303','305','336','372']);
   document.getElementById('dw-overlay').classList.add('open');
   document.getElementById('dw-settings').classList.add('open');
 }
@@ -1565,7 +1543,6 @@ function saveSettings(){
   if(cs) cfg.corredor=cs.dataset.v;
   var h1=document.getElementById('notif-h1'); if(h1) cfg.h1=h1.value;
   var h2=document.getElementById('notif-h2'); if(h2) cfg.h2=h2.value;
-  var gk=document.getElementById('gem-key'); if(gk) cfg.gemKey=gk.value.trim();
   S.set('settings2',cfg);
   document.documentElement.style.setProperty('--fs',(cfg.fs||14)+'px');
   if(cfg.notif) scheduleNotifications(cfg);
@@ -2053,31 +2030,40 @@ async function initSheetConnection() {
   var url = getSheetURL();
   if(!url) return;
   try {
+    // 1. Config (incluye gemKey)
     var cfg = await sheetGet('config', {});
     if(cfg && cfg.config) {
       var local = getSettings2();
-      if(cfg.config.gemKey) local.gemKey = cfg.config.gemKey;
-      S.set('settings2', local);
+      if(cfg.config.gemKey) { local.gemKey = cfg.config.gemKey; S.set('settings2', local); }
       sheetConnected = true;
     }
+    // 2. Registrar dispositivo
     var p = getProfile();
     var did = getDeviceId();
     var reg = await sheetGet('register', {
-      did: did, nombre: p.nombre||'', turno: p.turno||'', ubi: p.ubi||''
+      did:did, nombre:p.nombre||'', turno:p.turno||'', ubi:p.ubi||''
     });
     if(reg) {
       isAdmin = reg.isAdmin === true;
       var ab = document.getElementById('admin-btn');
       if(ab) ab.style.display = isAdmin ? 'inline-flex' : 'none';
+      // Si es admin, mostrar badge en header
+      updateAdminUI();
     }
-    var avRes = await sheetGet('avisos', {did: did});
+    // 3. Avisos pendientes
+    var avRes = await sheetGet('avisos', {did:did});
     if(avRes && avRes.avisos && avRes.avisos.length > 0) {
       pendingAvisos = avRes.avisos;
       showAvisoBanner(pendingAvisos[0]);
     }
   } catch(e) {
-    console.log('Sheet no disponible:', e.message);
+    console.warn('Sheet no disponible:', e.message);
   }
+}
+
+function updateAdminUI() {
+  var ab = document.getElementById('admin-btn');
+  if(ab) ab.style.display = isAdmin ? 'inline-flex' : 'none';
 }
 
 function showAvisoBanner(aviso) {
@@ -2639,10 +2625,6 @@ function deleteHistItem(id){
   showToast('Eliminado');
 }
 
-function toggleGemVis(){
-  var inp=document.getElementById('gem-key');
-  if(inp) inp.type=inp.type==='password'?'text':'password';
-}
 </script>
 </body>
 </html>
