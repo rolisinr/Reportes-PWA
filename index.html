@@ -336,6 +336,8 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 .fav-pick-cat{font-size:11px;color:var(--mut)}
 
 /* === ETAPA 1 === */
+.srv-direct{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:9px}
+
 /* Header */
 .hdr{justify-content:space-between}
 .hdr-center{flex:1;text-align:center;padding:0 8px}
@@ -438,7 +440,9 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 </div>
 
 <!-- PANTALLA PRINCIPAL -->
-<div class="screen" id="s-cat">
+<div class="screen active" id="s-cat">
+
+  <!-- Aviso admin -->
   <div class="aviso-banner" id="aviso-banner">
     <div class="aviso-icon">📢</div>
     <div class="aviso-body">
@@ -447,16 +451,12 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </div>
     <button class="aviso-dismiss" onclick="dismissAviso()">✓ Leí</button>
   </div>
-  <div id="notif-banner" class="notif-banner">
-    <span class="nb-txt" id="nb-txt">Activa notificaciones para recordatorios</span>
-    <button class="nb-btn" onclick="requestNotifPerm()">Activar</button>
-  </div>
 
+  <!-- Perfil -->
   <div class="prof-card">
     <div class="prof-info" id="prof-display"></div>
     <button class="edit-btn" onclick="toggleEdit()">✏️ Editar</button>
   </div>
-
   <div class="edit-drawer" id="edit-drawer">
     <div class="ed-title">Mis datos</div>
     <div class="ed-fields">
@@ -480,17 +480,9 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     <button class="ed-save" onclick="saveProfile()">Guardar</button>
   </div>
 
-  <div class="fav-section">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div class="sec-lbl" style="margin-bottom:0">Acceso rápido</div>
-      <button onclick="openFavPicker()" style="background:none;border:none;font-size:11px;color:var(--acc);cursor:pointer;font-family:inherit;font-weight:700">+ Agregar</button>
-    </div>
-    <div class="fav-grid" id="fav-grid">
-      <button class="fav-add" onclick="openFavPicker()">+ Añadir acceso rápido</button>
-    </div>
-  </div>
+  <!-- 4 categorías -->
   <div class="sec-lbl">Reportes</div>
-  <div class="cat-grid">
+  <div class="cat-grid" style="margin-bottom:9px">
     <button class="cat-btn" data-cat="vias" onclick="showTpl('vias')">
       <div class="cat-icon">🛣️</div>
       <div class="cat-info">
@@ -519,78 +511,45 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
         <div class="cat-sub">1 plantilla</div>
       </div>
     </button>
-    <button class="cat-btn full" data-cat="servicio" onclick="showTpl('servicio')">
-      <div class="cat-icon">👤</div>
-      <div class="cat-info">
-        <div class="cat-name">Servicio COV</div>
-        <div class="cat-sub">2 plantillas · QAP</div>
-      </div>
-    </button>
   </div>
-      <div class="cat-name">Informe de Vías</div>
-      <div class="cat-sub">2 plantillas</div>
-      <div class="cat-strip" style="background:var(--gr)"></div>
+
+  <!-- 4 acciones directas de servicio -->
+  <div class="srv-direct">
+    <button class="srv-btn" onclick="quickService('inicio')">
+      <div class="sb-icon">🟢</div>
+      <div class="sb-txt">Inicio</div>
+      <div class="sb-sub">Servicio</div>
     </button>
-    <button class="cat-btn" onclick="showTpl('incidencia')" style="--cc:var(--rd)">
-      <div class="cat-icon">🚨</div>
-      <div class="cat-name">Incidencias</div>
-      <div class="cat-sub">3 plantillas</div>
-      <div class="cat-strip" style="background:var(--rd)"></div>
+    <button class="srv-btn" onclick="quickService('termino')">
+      <div class="sb-icon">🔴</div>
+      <div class="sb-txt">Término</div>
+      <div class="sb-sub">Servicio</div>
     </button>
-    <button class="cat-btn" onclick="goDirectForm('obras','obras-via')" style="--cc:var(--or)">
-      <div class="cat-icon">🏗️</div>
-      <div class="cat-name">Obras en Vía</div>
-      <div class="cat-sub">1 plantilla</div>
-      <div class="cat-strip" style="background:var(--or)"></div>
+    <button class="srv-btn" onclick="quickService('qap-ini')">
+      <div class="sb-icon">☕</div>
+      <div class="sb-txt">Inicio</div>
+      <div class="sb-sub">QAP</div>
     </button>
-    <button class="cat-btn" onclick="goDirectForm('demanda','demanda')" style="--cc:var(--pu)">
-      <div class="cat-icon">📊</div>
-      <div class="cat-name">Demanda</div>
-      <div class="cat-sub">1 plantilla</div>
-      <div class="cat-strip" style="background:var(--pu)"></div>
+    <button class="srv-btn" onclick="quickService('qap-fin')">
+      <div class="sb-icon">⏰</div>
+      <div class="sb-txt">Fin</div>
+      <div class="sb-sub">QAP</div>
     </button>
   </div>
 
-  <div class="srv-block">
-    <div class="srv-title">Servicio COV</div>
-    <div class="srv-btns" style="grid-template-columns:1fr 1fr">
-      <button class="srv-btn" onclick="quickService('inicio')">
-        <div class="sb-icon">🟢</div>
-        <div class="sb-txt">Inicio</div>
-        <div class="sb-sub">Servicio</div>
-      </button>
-      <button class="srv-btn" onclick="quickService('termino')">
-        <div class="sb-icon">🔴</div>
-        <div class="sb-txt">Término</div>
-        <div class="sb-sub">Servicio</div>
-      </button>
+  <!-- IA -->
+  <button class="ia-main-btn" onclick="go('s-ia')">
+    <div class="ia-mb-icon">🤖</div>
+    <div class="ia-mb-txt">
+      <div class="ia-mb-name">Generar reporte con IA</div>
+      <div class="ia-mb-sub">Habla y Gemini redacta el reporte</div>
     </div>
-  </div>
-    <div class="srv-btns">
-      <button class="srv-btn" onclick="quickService('inicio')">
-        <div class="sb-icon">🟢</div>
-        <div class="sb-txt">Inicio</div>
-        <div class="sb-sub">Servicio</div>
-      </button>
-      <button class="srv-btn" onclick="quickService('termino')">
-        <div class="sb-icon">🔴</div>
-        <div class="sb-txt">Término</div>
-        <div class="sb-sub">Servicio</div>
-      </button>
-      <button class="srv-btn" onclick="quickService('qap-ini')">
-        <div class="sb-icon">☕</div>
-        <div class="sb-txt">Inicio</div>
-        <div class="sb-sub">QAP</div>
-      </button>
-      <button class="srv-btn" onclick="quickService('qap-fin')">
-        <div class="sb-icon">⏰</div>
-        <div class="sb-txt">Fin</div>
-        <div class="sb-sub">QAP</div>
-      </button>
-    </div>
-  </div>
+    <span class="ia-mb-arr">›</span>
+  </button>
 
 </div>
+
+
 
 <!-- PLANTILLAS -->
 <div class="screen" id="s-tpl">
