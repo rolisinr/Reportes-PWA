@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Reportes TGA</title>
+<title>COV Reportes</title>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="TGA">
+<meta name="apple-mobile-web-app-title" content="COV Reportes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="manifest" href="manifest.json">
@@ -334,6 +334,47 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 .fav-pick-icon{font-size:18px;flex-shrink:0}
 .fav-pick-name{font-size:13px;font-weight:700}
 .fav-pick-cat{font-size:11px;color:var(--mut)}
+
+/* === ETAPA 1 === */
+/* Header */
+.hdr{justify-content:space-between}
+.hdr-center{flex:1;text-align:center;padding:0 8px}
+.hdr-clock{font-size:18px;font-weight:800;color:var(--txt);font-variant-numeric:tabular-nums}
+.hdr-sep{font-size:12px;color:var(--mut);margin:0 3px}
+.hdr-date{font-size:12px;color:var(--mut)}
+
+/* Cat cards: horizontal, icon+texto a la derecha, fondo suave */
+.cat-btn{flex-direction:row;align-items:center;gap:13px;
+  border-left:4px solid var(--cc,var(--acc));padding:14px 14px 14px 12px;
+  border-radius:var(--r);border-top:1.5px solid var(--brd);
+  border-right:1.5px solid var(--brd);border-bottom:1.5px solid var(--brd)}
+.cat-btn.full{grid-column:1/-1}
+.cat-icon{font-size:26px;flex-shrink:0;line-height:1}
+.cat-info{flex:1;text-align:left}
+.cat-name{font-size:15px;font-weight:800;color:var(--txt);line-height:1.2}
+.cat-sub{font-size:11px;color:var(--mut);margin-top:2px}
+.cat-strip{display:none}
+.cat-btn[data-cat="vias"]      {background:#F0FBF4;--cc:var(--c-vias)}
+.cat-btn[data-cat="incidencia"]{background:#FEF5F5;--cc:var(--c-inc)}
+.cat-btn[data-cat="obras"]     {background:#FFFCF0;--cc:var(--c-obras)}
+.cat-btn[data-cat="demanda"]   {background:#F7F3FF;--cc:var(--c-dem)}
+.cat-btn[data-cat="servicio"]  {background:#F0F7FF;--cc:var(--c-srv)}
+
+/* Corredor badge */
+.corredor-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;
+  margin-left:4px;vertical-align:middle}
+.corredor-badge.TGA{background:#DBEAFE;color:#1D4ED8}
+.corredor-badge.SJL{background:#EDE9FE;color:#6D28D9}
+.corredor-badge.PAB{background:#FEE2E2;color:#991B1B}
+
+/* Rutas chips */
+.ruta-chip{display:inline-flex;align-items:center;gap:4px;background:var(--bg);
+  border:1.5px solid var(--brd);border-radius:12px;padding:4px 9px;
+  font-size:12px;font-weight:700;color:var(--txt);margin:3px}
+.ruta-del{background:none;border:none;color:var(--rd);cursor:pointer;
+  font-size:13px;padding:0;line-height:1;-webkit-tap-highlight-color:transparent}
+.rutas-wrap{display:flex;flex-wrap:wrap;gap:2px;margin-bottom:8px;min-height:30px}
+.add-ruta-row{display:flex;gap:6px}
 </style>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -350,20 +391,15 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 
 <!-- HEADER -->
 <header class="hdr">
-  <div class="hdr-l">
-    <div class="hdr-logo">🛣️</div>
-    <div class="hdr-title">Reportes <span>TGA</span></div>
+  <div class="hdr-l"><div class="hdr-logo">🛣️</div><div class="hdr-title">COV <span>Reportes</span></div></div>
+  <div class="hdr-center">
+    <span class="hdr-clock" id="clock">--:--</span>
+    <span class="hdr-sep">·</span>
+    <span class="hdr-date" id="hdrdate"></span>
   </div>
   <div class="hdr-r">
-    <div>
-      <div class="hdr-clock" id="clock">--:--</div>
-      <div class="hdr-date" id="hdrdate"></div>
-    </div>
-    <div class="hdr-btns">
-      <button class="admin-btn" id="admin-btn" onclick="openAdmin()" title="Admin">🛡️</button>
-      <button class="icon-btn" onclick="openHistory()" title="Historial">🕐</button>
-      <button class="icon-btn" onclick="openSettings()" title="Configuración">⚙️</button>
-    </div>
+    <button class="admin-btn" id="admin-btn" onclick="openAdmin()" style="display:none">🛡️</button>
+    <button class="icon-btn" onclick="openSettings()" style="color:#E67E22;font-size:21px">⚙️</button>
   </div>
 </header>
 
@@ -454,8 +490,42 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   </div>
   <div class="sec-lbl">Reportes</div>
   <div class="cat-grid">
-    <button class="cat-btn" onclick="showTpl('vias')" style="--cc:var(--gr)">
+    <button class="cat-btn" data-cat="vias" onclick="showTpl('vias')">
       <div class="cat-icon">🛣️</div>
+      <div class="cat-info">
+        <div class="cat-name">Informe de Vías</div>
+        <div class="cat-sub">2 plantillas</div>
+      </div>
+    </button>
+    <button class="cat-btn" data-cat="incidencia" onclick="showTpl('incidencia')">
+      <div class="cat-icon">🚨</div>
+      <div class="cat-info">
+        <div class="cat-name">Incidencias</div>
+        <div class="cat-sub">3 plantillas</div>
+      </div>
+    </button>
+    <button class="cat-btn" data-cat="obras" onclick="goDirectForm('obras','obras-via')">
+      <div class="cat-icon">🏗️</div>
+      <div class="cat-info">
+        <div class="cat-name">Obras en Vía</div>
+        <div class="cat-sub">1 plantilla</div>
+      </div>
+    </button>
+    <button class="cat-btn" data-cat="demanda" onclick="goDirectForm('demanda','demanda')">
+      <div class="cat-icon">📊</div>
+      <div class="cat-info">
+        <div class="cat-name">Demanda</div>
+        <div class="cat-sub">1 plantilla</div>
+      </div>
+    </button>
+    <button class="cat-btn full" data-cat="servicio" onclick="showTpl('servicio')">
+      <div class="cat-icon">👤</div>
+      <div class="cat-info">
+        <div class="cat-name">Servicio COV</div>
+        <div class="cat-sub">2 plantillas · QAP</div>
+      </div>
+    </button>
+  </div>
       <div class="cat-name">Informe de Vías</div>
       <div class="cat-sub">2 plantillas</div>
       <div class="cat-strip" style="background:var(--gr)"></div>
@@ -701,6 +771,22 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </div>
   </div>
   <div class="dw-sec">
+    <div class="dw-sec-title">Corredor</div>
+    <div class="turno-seg" id="corr-sel" style="margin-bottom:0">
+      <button class="turno-opt" data-v="TGA" onclick="selCorredor(this)">TGA</button>
+      <button class="turno-opt" data-v="SJL" onclick="selCorredor(this)">SJL</button>
+      <button class="turno-opt" data-v="PAB" onclick="selCorredor(this)">PAB</button>
+    </div>
+  </div>
+  <div class="dw-sec">
+    <div class="dw-sec-title">Rutas del corredor</div>
+    <div class="rutas-wrap" id="rutas-wrap"></div>
+    <div class="add-ruta-row">
+      <input class="dw-input" id="nueva-ruta" type="text" placeholder="Ej: 307" style="flex:1;width:auto" onkeydown="if(event.key==='Enter')addRuta()">
+      <button onclick="addRuta()" style="background:var(--acc);color:#fff;border:none;border-radius:var(--rs);padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">+ Agregar</button>
+    </div>
+  </div>
+  <div class="dw-sec">
     <div class="dw-sec-title">Permisos</div>
     <div class="perm-row">
       <div class="perm-info">
@@ -792,7 +878,7 @@ function getDeviceId() {
   return id;
 }
 const getProfile = () => S.get("profile") || {nombre:"",turno:"TARDE",ubi:""};
-const getSettings2 = () => S.get("settings2") || {fs:14,tgQap:"",tgDem:"",tgInc:"",notif:false,h1:"10:00",h2:"16:00"};
+const getSettings2 = () => S.get('settings2') || {fs:14,notif:false,h1:'10:00',h2:'16:00',gemKey:'',corredor:'TGA',rutas:['301','303','305','336','372']};
 
 // ═══════════════════════════════════════════
 // AUTOCOMPLETE
@@ -1028,6 +1114,7 @@ function renderHistory(){
       <div class="hi-btns">
         <button class="hi-btn copy" onclick="hiCopy(${h.id})">📋 Copiar</button>
         <button class="hi-btn tg" onclick="hiTg(${h.id})">✈️ Telegram</button>
+        <button class="hi-btn" onclick="deleteHistItem(${h.id})" style="color:var(--rd);border-color:var(--rd);flex:none;padding:6px 8px">🗑️</button>
       </div>
     </div>`;
   }).join("");
@@ -1133,7 +1220,7 @@ const TPLS = {
 🔹Tránsito ${B(f.ns)} N/S y ${B(f.sn)} S/N 🛣️
 🔹Semáforos ${B(f.sem)} 🚦
 ${pnp}
-🔹Unidades del corredor entrando al ${B("*SEGREGADO*")} ${f.seg} 🚎
+🔹Unidades del corredor entrando al ${B("SEGREGADO")} ${f.seg} 🚎
 ${rec}${f.extra?"\n🔹"+f.extra:""}
 📸${B("ADJUNTO FOTOS")}📸`;
       }
@@ -1148,12 +1235,12 @@ ${rec}${f.extra?"\n🔹"+f.extra:""}
         {id:"media", label:"Adjunto", type:"sel", opts:["FOTO 📷","VIDEO 📷","FOTO Y VIDEO 📷","sin adjunto"]},
       ],
       gen: f =>
-`🚨 ${B("SITUACIÓN ACTUAL")} - 𝗖𝗢𝗥𝗥𝗘𝗗𝗢𝗥 𝗔𝗭𝗨𝗟 - ${B("TGA")}
+`🚨 ${B("SITUACION ACTUAL")} - 𝗖𝗢𝗥𝗥𝗘𝗗𝗢𝗥 𝗔𝗭𝗨𝗟 - ${B("TGA")}
 👤  ${B("PERSONAL COV:")} 
        ${getCOV()}
 🔁  ${B("SENTIDO:")} ${f.sent}
 
-✍🏼  ${B("OBSERVACIÓN:")} 
+✍🏼  ${B("OBSERVACION:")} 
 ▪️${f.obs}
 ${f.media!=="sin adjunto"?"📷 ADJUNTO "+f.media:""}`
     },
@@ -1178,15 +1265,15 @@ ${f.media!=="sin adjunto"?"📷 ADJUNTO "+f.media:""}`
 ${B(today())}
 
 ${B("ZONAL:")} ${f.zonal}
-${B("UBICACIÓN DE LA OBRA:")} ${f.ubicacion}
+${B("UBICACION DE LA OBRA:")} ${f.ubicacion}
 ${B("EMPRESA:")} ${f.empresa}
 ${B("CONTRATANTE:")} ${f.contrat}
-${B("DURACIÓN:")} ${f.duracion}
+${B("DURACION:")} ${f.duracion}
 
 ${B("DESCRIPCION:")}
 ${f.desc}
 
-${B("TRÁNSITO:")} ${f.transito.toUpperCase()}
+${B("TRANSITO:")} ${f.transito.toUpperCase()}
 ${B("AFECTACIÓN AL CORREDOR:")} ${f.afecta.toUpperCase()}
 
 ${B("SE ADJUNTA IMAGENES")} ✍️`
@@ -1212,7 +1299,7 @@ ${B("SE ADJUNTA IMAGENES")} ✍️`
 ${B("COV:")} ${getCOV()}
 
 📆 ${B("FECHA:")} ${today()}
-📍 ${B("UBICACIÓN:")} ${f.ubi}
+📍 ${B("UBICACION:")} ${f.ubi}
 🔁 ${B("SENTIDO:")} ${f.sent}
 🕒 ${B("HORA:")} ${nowTime()}
 
@@ -1242,7 +1329,7 @@ ${B("COV:")} ${getCOV()}
 🧭${B("HORA:")} ${nowTime()}
 🔃${B("SENTIDO:")} ${f.sent}
 
-🚨${B("OBSERVACIÓN:")}🚨
+🚨${B("OBSERVACION:")}🚨
 ${f.obs}
 
 - SE ADJUNTA IMAGENES.`
@@ -1269,11 +1356,11 @@ ${f.obs}
       gen: f =>
 `${B("REPORTE ACCIDENTE DE BUS - CAÍDA DE USUARIO - TGA T.")} ${f.turno}
 ${B("COV:")} ${getCOV()}
-🚏 ${B("UBICACIÓN:")} ${f.ubi}
+🚏 ${B("UBICACION:")} ${f.ubi}
 🔃 ${B("SENTIDO:")} ${f.sent}
 🚾 ${B("PLACA:")} ${f.placa}
 🚍 ${B("BUS:")} ${f.ruta}
-🔢 ${B("PADRÓN:")} ${f.padron}
+🔢 ${B("PADRON:")} ${f.padron}
 👨🏻‍💼 ${B("CONDUCTOR:")} ${f.conductor}
 ${B("TRASBORDO:")} ${f.trasbordo}
 
@@ -1285,7 +1372,7 @@ ${B("DNI:")} ${f.dni}
 ${B("CLÍNICA:")} ${f.clinica}
 ${B("COMISARÍA:")} ${f.comisaria}
 
-🔍 ${B("OBSERVACIÓN:")}
+🔍 ${B("OBSERVACION:")}
 ${f.obs}`
     },
   ],
@@ -1312,11 +1399,11 @@ ${f.obs}`
 ♻️ ${B("SENTIDO:")} ${f.sent}
 🔢 ${B("FECHA:")} ${today()}
 🚍 ${B("RUTA:")} ${f.ruta}
-🔢 ${B("PADRÓN:")} ${f.padron}
+🔢 ${B("PADRON:")} ${f.padron}
 🕐 ${B("FRECUENCIA:")} ${f.freq||"—"}
-🔢 ${B("CÓDIGO:")} ${f.codigo}
+🔢 ${B("CODIGO:")} ${f.codigo}
 
-✍🏻 ${B("OBSERVACIÓN:")} ${f.obs.toUpperCase()}`
+✍🏻 ${B("OBSERVACION:")} ${f.obs.toUpperCase()}`
     },
   ],
 };
@@ -1487,6 +1574,9 @@ function doTelegram(){
 function openSettings(){
   updatePermStates();
   var cfg=getSettings2();
+  document.querySelectorAll('#corr-sel .turno-opt').forEach(function(b){b.classList.toggle('sel',b.dataset.v===cfg.corredor||(!cfg.corredor&&b.dataset.v==='TGA'));});
+  renderRutasChips(cfg.rutas||['301','303','305','336','372']);
+  updateCorredorBadge();
   var fv=document.getElementById('fs-val'); if(fv) fv.textContent=(cfg.fs||14)+'px';
   var h1=document.getElementById('notif-h1'); if(h1) h1.value=cfg.h1||'10:00';
   var h2=document.getElementById('notif-h2'); if(h2) h2.value=cfg.h2||'16:00';
@@ -1514,6 +1604,8 @@ function toggleNotif(btn){
 }
 function saveSettings(){
   var cfg=getSettings2();
+  var cs=document.querySelector('#corr-sel .turno-opt.sel');
+  if(cs) cfg.corredor=cs.dataset.v;
   var h1=document.getElementById('notif-h1'); if(h1) cfg.h1=h1.value;
   var h2=document.getElementById('notif-h2'); if(h2) cfg.h2=h2.value;
   var gk=document.getElementById('gem-key'); if(gk) cfg.gemKey=gk.value.trim();
@@ -1947,6 +2039,10 @@ var isAdmin = false;
 var sheetConnected = false;
 var pendingAvisos = [];
 
+
+function getCorredor(){return (getSettings2().corredor)||'TGA';}
+function getCorrNombre(){var m={TGA:'Corredor Azul',SJL:'Corredor Morado',PAB:'Corredor Rojo'};return m[getCorredor()]||'Corredor';}
+function getRutas(){return (getSettings2().rutas)||['301','303','305','336','372'];}
 function getSheetURL() {
   return ((getSettings2().sheetUrl)||'').trim();
 }
@@ -2515,6 +2611,60 @@ function addFavCustom(idx,name,icon){
   document.getElementById('fav-picker-ov').classList.remove('open');
   renderFavs();
   showToast('⭐ Agregado al acceso rápido');
+}
+
+
+function selCorredor(btn){
+  document.querySelectorAll('#corr-sel .turno-opt').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+}
+
+function renderRutasChips(rutas){
+  var el=document.getElementById('rutas-wrap');
+  if(!el) return;
+  el.innerHTML=(rutas||[]).map(function(r,i){
+    return '<span class="ruta-chip">'+r+
+      '<button class="ruta-del" onclick="removeRuta('+i+')">×</button></span>';
+  }).join('');
+}
+
+function addRuta(){
+  var inp=document.getElementById('nueva-ruta');
+  var val=(inp.value||'').trim().toUpperCase();
+  if(!val) return;
+  var cfg=getSettings2();
+  var rutas=cfg.rutas||['301','303','305','336','372'];
+  if(rutas.indexOf(val)<0) rutas.push(val);
+  cfg.rutas=rutas; S.set('settings2',cfg);
+  renderRutasChips(rutas); inp.value='';
+}
+
+function removeRuta(idx){
+  var cfg=getSettings2();
+  var rutas=cfg.rutas||['301','303','305','336','372'];
+  rutas.splice(idx,1); cfg.rutas=rutas; S.set('settings2',cfg);
+  renderRutasChips(rutas);
+}
+
+function updateCorredorBadge(){
+  var c=getCorredor();
+  var title=document.querySelector('.hdr-title');
+  if(!title) return;
+  var existing=title.querySelector('.corredor-badge');
+  if(existing) existing.remove();
+  if(c!=='TGA'){
+    var b=document.createElement('span');
+    b.className='corredor-badge '+c;
+    b.textContent=c;
+    title.appendChild(b);
+  }
+}
+
+function deleteHistItem(id){
+  var arr=S.get('history')||[];
+  arr=arr.filter(function(h){return h.id!==id;});
+  S.set('history',arr); updateHistCount(); renderHistory();
+  showToast('Eliminado');
 }
 
 function toggleGemVis(){
