@@ -219,8 +219,6 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 /* TOAST */
 .toast{position:fixed;bottom:calc(18px + var(--safe));left:50%;transform:translateX(-50%) translateY(14px);background:#16A34A;color:#fff;padding:8px 18px;border-radius:18px;font-size:13px;font-weight:600;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:999;box-shadow:0 3px 14px rgba(0,0,0,.18);white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ═══ FASE 2 — IA ═══ */
 .ia-main-btn{width:100%;background:linear-gradient(135deg,#EBF3FF 0%,#fff 100%);border:1.5px solid #B0CCE8;border-radius:var(--r);padding:11px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.06);font-family:inherit;transition:border-color .15s;margin-bottom:9px}
 .ia-main-btn:hover{border-color:var(--acc)}
 .ia-main-btn:active{transform:scale(.98)}
@@ -494,7 +492,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 <!-- IA SCREEN -->
 <div class="screen" id="s-ia">
   <div class="back-row" onclick="goBack()">
-    <span class="back-icon">&#8249;</span><span class="back-lbl">Inicio</span>
+    <span class="back-icon">‹</span><span class="back-lbl">Inicio</span>
   </div>
   <div style="font-size:15px;font-weight:700;margin-bottom:12px">🤖 Asistente IA <span style="font-size:11px;color:var(--mut);font-weight:400">Gemini</span></div>
   <div class="ia-tabs">
@@ -578,12 +576,12 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   </div>
   <div class="dw-sec">
     <div class="dw-sec-title">🤖 Inteligencia Artificial</div>
-    <div style="font-size:11px;color:var(--mut);margin-bottom:7px">Clave API de Google AI Studio (Gemini)</div>
+    <div style="font-size:11px;color:var(--mut);margin-bottom:7px">Clave API de Google AI Studio</div>
     <div style="display:flex;gap:6px;margin-bottom:6px">
       <input class="dw-input" id="gem-key" type="password" placeholder="AIzaSy..." style="flex:1;font-family:monospace;font-size:11px">
-      <button onclick="toggleGemVis()" style="background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);padding:0 10px;cursor:pointer;font-size:14px;-webkit-tap-highlight-color:transparent">👁</button>
+      <button onclick="toggleGemVis()" style="background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);padding:0 10px;cursor:pointer;font-size:14px">👁</button>
     </div>
-    <div style="font-size:10px;color:var(--mut);line-height:1.5">Obtén tu clave en <b>aistudio.google.com</b>. Para seguridad, restringe el dominio a <b>rolisinr.github.io</b> en la configuración de la clave.</div>
+    <div style="font-size:10px;color:var(--mut);line-height:1.5">Obtén tu clave en <b>aistudio.google.com</b>. Restringe el dominio a <b>rolisinr.github.io</b>.</div>
   </div>
   <button class="dw-save" onclick="saveSettings()">Guardar configuración</button>
 </div>
@@ -1438,25 +1436,27 @@ function init(){
 
 if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
 init();
+// =============================================
+// FASE 2 - IA CON GEMINI
+// =============================================
 
-// ═══════════════════════════════════════════
-// FASE 2 — GEMINI IA
-// ═══════════════════════════════════════════
-
-const GEMINI_MODELS = [
+var GEMINI_MODELS = [
   'gemini-2.5-flash',
+  'gemini-3.5-flash',
   'gemini-3.1-flash-lite',
-  'gemini-2.5-flash-lite',
+  'gemini-2.5-flash-lite'
 ];
 
 async function callGemini(audioB64, mimeType, prompt) {
-  const key = (getSettings2().gemKey||'').trim();
+  var cfg2 = getSettings2();
+  var key = (cfg2.gemKey||'').trim();
   if(!key) throw new Error('Configura tu clave API en ⚙️');
-  let lastErr = null;
-  for(const model of GEMINI_MODELS) {
+  var lastErr = null;
+  for(var mi=0; mi<GEMINI_MODELS.length; mi++) {
+    var model = GEMINI_MODELS[mi];
     try {
-      const r = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+      var r = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + key,
         {
           method:'POST', headers:{'Content-Type':'application/json'},
           body: JSON.stringify({
@@ -1468,298 +1468,300 @@ async function callGemini(audioB64, mimeType, prompt) {
           })
         }
       );
-      if(r.status===429||r.status===503){lastErr=new Error('Cuota agotada: '+model); continue;}
-      if(!r.ok){const e=await r.json(); throw new Error(e.error?.message||'Error '+r.status);}
-      const d=await r.json();
-      const text=d.candidates?.[0]?.content?.parts?.[0]?.text||'';
-      if(!text) throw new Error('Respuesta vacía de la IA');
-      return {text, model};
+      if(r.status===429||r.status===503){lastErr=new Error('Cuota: '+model); continue;}
+      if(!r.ok){var e=await r.json(); throw new Error((e.error&&e.error.message)||'Error '+r.status);}
+      var d=await r.json();
+      var text=(d.candidates&&d.candidates[0]&&d.candidates[0].content&&
+        d.candidates[0].content.parts&&d.candidates[0].content.parts[0]&&
+        d.candidates[0].content.parts[0].text)||'';
+      if(!text) throw new Error('Respuesta vacía');
+      return {text:text, model:model};
     } catch(e) {
       lastErr=e;
-      if(model===GEMINI_MODELS[GEMINI_MODELS.length-1]) throw lastErr;
+      if(mi===GEMINI_MODELS.length-1) throw lastErr;
     }
   }
   throw lastErr;
 }
 
 function parseGemJSON(text) {
-  let s=text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
-  const i=s.indexOf('{'), j=s.lastIndexOf('}');
-  if(i<0||j<0) throw new Error('La IA no devolvió JSON válido');
+  var s=text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+  var i=s.indexOf('{'), j=s.lastIndexOf('}');
+  if(i<0||j<0) throw new Error('Sin JSON en respuesta');
   return JSON.parse(s.slice(i,j+1));
 }
 
-// ── RECORDING ENGINE ──
-let mRec=null, aChunks=[], rTimer=null, rSecs=0;
-const fmtTime = s => String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+// -- RECORDING --
+var mRec=null, aChunks=[], rTimer=null, rSecs=0;
+var fmtTime=function(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
 
 async function startRec(micId, timerId, statusId) {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
-    const mimeType = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4']
-      .find(m=>{ try{return MediaRecorder.isTypeSupported(m);}catch{return false;} })||'';
-    mRec = new MediaRecorder(stream, mimeType?{mimeType}:{});
+    var stream = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    var mimes = ['audio/webm;codecs=opus','audio/webm','audio/ogg','audio/mp4'];
+    var mimeType = '';
+    for(var k=0;k<mimes.length;k++){
+      try{if(MediaRecorder.isTypeSupported(mimes[k])){mimeType=mimes[k];break;}}catch(e){}
+    }
+    mRec = mimeType ? new MediaRecorder(stream,{mimeType:mimeType}) : new MediaRecorder(stream);
     aChunks=[];
-    mRec.ondataavailable = e=>{ if(e.data.size>0) aChunks.push(e.data); };
+    mRec.ondataavailable=function(e){if(e.data.size>0)aChunks.push(e.data);};
     mRec.start(200);
     rSecs=0;
-    const tEl=document.getElementById(timerId);
+    var tEl=document.getElementById(timerId);
     if(tEl){tEl.style.display='';tEl.textContent='00:00';}
-    rTimer=setInterval(()=>{rSecs++; const t=document.getElementById(timerId); if(t) t.textContent=fmtTime(rSecs);},1000);
+    rTimer=setInterval(function(){rSecs++; var t=document.getElementById(timerId); if(t)t.textContent=fmtTime(rSecs);},1000);
     document.getElementById(micId).classList.add('recording');
-    const sEl=document.getElementById(statusId);
-    if(sEl) sEl.textContent='Grabando… toca para detener';
-    const hint=document.getElementById('ia-stop-hint');
-    if(hint) hint.style.display='';
+    var sEl=document.getElementById(statusId);
+    if(sEl)sEl.textContent='Grabando… toca para detener';
+    var hint=document.getElementById('ia-stop-hint');
+    if(hint)hint.style.display='';
     return true;
   } catch(e) { showToast('⚠️ Sin acceso al micrófono'); return false; }
 }
 
 async function stopRecGetAudio() {
   clearInterval(rTimer);
-  return new Promise(resolve=>{
-    mRec.onstop = async ()=>{
-      const blob=new Blob(aChunks,{type:mRec.mimeType||'audio/webm'});
-      const fr=new FileReader();
-      fr.onload=()=>resolve({b64:fr.result.split(',')[1], mime:blob.type});
+  return new Promise(function(resolve){
+    mRec.onstop=async function(){
+      var blob=new Blob(aChunks,{type:mRec.mimeType||'audio/webm'});
+      var fr=new FileReader();
+      fr.onload=function(){resolve({b64:fr.result.split(',')[1], mime:blob.type});};
       fr.readAsDataURL(blob);
     };
     mRec.stop();
-    mRec.stream.getTracks().forEach(t=>t.stop());
+    mRec.stream.getTracks().forEach(function(t){t.stop();});
   });
 }
 
-// ── IA SCREEN ──
-let iaRecording=false, iaCurrentMode='libre', iaCurrentResult=null;
+// -- IA SCREEN --
+var iaRecording=false, iaCurrentMode='libre', iaCurrentResult=null;
 
 function setIAMode(mode) {
   iaCurrentMode=mode;
   document.getElementById('ia-tab-libre').classList.toggle('on',mode==='libre');
   document.getElementById('ia-tab-narr').classList.toggle('on',mode==='narrador');
   document.getElementById('ia-hint').textContent = mode==='libre'
-    ? 'Habla describiendo la situación y Gemini detectará el tipo de reporte y completará los campos automáticamente.'
-    : 'Describe la situación como puedas. Gemini ordenará tus ideas en un texto claro y profesional para copiar.';
+    ? 'Habla describiendo la situación y Gemini detectará el tipo de reporte y completará los campos.'
+    : 'Describe la situación como puedas. Gemini ordenará tus ideas en texto claro para copiar.';
   document.getElementById('ia-result').style.display='none';
 }
 
 async function iaToggleRec() {
   if(iaRecording) {
     iaRecording=false;
-    const mic=document.getElementById('ia-mic');
+    var mic=document.getElementById('ia-mic');
     mic.classList.remove('recording'); mic.classList.add('processing'); mic.textContent='⏳';
     document.getElementById('ia-status').textContent='Procesando con Gemini…';
-    document.getElementById('ia-stop-hint').style.display='none';
+    var hint2=document.getElementById('ia-stop-hint'); if(hint2)hint2.style.display='none';
     try {
-      const {b64,mime}=await stopRecGetAudio();
-      const prompt=iaCurrentMode==='libre'?buildDetectPrompt():buildNarradorPrompt();
-      const {text,model}=await callGemini(b64,mime,prompt);
-      if(iaCurrentMode==='libre') renderLibreResult(text);
-      else renderNarradorResult(text);
-      showToast('✓ '+model);
+      var audio=await stopRecGetAudio();
+      var prompt=iaCurrentMode==='libre' ? buildDetectPrompt() : buildNarradorPrompt();
+      var res=await callGemini(audio.b64, audio.mime, prompt);
+      if(iaCurrentMode==='libre') renderLibreResult(res.text);
+      else renderNarradorResult(res.text);
+      showToast('✓ ' + res.model);
     } catch(e){ showToast('⚠️ '+e.message); }
     finally {
-      const m=document.getElementById('ia-mic');
-      m.classList.remove('processing','recording'); m.textContent='🎤';
+      var m2=document.getElementById('ia-mic');
+      m2.classList.remove('processing','recording'); m2.textContent='🎤';
       document.getElementById('ia-status').textContent='Toca para grabar';
       document.getElementById('ia-timer').style.display='none';
     }
   } else {
-    const ok=await startRec('ia-mic','ia-timer','ia-status');
+    var ok=await startRec('ia-mic','ia-timer','ia-status');
     if(ok){iaRecording=true; document.getElementById('ia-result').style.display='none';}
   }
 }
 
 function buildDetectPrompt() {
-  const p=getProfile();
-  const tplList=[
-    {id:'informe-via',cat:'vias',name:'Informe de Vías TGA',desc:'estado de tráfico N/S y S/N, semáforos, PNP, segregado, recaudo'},
-    {id:'situacion',cat:'vias',name:'Situación Actual Corredor Azul',desc:'reporte rápido de situación puntual'},
-    {id:'obras-via',cat:'obras',name:'Obras en Vía TGA',desc:'trabajos de construcción o mantenimiento en calzada'},
-    {id:'inc-via',cat:'incidencia',name:'Incidencia en Vía',desc:'accidente, choque, caída de persona, árbol caído'},
-    {id:'inc-cc3',cat:'incidencia',name:'Incidencia CC3 Rápido',desc:'incidencia puntual breve'},
-    {id:'accidente-bus',cat:'incidencia',name:'Accidente Bus / Caída de Usuario',desc:'usuario herido a bordo, caída por frenada brusca'},
-    {id:'demanda',cat:'demanda',name:'Demanda Corredor Azul',desc:'paradero con usuarios esperando buses'},
+  var p=getProfile();
+  var nl='\n';
+  var tpls=[
+    {id:'informe-via',name:'Informe de Vias TGA',desc:'estado de trafico N/S y S/N, semaforos, PNP, segregado'},
+    {id:'situacion',name:'Situacion Actual Corredor Azul',desc:'reporte rapido de situacion puntual'},
+    {id:'obras-via',name:'Obras en Via TGA',desc:'trabajos de construccion o mantenimiento en calzada'},
+    {id:'inc-via',name:'Incidencia en Via',desc:'accidente, choque, caida de persona'},
+    {id:'inc-cc3',name:'Incidencia CC3 Rapido',desc:'incidencia puntual breve'},
+    {id:'accidente-bus',name:'Accidente Bus / Caida de Usuario',desc:'usuario herido a bordo del bus'},
+    {id:'demanda',name:'Demanda Corredor Azul',desc:'paradero con usuarios esperando buses'},
   ];
-  return `Eres asistente del Corredor Azul TGA Lima, Peru. COV: ${p.nombre||'COV'}, punto: ${p.ubi||'no especificado'}.
-
-Escucha el audio y determina el tipo de reporte. Extrae todos los datos mencionados.
-
-Plantillas disponibles:
-${tplList.map(t=>`- "${t.id}": ${t.name} — ${t.desc}`).join('
-')}
-
-Responde UNICAMENTE con JSON valido, sin markdown, sin explicaciones:
-{
-  "plantilla": "id_de_la_plantilla",
-  "confianza": "alta",
-  "campos": {
-    "campo_id": "valor extraido"
-  }
-}
-
-Reglas importantes:
-- Mantener nombres de calles, paraderos, placas y numeros EXACTAMENTE como se escuchen
-- Si no se menciona un campo, omitirlo del JSON
-- Para campos de descripcion, redactar de forma clara y profesional
-- confianza: alta (claro), media (probable), baja (dudoso)`;
+  var tplLines = tpls.map(function(t){return '- "'+t.id+'": '+t.name+' - '+t.desc;}).join(nl);
+  return (
+    'Eres asistente del Corredor Azul TGA Lima, Peru. COV: '+(p.nombre||'COV')+', punto: '+(p.ubi||'no especificado')+'.'+nl+nl+
+    'Escucha el audio y determina el tipo de reporte. Extrae todos los datos mencionados.'+nl+nl+
+    'Plantillas disponibles:'+nl+tplLines+nl+nl+
+    'Responde UNICAMENTE con JSON valido, sin markdown, sin explicaciones:'+nl+
+    '{'+nl+
+    '  "plantilla": "id_de_la_plantilla",'+nl+
+    '  "confianza": "alta",'+nl+
+    '  "campos": {'+nl+
+    '    "campo_id": "valor extraido"'+nl+
+    '  }'+nl+
+    '}'+nl+nl+
+    'Reglas: mantener nombres de calles y paraderos exactamente como se escuchen. '+
+    'Si no se menciona un campo omitirlo. confianza: alta/media/baja.'
+  );
 }
 
 function buildFillPrompt(tpl) {
-  const p=getProfile();
-  const textFields=tpl.fields.filter(f=>f.type!=='sel');
-  return `Eres asistente del Corredor Azul TGA Lima, Peru. COV: ${p.nombre||'COV'}, punto: ${p.ubi||'no especificado'}.
-
-Escucha el audio y extrae informacion para el formulario: "${tpl.name}".
-
-Responde UNICAMENTE con JSON valido, sin markdown:
-{
-${textFields.map(f=>`  "${f.id}": ""`).join(',
-')}
-}
-
-Descripcion de cada campo:
-${textFields.map(f=>`- "${f.id}": ${f.label}`).join('
-')}
-
-Si no se menciona un campo, dejarlo como string vacio "". Redactar de forma clara y profesional. La hora se inserta automaticamente, no incluirla.`;
+  var p=getProfile();
+  var nl='\n';
+  var textFields=tpl.fields.filter(function(f){return f.type!=='sel';});
+  var fieldLines=textFields.map(function(f){return '  "'+f.id+'": ""';}).join(','+nl);
+  var descLines=textFields.map(function(f){return '- "'+f.id+'": '+f.label;}).join(nl);
+  return (
+    'Eres asistente del Corredor Azul TGA Lima, Peru. COV: '+(p.nombre||'COV')+', punto: '+(p.ubi||'no especificado')+'.'+nl+nl+
+    'Escucha el audio y extrae informacion para el formulario: "'+tpl.name+'".'+nl+nl+
+    'Responde UNICAMENTE con JSON valido, sin markdown:'+nl+
+    '{'+nl+fieldLines+nl+'}'+nl+nl+
+    'Descripcion de cada campo:'+nl+descLines+nl+nl+
+    'Si no se menciona un campo dejarlo vacio. Redactar de forma clara y profesional.'
+  );
 }
 
 function buildNarradorPrompt() {
-  return `Eres asistente de redaccion para reportes de transito del Corredor Azul TGA Lima, Peru.
-
-Escucha el audio y organiza las ideas en un texto claro, ordenado y profesional para un reporte operativo.
-
-Reglas:
-- Mantener exactamente los nombres de calles, paraderos, placas y numeros de padron
-- Ordenar cronologicamente si hay secuencia de eventos
-- Usar lenguaje formal de reporte operativo de transito peruano
-- Solo texto plano, sin formato especial ni listas
-- Si faltan datos, redactar lo que se pueda inferir`;
+  var nl='\n';
+  return (
+    'Eres asistente de redaccion para reportes de transito del Corredor Azul TGA Lima, Peru.'+nl+nl+
+    'Escucha el audio y organiza las ideas en un texto claro, ordenado y profesional.'+nl+nl+
+    'Reglas:'+nl+
+    '- Mantener exactamente los nombres de calles, paraderos, placas y numeros de padron'+nl+
+    '- Ordenar cronologicamente si hay secuencia de eventos'+nl+
+    '- Usar lenguaje formal de reporte operativo de transito peruano'+nl+
+    '- Solo texto plano, sin formato especial'
+  );
 }
 
 function renderLibreResult(text) {
-  let data;
-  try{data=parseGemJSON(text);}catch(e){showToast('⚠️ No se pudo interpretar la respuesta'); return;}
-  const {plantilla, confianza='media', campos={}}=data;
-  let foundTpl=null, foundCat=null;
-  for(const [cat,tpls] of Object.entries(TPLS)){
-    const t=tpls.find(x=>x.id===plantilla);
-    if(t){foundTpl=t; foundCat=cat; break;}
+  var data;
+  try{data=parseGemJSON(text);}catch(e){showToast('⚠️ '+e.message);return;}
+  var plantilla=data.plantilla, confianza=data.confianza||'media', campos=data.campos||{};
+  var foundTpl=null, foundCat=null;
+  var catKeys=Object.keys(TPLS);
+  for(var ci=0;ci<catKeys.length;ci++){
+    var cat=catKeys[ci];
+    for(var ti=0;ti<TPLS[cat].length;ti++){
+      if(TPLS[cat][ti].id===plantilla){foundTpl=TPLS[cat][ti];foundCat=cat;break;}
+    }
+    if(foundTpl) break;
   }
-  if(!foundTpl){showToast('⚠️ Plantilla no reconocida: '+plantilla); return;}
-  iaCurrentResult={tpl:foundTpl, cat:foundCat, campos};
-  const cf=(['alta','media','baja'].includes(confianza)?confianza:'media');
-  const filledFields=Object.entries(campos).filter(([k,v])=>v).map(([k,v])=>{
-    const f=foundTpl.fields.find(x=>x.id===k);
-    return f?`<div class="ia-fitem"><div class="ia-flbl">${f.label}</div><div class="ia-fval">${v}</div></div>`:'';
-  }).join('');
-  const el=document.getElementById('ia-result');
-  el.innerHTML=`<div class="ia-result">
-    <div class="ia-r-title">Plantilla detectada</div>
-    <div class="ia-tpl-card">
-      <div class="ia-tpl-name">${foundTpl.icon} ${foundTpl.name}</div>
-      <span class="ia-conf ${cf}">${cf}</span>
-    </div>
-    ${filledFields?'<div class="ia-r-title">Campos extraídos</div><div class="ia-flist">'+filledFields+'</div>':'<p style="font-size:12px;color:var(--mut);margin-bottom:10px">No se detectaron campos específicos. Puedes completarlos manualmente.</p>'}
-    <div class="ia-rbtns">
-      <button class="ia-rbtn pri" onclick="applyIAResult()">✓ Usar plantilla</button>
-      <button class="ia-rbtn sec" onclick="document.getElementById('ia-result').style.display='none'">↩ Reintentar</button>
-    </div>
-  </div>`;
+  if(!foundTpl){showToast('⚠️ Plantilla no reconocida: '+plantilla);return;}
+  iaCurrentResult={tpl:foundTpl,cat:foundCat,campos:campos};
+  var cf=['alta','media','baja'].includes(confianza)?confianza:'media';
+  var filledHtml='';
+  Object.keys(campos).forEach(function(k){
+    var v=campos[k]; if(!v) return;
+    var f=null;
+    for(var fi=0;fi<foundTpl.fields.length;fi++){if(foundTpl.fields[fi].id===k){f=foundTpl.fields[fi];break;}}
+    if(f) filledHtml+='<div class="ia-fitem"><div class="ia-flbl">'+f.label+'</div><div class="ia-fval">'+v+'</div></div>';
+  });
+  var noFields='<p style="font-size:12px;color:var(--mut);margin-bottom:10px">No se detectaron campos. Completa manualmente.</p>';
+  var el=document.getElementById('ia-result');
+  el.innerHTML=
+    '<div class="ia-result">' +
+    '<div class="ia-r-title">Plantilla detectada</div>' +
+    '<div class="ia-tpl-card">' +
+    '<div class="ia-tpl-name">'+foundTpl.icon+' '+foundTpl.name+'</div>' +
+    '<span class="ia-conf '+cf+'">'+cf+'</span>' +
+    '</div>' +
+    (filledHtml ? '<div class="ia-r-title">Campos extraídos</div><div class="ia-flist">'+filledHtml+'</div>' : noFields) +
+    '<div class="ia-rbtns">' +
+    '<button class="ia-rbtn pri" onclick="applyIAResult()">✓ Usar plantilla</button>' +
+    '<button class="ia-rbtn sec" onclick="document.getElementById(\x27ia-result\x27).style.display=\x27none\x27">↩ Reintentar</button>' +
+    '</div></div>';
   el.style.display='block';
 }
 
 function renderNarradorResult(text) {
-  const el=document.getElementById('ia-result');
-  el.innerHTML=`<div class="ia-result">
-    <div class="ia-r-title">Texto organizado por Gemini</div>
-    <div class="ia-narr-prev" id="narr-txt">${text}</div>
-    <div class="ia-rbtns">
-      <button class="ia-rbtn pri" onclick="copyText(document.getElementById('narr-txt').innerText)">📋 Copiar</button>
-      <button class="ia-rbtn sec" onclick="document.getElementById('ia-result').style.display='none'">↩ Reintentar</button>
-    </div>
-  </div>`;
+  var el=document.getElementById('ia-result');
+  el.innerHTML=
+    '<div class="ia-result">' +
+    '<div class="ia-r-title">Texto organizado por Gemini</div>' +
+    '<div class="ia-narr-prev" id="narr-txt">'+text.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>' +
+    '<div class="ia-rbtns">' +
+    '<button class="ia-rbtn pri" onclick="copyText(document.getElementById(\x27narr-txt\x27).innerText)">📋 Copiar</button>' +
+    '<button class="ia-rbtn sec" onclick="document.getElementById(\x27ia-result\x27).style.display=\x27none\x27">↩ Reintentar</button>' +
+    '</div></div>';
   el.style.display='block';
 }
 
 function applyIAResult() {
   if(!iaCurrentResult) return;
-  const {tpl,cat,campos}=iaCurrentResult;
-  showForm(cat,tpl.id,true);
-  setTimeout(()=>fillFieldsFromAI(tpl,campos), 180);
+  var tpl=iaCurrentResult.tpl, cat=iaCurrentResult.cat, campos=iaCurrentResult.campos;
+  showForm(cat, tpl.id, true);
+  setTimeout(function(){fillFieldsFromAI(tpl,campos);}, 180);
 }
 
 function fillFieldsFromAI(tpl, campos) {
-  tpl.fields.forEach(f=>{
-    const val=campos[f.id];
-    if(!val) return;
-    const el=document.getElementById('f-'+f.id);
-    if(!el) return;
+  tpl.fields.forEach(function(f){
+    var val=campos[f.id]; if(!val) return;
+    var el=document.getElementById('f-'+f.id); if(!el) return;
     if(el.tagName==='SELECT'){
-      const m=Array.from(el.options).find(o=>
-        o.value.toLowerCase().includes(val.toLowerCase())||
-        val.toLowerCase().includes(o.value.toLowerCase())
-      );
+      var opts=Array.from(el.options);
+      var m=opts.find(function(o){
+        return o.value.toLowerCase().indexOf(val.toLowerCase())>=0 ||
+               val.toLowerCase().indexOf(o.value.toLowerCase())>=0;
+      });
       if(m) el.value=m.value;
     } else {
       el.value=val;
       el.style.transition='border-color .3s';
       el.style.borderColor='var(--gr)';
-      setTimeout(()=>{el.style.borderColor='';},1800);
+      setTimeout(function(){el.style.borderColor='';},1800);
     }
   });
   upd();
   showToast('✓ Campos completados por IA');
 }
 
-// ── MINI IA (desde formulario) ──
-let msRecording=false;
+// -- MINI IA --
+var msRecording=false;
 
 function openMiniIA() {
   if(!curTpl){showToast('⚠️ Selecciona una plantilla'); return;}
   document.getElementById('ms-tpl-name').textContent=curTpl.name;
   document.getElementById('ms-status').textContent='Toca para grabar';
   document.getElementById('ms-timer').style.display='none';
-  const m=document.getElementById('ms-mic');
+  var m=document.getElementById('ms-mic');
   m.className='ms-mic'; m.textContent='🎤';
   msRecording=false;
   document.getElementById('mini-ov').classList.add('open');
 }
 
 function closeMiniIA() {
-  if(msRecording&&mRec){mRec.stop(); mRec.stream.getTracks().forEach(t=>t.stop()); clearInterval(rTimer); msRecording=false;}
+  if(msRecording&&mRec){mRec.stop();mRec.stream.getTracks().forEach(function(t){t.stop();});clearInterval(rTimer);msRecording=false;}
   document.getElementById('mini-ov').classList.remove('open');
 }
 
 async function msToggleRec() {
   if(msRecording) {
     msRecording=false;
-    const mic=document.getElementById('ms-mic');
+    var mic=document.getElementById('ms-mic');
     mic.classList.remove('recording'); mic.classList.add('processing'); mic.textContent='⏳';
     document.getElementById('ms-status').textContent='Procesando…';
     try {
-      const {b64,mime}=await stopRecGetAudio();
-      const {text,model}=await callGemini(b64,mime,buildFillPrompt(curTpl));
-      const campos=parseGemJSON(text);
+      var audio=await stopRecGetAudio();
+      var res=await callGemini(audio.b64, audio.mime, buildFillPrompt(curTpl));
+      var campos=parseGemJSON(res.text);
       closeMiniIA();
-      fillFieldsFromAI(curTpl,campos);
+      fillFieldsFromAI(curTpl, campos);
     } catch(e) {
       showToast('⚠️ '+e.message);
-      const m=document.getElementById('ms-mic');
-      m.classList.remove('processing'); m.textContent='🎤';
+      var m2=document.getElementById('ms-mic');
+      m2.classList.remove('processing'); m2.textContent='🎤';
       document.getElementById('ms-status').textContent='Error — toca para reintentar';
     }
   } else {
-    const ok=await startRec('ms-mic','ms-timer','ms-status');
-    if(ok) msRecording=true;
+    var ok2=await startRec('ms-mic','ms-timer','ms-status');
+    if(ok2) msRecording=true;
   }
 }
 
 function toggleGemVis(){
-  const i=document.getElementById('gem-key');
-  if(i) i.type=i.type==='password'?'text':'password';
+  var inp=document.getElementById('gem-key');
+  if(inp) inp.type=inp.type==='password'?'text':'password';
 }
-
 </script>
 </body>
 </html>
