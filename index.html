@@ -399,6 +399,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   </div>
   <div class="hdr-r">
     <button class="admin-btn" id="admin-btn" onclick="openAdmin()" style="display:none">🛡️</button>
+    <button class="icon-btn" onclick="openHistory()" style="color:var(--mut);font-size:19px" title="Historial">📋</button>
     <button class="icon-btn" onclick="openSettings()" style="color:#E67E22;font-size:21px">⚙️</button>
   </div>
 </header>
@@ -550,16 +551,21 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </button>
   </div>
 
-  <button class="ia-main-btn" onclick="go('s-ia')">
-    <div class="ia-mb-icon">🤖</div>
-    <div class="ia-mb-txt">
-      <div class="ia-mb-name">Generar reporte con IA</div>
-      <div class="ia-mb-sub">Habla y Gemini redacta el reporte</div>
-    </div>
-    <span class="ia-mb-arr">›</span>
-  </button>
   <div class="srv-block">
     <div class="srv-title">Servicio COV</div>
+    <div class="srv-btns" style="grid-template-columns:1fr 1fr">
+      <button class="srv-btn" onclick="quickService('inicio')">
+        <div class="sb-icon">🟢</div>
+        <div class="sb-txt">Inicio</div>
+        <div class="sb-sub">Servicio</div>
+      </button>
+      <button class="srv-btn" onclick="quickService('termino')">
+        <div class="sb-icon">🔴</div>
+        <div class="sb-txt">Término</div>
+        <div class="sb-sub">Servicio</div>
+      </button>
+    </div>
+  </div>
     <div class="srv-btns">
       <button class="srv-btn" onclick="quickService('inicio')">
         <div class="sb-icon">🟢</div>
@@ -584,14 +590,6 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </div>
   </div>
 
-  <button class="hist-btn" onclick="openHistory()">
-    <span style="font-size:16px">🕐</span>
-    <div>
-      <div class="hist-btn-txt">Historial del turno</div>
-      <div class="hist-btn-sub" id="hist-count-lbl">Sin reportes aún</div>
-    </div>
-    <span class="hist-btn-arr">›</span>
-  </button>
 </div>
 
 <!-- PLANTILLAS -->
