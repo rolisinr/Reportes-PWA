@@ -377,6 +377,17 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   font-size:13px;padding:0;line-height:1;-webkit-tap-highlight-color:transparent}
 .rutas-wrap{display:flex;flex-wrap:wrap;gap:2px;margin-bottom:8px;min-height:30px}
 .add-ruta-row{display:flex;gap:6px}
+
+/* === ETAPA 2 === */
+.multisel{display:flex;flex-wrap:wrap;gap:6px}
+.mopt{background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;
+  padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;
+  font-family:inherit;color:var(--mut);-webkit-tap-highlight-color:transparent;transition:all .15s}
+.mopt.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.otro-inp{margin-top:6px;display:none}
+.otro-inp.show{display:block}
+.relevo-extra{display:none}
+.relevo-extra.show{display:block;margin-top:6px}
 </style>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -1123,222 +1134,258 @@ const getCOV = () => (getProfile().nombre)||"";
 const getUbi = () => (getProfile().ubi)||"";
 const getTurno = () => (getProfile().turno)||"TARDE";
 
-const TPLS = {
+var TPLS = {
   vias:[
     {
-      id:"informe-via", icon:"🛣️", name:"Informe de Vías TGA",
-      desc:"Estado de vía, semáforos y segregado",
-      required:["ubicacion","ns","sn"],
+      id:'informe-via', icon:'\U0001f6e3\ufe0f', name:'Informe de V\u00edas',
+      desc:'Estado de v\u00eda, sem\u00e1foros y segregado',
+      required:['ubicacion'],
       fields:[
-        {id:"ubicacion", label:"Ubicación / Paradero", type:"text", autofill:"ubi"},
-        {id:"ns",  label:"Tránsito N/S", type:"sel", opts:["fluido","moderado","cargado","detenido"]},
-        {id:"sn",  label:"Tránsito S/N", type:"sel", opts:["fluido","moderado","cargado","detenido"]},
-        {id:"sem", label:"Semáforos",    type:"sel", opts:["OPERATIVOS","NO OPERATIVOS"]},
-        {id:"pnp", label:"Efectivo policial", type:"sel", opts:["SÍ contamos","NO contamos"]},
-        {id:"pnp_det", label:"Detalle PNP", type:"text", opt:true},
-        {id:"seg", label:"Segregado",    type:"sel", opts:["con normalidad","cerrado, vía alterna","con dificultades"]},
-        {id:"rec", label:"Personal de recaudo", type:"sel", opts:["SÍ, en punto","NO en el punto"]},
-        {id:"rec_par", label:"Paradero de recaudo", type:"text", opt:true},
-        {id:"extra", label:"Novedad adicional", type:"text", opt:true},
+        {id:'ubicacion', label:'Ubicaci\u00f3n / Paradero', type:'text', autofill:'ubi'},
+        {id:'ns',  label:'Tr\u00e1nsito N/S', type:'sel', opts:['fluido','moderado','cargado','detenido']},
+        {id:'sn',  label:'Tr\u00e1nsito S/N', type:'sel', opts:['fluido','moderado','cargado','detenido']},
+        {id:'sem', label:'Sem\u00e1foros',    type:'sel', opts:['OPERATIVOS','NO OPERATIVOS']},
+        {id:'pnp', label:'Efectivo policial', type:'sel', opts:['S\u00cd contamos','NO contamos']},
+        {id:'pnp_det', label:'Detalle PNP',  type:'text', opt:true},
+        {id:'seg', label:'Segregado',  type:'sel-otro', opts:['con normalidad','con dificultades','cerrado temporalmente','con restricci\u00f3n']},
+        {id:'rec', label:'Personal de recaudo', type:'sel', opts:['S\u00cd, en punto','NO en el punto','No aplica']},
+        {id:'rec_par', label:'Paradero de recaudo', type:'text', opt:true},
+        {id:'extra', label:'Novedad adicional', type:'text', opt:true},
       ],
-      gen: f => {
-        const pnp = f.pnp==="SÍ contamos"
-          ? `🔹${B("SÍ contamos")} con presencia de EFECTIVO POLICIAL${f.pnp_det?" ("+f.pnp_det+")":""} 👮🏻‍♂️`
-          : `🔹${B("NO contamos")} con presencia de EFECTIVO POLICIAL`;
-        const rec = f.rec==="SÍ, en punto"
-          ? `🔹Personal de recaudo${f.rec_par?" en paradero "+f.rec_par.toUpperCase():" en el punto"}`
-          : `🔹NO contamos con personal de recaudo en el punto`;
-        return `🛣️${B("INFORME DE VIAS TGA")}🛣️
-📆 ${B("Fecha:")} ${today()}
-👮🏻‍♀ ${B("COV:")} ${getCOV()}
-📝 Lo que respecta a ${f.ubicacion}
-🔹Tránsito ${B(f.ns)} N/S y ${B(f.sn)} S/N 🛣️
-🔹Semáforos ${B(f.sem)} 🚦
-${pnp}
-🔹Unidades del corredor entrando al ${B("SEGREGADO")} ${f.seg} 🚎
-${rec}${f.extra?"\n🔹"+f.extra:""}
-📸${B("ADJUNTO FOTOS")}📸`;
+      gen:function(f){
+        var pnp = f.pnp==='S\u00cd contamos'
+          ? '\U0001f539'+B('SI contamos')+' con presencia de EFECTIVO POLICIAL'+(f.pnp_det?' ('+f.pnp_det+')':'')+' \U0001f46e\U0001f3fb\u200d\u2642\ufe0f'
+          : '\U0001f539'+B('NO contamos')+' con presencia de EFECTIVO POLICIAL';
+        var rec = f.rec==='No aplica' ? '' :
+          f.rec==='S\u00cd, en punto'
+            ? '\n\U0001f539Personal de recaudo'+(f.rec_par?' en paradero '+f.rec_par.toUpperCase():' en el punto')
+            : '\n\U0001f539NO contamos con personal de recaudo en el punto';
+        var extra = f.extra ? '\n\U0001f539'+f.extra : '';
+        return '\U0001f6e3\ufe0f'+B('INFORME DE VIAS')+'\U0001f6e3\ufe0f\n'
+          +'\U0001f4c6 '+B('Fecha:')+' '+today()+'\n'
+          +'\U0001f46e\U0001f3fb\u200d\u2640 '+B('COV:')+' '+getCOV()+'\n'
+          +'\U0001f4dd Lo que respecta a '+f.ubicacion+'\n'
+          +'\U0001f539Tr\u00e1nsito '+B(f.ns)+' N/S y '+B(f.sn)+' S/N \U0001f6e3\ufe0f\n'
+          +'\U0001f539Sem\u00e1foros '+B(f.sem)+' \U0001f6a6\n'
+          +pnp+'\n'
+          +'\U0001f539Unidades del corredor entrando al SEGREGADO '+f.seg+' \U0001f68e'
+          +rec+extra+'\n'
+          +'\U0001f4f8'+B('ADJUNTO FOTOS')+'\U0001f4f8';
       }
     },
     {
-      id:"situacion", icon:"🚨", name:"Situación Actual – Corredor Azul",
-      desc:"Reporte rápido con observación puntual",
-      required:["obs"],
+      id:'situacion', icon:'\U0001f6a8', name:'Situaci\u00f3n Actual',
+      desc:'Reporte r\u00e1pido con observaci\u00f3n puntual',
+      required:['obs'],
       fields:[
-        {id:"sent",  label:"Sentido", type:"sel", opts:["N/S","S/N","Ambos"]},
-        {id:"obs",   label:"Observación", type:"ta"},
-        {id:"media", label:"Adjunto", type:"sel", opts:["FOTO 📷","VIDEO 📷","FOTO Y VIDEO 📷","sin adjunto"]},
+        {id:'ubicacion', label:'Ubicaci\u00f3n', type:'text', autofill:'ubi'},
+        {id:'sent',  label:'Sentido', type:'sel', opts:['Ambos','S/N','N/S','E/O','O/E']},
+        {id:'obs',   label:'Observaci\u00f3n', type:'ta'},
+        {id:'media', label:'Adjunto', type:'sel', opts:['sin adjunto','FOTO \U0001f4f7','VIDEO \U0001f4f7','FOTO Y VIDEO \U0001f4f7']},
       ],
-      gen: f =>
-`🚨 ${B("SITUACION ACTUAL")} - 𝗖𝗢𝗥𝗥𝗘𝗗𝗢𝗥 𝗔𝗭𝗨𝗟 - ${B("TGA")}
-👤  ${B("PERSONAL COV:")} 
-       ${getCOV()}
-🔁  ${B("SENTIDO:")} ${f.sent}
-
-✍🏼  ${B("OBSERVACION:")} 
-▪️${f.obs}
-${f.media!=="sin adjunto"?"📷 ADJUNTO "+f.media:""}`
+      gen:function(f){
+        var ubiLine = f.ubicacion ? '\n\U0001f4cd '+B('UBICACION:')+' '+f.ubicacion : '';
+        var mediaLine = f.media!=='sin adjunto' ? '\n\U0001f4f7 ADJUNTO '+f.media : '';
+        return '\U0001f6a8 '+B('SITUACION ACTUAL')+' - '+B(getCorredor())+'\n'
+          +'\U0001f464  '+B('PERSONAL COV:')+'\n'
+          +'       '+getCOV()+ubiLine+'\n'
+          +'\U0001f501  '+B('SENTIDO:')+' '+f.sent+'\n\n'
+          +'\u270d\U0001f3fc  '+B('OBSERVACION:')+'\n'
+          +'\u25aa\ufe0f'+f.obs
+          +mediaLine;
+      }
     },
   ],
+
   obras:[
     {
-      id:"obras-via", icon:"🏗️", name:"Obras en Vía TGA",
-      desc:"Construcción o mantenimiento vial",
-      required:["ubicacion","desc"],
+      id:'obras-via', icon:'\U0001f3d7\ufe0f', name:'Obras en V\u00eda',
+      desc:'Construcci\u00f3n o mantenimiento vial',
+      required:['ubicacion','desc'],
       fields:[
-        {id:"zonal",    label:"Zonal / COV a cargo", type:"text", autofill:"cov"},
-        {id:"ubicacion",label:"Ubicación de la obra", type:"text"},
-        {id:"empresa",  label:"Empresa ejecutora", type:"text"},
-        {id:"contrat",  label:"Contratante", type:"text"},
-        {id:"duracion", label:"Duración / Horario", type:"text"},
-        {id:"desc",     label:"Descripción", type:"ta"},
-        {id:"transito", label:"Estado del tránsito", type:"sel", opts:["fluido en ambos sentidos","moderado N/S, fluido S/N","cargado N/S, moderado S/N","ligero moderado en ambos sentidos"]},
-        {id:"afecta",   label:"Afectación al corredor", type:"sel", opts:["NO afecta carril del corredor","SÍ, ocupa 1 carril","SÍ, ocupa el carril derecho"]},
+        {id:'ubicacion', label:'Ubicaci\u00f3n de la obra', type:'text'},
+        {id:'empresa',   label:'Empresa ejecutora', type:'text'},
+        {id:'contrat',   label:'Contratante', type:'text', opt:true},
+        {id:'duracion',  label:'Duraci\u00f3n / Horario', type:'text', opt:true},
+        {id:'desc',      label:'Descripci\u00f3n', type:'ta'},
+        {id:'ns',  label:'Tr\u00e1nsito N/S (opcional)', type:'sel', opts:['\u2014','fluido','moderado','cargado','detenido']},
+        {id:'sn',  label:'Tr\u00e1nsito S/N (opcional)', type:'sel', opts:['\u2014','fluido','moderado','cargado','detenido']},
+        {id:'afecta', label:'Afectaci\u00f3n al corredor', type:'sel-otro', opts:['NO afecta al corredor','S\u00cd, ocupa 1 carril','S\u00cd, ocupa el carril derecho']},
       ],
-      gen: f =>
-`🏗 ${B("OBRAS EN VIA TGA")}
-${B(today())}
-
-${B("ZONAL:")} ${f.zonal}
-${B("UBICACION DE LA OBRA:")} ${f.ubicacion}
-${B("EMPRESA:")} ${f.empresa}
-${B("CONTRATANTE:")} ${f.contrat}
-${B("DURACION:")} ${f.duracion}
-
-${B("DESCRIPCION:")}
-${f.desc}
-
-${B("TRANSITO:")} ${f.transito.toUpperCase()}
-${B("AFECTACIÓN AL CORREDOR:")} ${f.afecta.toUpperCase()}
-
-${B("SE ADJUNTA IMAGENES")} ✍️`
+      gen:function(f){
+        var empresa  = f.empresa  ? '\n'+B('EMPRESA:')+' '+f.empresa  : '';
+        var contrat  = f.contrat  ? '\n'+B('CONTRATANTE:')+' '+f.contrat  : '';
+        var duracion = f.duracion ? '\n'+B('DURACION:')+' '+f.duracion : '';
+        var nsLine   = f.ns!=='\u2014' ? '\n'+B('TRANSITO N/S:')+' '+f.ns : '';
+        var snLine   = f.sn!=='\u2014' ? '\n'+B('TRANSITO S/N:')+' '+f.sn : '';
+        return '\U0001f3d7\ufe0f '+B('OBRAS EN VIA')+'\n'
+          +B(today())+'\n\n'
+          +B('UBICACION:')+' '+f.ubicacion
+          +empresa+contrat+duracion+'\n\n'
+          +B('DESCRIPCION:')+'\n'+f.desc
+          +nsLine+snLine+'\n'
+          +B('AFECTACION AL CORREDOR:')+' '+f.afecta+'\n\n'
+          +B('SE ADJUNTA IMAGENES')+' \u270d\ufe0f';
+      }
     },
   ],
+
   incidencia:[
     {
-      id:"inc-via", icon:"🚦", name:"Incidencia en Vía",
-      desc:"Accidente u otro evento con detalle completo",
-      required:["ubi","desc","accion"],
+      id:'inc-via', icon:'\U0001f6a6', name:'Incidencia en V\u00eda',
+      desc:'Accidente u otro evento con detalle',
+      required:['ubi','desc'],
       fields:[
-        {id:"ubi",    label:"Ubicación", type:"text", autofill:"ubi"},
-        {id:"sent",   label:"Sentido", type:"sel", opts:["N/S","S/N","Ambos"]},
-        {id:"tipo",   label:"Tipo de evento", type:"sel", opts:["Accidente vehicular","Accidente en ciclovía","Caída de usuario","Vehículo varado","Árbol caído","Persona herida","Otro"]},
-        {id:"desc",   label:"Descripción del hecho", type:"ta"},
-        {id:"pnp",    label:"Presencia policial", type:"sel", opts:["Sí, PNP en el punto","Sí, PNP en camino","No hay PNP"]},
-        {id:"samu",   label:"Emergencias", type:"sel", opts:["SAMU en el lugar","SAMU en camino","Serenazgo en el punto","No se requirió","PNP + SAMU"]},
-        {id:"accion", label:"Acciones tomadas", type:"text"},
-        {id:"estado", label:"Estado de la vía", type:"sel", opts:["liberada, tránsito normal","parcialmente afectada","cerrada"]},
+        {id:'ubi',    label:'Ubicaci\u00f3n', type:'text', autofill:'ubi'},
+        {id:'sent',   label:'Sentido', type:'sel', opts:['Ambos','S/N','N/S','E/O','O/E']},
+        {id:'tipo',   label:'Tipo de evento', type:'sel-otro', opts:['Accidente vehicular','Accidente en ciclov\u00eda','Ca\u00edda de usuario','Veh\u00edculo varado','\u00c1rbol ca\u00eddo','Persona herida']},
+        {id:'desc',   label:'Descripci\u00f3n del hecho', type:'ta'},
+        {id:'pnp',    label:'Presencia policial', type:'sel', opts:['S\u00cd','NO']},
+        {id:'emergencias', label:'Emergencias (selecciona las que aplican)', type:'multisel', opts:['SAMU','PNP','Serenazgo','Bomberos']},
+        {id:'accion', label:'Acciones tomadas', type:'text', opt:true},
+        {id:'estado', label:'Estado de la v\u00eda', type:'sel-otro', opts:['liberada, tr\u00e1nsito normal','parcialmente afectada','cerrada','restablecida']},
       ],
-      gen: f =>
-`🚦 ${B("REPORTE DE INCIDENCIAS EN VÍA TGA")}
-${B("COV:")} ${getCOV()}
-
-📆 ${B("FECHA:")} ${today()}
-📍 ${B("UBICACION:")} ${f.ubi}
-🔁 ${B("SENTIDO:")} ${f.sent}
-🕒 ${B("HORA:")} ${nowTime()}
-
-🚨 ${B("DETALLE DE LA INCIDENCIA:")}
-▪️${B("Tipo:")} ${f.tipo}
-▪️${B("Descripción:")} ${f.desc}
-▪️${B("Presencia policial:")} ${f.pnp}
-▪️${B("Emergencias:")} ${f.samu}
-▪️${B("Acciones:")} ${f.accion}
-▪️${B("Estado de la vía:")} ${f.estado}
-
-📸 Se adjunta imágenes`
+      gen:function(f){
+        var emergLine = f.emergencias ? '\n\u25aa\ufe0f'+B('Emergencias:')+' '+f.emergencias : '';
+        var accionLine = f.accion ? '\n\u25aa\ufe0f'+B('Acciones:')+' '+f.accion : '';
+        return '\U0001f6a6 '+B('REPORTE DE INCIDENCIAS EN VIA')+'\n'
+          +B('COV:')+' '+getCOV()+'\n\n'
+          +'\U0001f4c6 '+B('FECHA:')+' '+today()+'\n'
+          +'\U0001f4cd '+B('UBICACION:')+' '+f.ubi+'\n'
+          +'\U0001f501 '+B('SENTIDO:')+' '+f.sent+'\n'
+          +'\U0001f552 '+B('HORA:')+' '+nowTime()+'\n\n'
+          +'\U0001f6a8 '+B('DETALLE:')+'\n'
+          +'\u25aa\ufe0f'+B('Tipo:')+' '+f.tipo+'\n'
+          +'\u25aa\ufe0f'+B('Descripcion:')+' '+f.desc+'\n'
+          +'\u25aa\ufe0f'+B('Presencia policial:')+' '+f.pnp
+          +emergLine+accionLine+'\n'
+          +'\u25aa\ufe0f'+B('Estado de la via:')+' '+f.estado+'\n\n'
+          +'\U0001f4f8 Se adjunta im\u00e1genes';
+      }
     },
     {
-      id:"inc-cc3", icon:"🚧", name:"Incidencia CC.3 – Rápido",
-      desc:"Reporte simplificado para situaciones puntuales",
-      required:["lugar","obs"],
+      id:'inc-cc3', icon:'\U0001f6a7', name:'Incidencia R\u00e1pido',
+      desc:'Reporte simplificado para situaciones puntuales',
+      required:['lugar','obs'],
       fields:[
-        {id:"lugar", label:"Lugar", type:"text", autofill:"ubi"},
-        {id:"sent",  label:"Sentido", type:"sel", opts:["N/S","S/N","Ambos"]},
-        {id:"obs",   label:"Observación", type:"ta"},
+        {id:'lugar', label:'Ubicaci\u00f3n', type:'text', autofill:'ubi'},
+        {id:'sent',  label:'Sentido', type:'sel', opts:['Ambos','S/N','N/S','E/O','O/E']},
+        {id:'obs',   label:'Observaci\u00f3n', type:'ta'},
       ],
-      gen: f =>
-`🚦${B("REPORTE DE INCIDENCIAS EN VIA CC.3 -TGA")}
-${B("COV:")} ${getCOV()}
-🌍 ${B("LUGAR:")} ${f.lugar}
-🧭${B("HORA:")} ${nowTime()}
-🔃${B("SENTIDO:")} ${f.sent}
-
-🚨${B("OBSERVACION:")}🚨
-${f.obs}
-
-- SE ADJUNTA IMAGENES.`
+      gen:function(f){
+        return '\U0001f6a6'+B('REPORTE DE INCIDENCIAS')+' -'+B(getCorredor())+'\n'
+          +B('COV:')+' '+getCOV()+'\n'
+          +'\U0001f30d '+B('LUGAR:')+' '+f.lugar+'\n'
+          +'\U0001f9ed'+B('HORA:')+' '+nowTime()+'\n'
+          +'\U0001f503'+B('SENTIDO:')+' '+f.sent+'\n\n'
+          +'\U0001f6a8'+B('OBSERVACION:')+'\U0001f6a8\n'
+          +f.obs+'\n\n'
+          +'- SE ADJUNTA IMAGENES.';
+      }
     },
     {
-      id:"accidente-bus", icon:"🚌", name:"Accidente Bus / Caída de Usuario",
-      desc:"Reporte con usuario afectado y datos completos",
-      required:["ubi","placa","padron","conductor","usuario","dni","obs"],
+      id:'accidente-bus', icon:'\U0001f68c', name:'Accidente Bus / Ca\u00edda de Usuario',
+      desc:'Reporte con usuario afectado y datos completos',
+      required:['ubi','padron','conductor','usuario','dni','obs'],
       fields:[
-        {id:"turno",     label:"Turno", type:"sel", opts:["MAÑANA","TARDE","NOCHE","MADRUGADA"], autofill:"turno"},
-        {id:"ubi",       label:"Ubicación", type:"text", autofill:"ubi"},
-        {id:"sent",      label:"Sentido", type:"sel", opts:["N/S","S/N"]},
-        {id:"placa",     label:"Placa del bus", type:"text"},
-        {id:"ruta",      label:"Ruta / Bus N°", type:"text"},
-        {id:"padron",    label:"Padrón", type:"text"},
-        {id:"conductor", label:"Nombre del conductor", type:"text"},
-        {id:"trasbordo", label:"Trasbordo", type:"sel", opts:["SÍ","NO"]},
-        {id:"usuario",   label:"Nombre usuario afectado", type:"text"},
-        {id:"dni",       label:"DNI del usuario", type:"text"},
-        {id:"clinica",   label:"Clínica / Hospital", type:"text"},
-        {id:"comisaria", label:"Comisaría", type:"text"},
-        {id:"obs",       label:"Descripción del hecho", type:"ta"},
+        {id:'turno',     label:'Turno', type:'sel', opts:['MA\u00d1ANA','TARDE','NOCHE','MADRUGADA'], autofill:'turno'},
+        {id:'ubi',       label:'Ubicaci\u00f3n', type:'text', autofill:'ubi'},
+        {id:'sent',      label:'Sentido', type:'sel', opts:['S/N','N/S']},
+        {id:'placa',     label:'Placa del bus', type:'text', opt:true},
+        {id:'ruta',      label:'Ruta', type:'text', opt:true},
+        {id:'padron',    label:'Padr\u00f3n', type:'text'},
+        {id:'conductor', label:'Nombre del conductor', type:'text'},
+        {id:'trasbordo', label:'Trasbordo', type:'sel', opts:['S\u00cd','NO']},
+        {id:'usuario',   label:'Nombre usuario afectado', type:'text'},
+        {id:'dni',       label:'DNI del usuario', type:'text'},
+        {id:'clinica',   label:'Cl\u00ednica / Hospital', type:'text', opt:true},
+        {id:'comisaria', label:'Comisar\u00eda', type:'text', opt:true},
+        {id:'adjunto',   label:'Adjunto', type:'sel', opts:['sin adjunto','FOTO \U0001f4f7','VIDEO \U0001f4f7','FOTO Y VIDEO \U0001f4f7']},
+        {id:'obs',       label:'Descripci\u00f3n del hecho', type:'ta'},
       ],
-      gen: f =>
-`${B("REPORTE ACCIDENTE DE BUS - CAÍDA DE USUARIO - TGA T.")} ${f.turno}
-${B("COV:")} ${getCOV()}
-🚏 ${B("UBICACION:")} ${f.ubi}
-🔃 ${B("SENTIDO:")} ${f.sent}
-🚾 ${B("PLACA:")} ${f.placa}
-🚍 ${B("BUS:")} ${f.ruta}
-🔢 ${B("PADRON:")} ${f.padron}
-👨🏻‍💼 ${B("CONDUCTOR:")} ${f.conductor}
-${B("TRASBORDO:")} ${f.trasbordo}
-
-${B("DATOS DEL USUARIO AFECTADO:")}
-${B("Nombre:")} ${f.usuario}
-${B("DNI:")} ${f.dni}
-🕰 ${B("HORA:")} ${nowTime()}
-🌞 ${B("DÍA:")} ${today()}
-${B("CLÍNICA:")} ${f.clinica}
-${B("COMISARÍA:")} ${f.comisaria}
-
-🔍 ${B("OBSERVACION:")}
-${f.obs}`
+      gen:function(f){
+        var placa    = f.placa     ? '\n\U0001f6be '+B('PLACA:')+' '+f.placa     : '';
+        var ruta     = f.ruta      ? '\n\U0001f68d '+B('RUTA:')+' '+f.ruta       : '';
+        var clinica  = f.clinica   ? '\n'+B('CLINICA:')+' '+f.clinica             : '';
+        var comisaria= f.comisaria ? '\n'+B('COMISARIA:')+' '+f.comisaria        : '';
+        var adjunto  = f.adjunto!=='sin adjunto' ? '\n\U0001f4f7 ADJUNTO '+f.adjunto : '';
+        return B('REPORTE ACCIDENTE DE BUS - CAIDA DE USUARIO - T.')+' '+f.turno+'\n'
+          +'\U0001f468\U0001f3fc\u200d\u2708\ufe0f '+B('COV:')+' '+getCOV()+'\n'
+          +'\U0001f6cf\ufe0f '+B('UBICACION:')+' '+f.ubi+'\n'
+          +'\U0001f503 '+B('SENTIDO:')+' '+f.sent
+          +placa+ruta+'\n'
+          +'\U0001f522 '+B('PADRON:')+' '+f.padron+'\n'
+          +'\U0001f468\U0001f3fb\u200d\U0001f4bc '+B('CONDUCTOR:')+' '+f.conductor+'\n'
+          +B('TRASBORDO:')+' '+f.trasbordo+'\n\n'
+          +B('DATOS DEL USUARIO AFECTADO:')+'\n'
+          +B('Nombre:')+' '+f.usuario+'\n'
+          +B('DNI:')+' '+f.dni+'\n'
+          +'\u23f0 '+B('HORA:')+' '+nowTime()+'\n'
+          +'\U0001f31e '+B('DIA:')+' '+today()
+          +clinica+comisaria+'\n\n'
+          +'\U0001f50d '+B('OBSERVACION:')+'\n'
+          +f.obs+adjunto;
+      }
     },
   ],
+
   demanda:[
     {
-      id:"demanda", icon:"🚍", name:"Demanda – Corredor Azul TGA",
-      desc:"Reporte de demanda con código y observación",
-      required:["paradero","padron","obs"],
+      id:'demanda', icon:'\U0001f4ca', name:'Demanda',
+      desc:'Reporte de demanda con c\u00f3digo y observaci\u00f3n',
+      required:['paradero','padron'],
       fields:[
-        {id:"turno",    label:"Turno", type:"sel", opts:["MAÑANA","TARDE","NOCHE","MADRUGADA"], autofill:"turno"},
-        {id:"paradero", label:"Paradero", type:"text"},
-        {id:"sent",     label:"Sentido", type:"sel", opts:["N/S","S/N"]},
-        {id:"ruta",     label:"Ruta", type:"sel", opts:["301","303","305","336","371"]},
-        {id:"padron",   label:"Padrón unidad próxima", type:"text"},
-        {id:"freq",     label:"Frecuencia", type:"text", opt:true},
-        {id:"codigo",   label:"Código", type:"sel", opts:["01","02","03","04","05"]},
-        {id:"obs",      label:"Observación", type:"text"},
+        {id:'paradero', label:'Paradero', type:'text'},
+        {id:'sent',     label:'Sentido', type:'sel', opts:['S/N','N/S']},
+        {id:'ruta',     label:'Ruta', type:'sel-rutas'},
+        {id:'padron',   label:'Padr\u00f3n', type:'text'},
+        {id:'freq',     label:'Frecuencia (ej: 10:30 AM)', type:'text', opt:true},
+        {id:'codigo',   label:'C\u00f3digo', type:'sel', opts:['01','02','03','04','05','06']},
+        {id:'obs',      label:'Observaci\u00f3n', type:'text', opt:true},
       ],
-      gen: f =>
-`🛑 ${B("CORREDOR AZUL")}🚍 
-🔷${B("TURNO")} ${f.turno} 🔷 🔶${B("TGA")}🔶 
-👮${B("COV:")} ${getCOV().toUpperCase()}
-🚏 ${B("PARADERO:")} ${f.paradero.toUpperCase()}
-♻️ ${B("SENTIDO:")} ${f.sent}
-🔢 ${B("FECHA:")} ${today()}
-🚍 ${B("RUTA:")} ${f.ruta}
-🔢 ${B("PADRON:")} ${f.padron}
-🕐 ${B("FRECUENCIA:")} ${f.freq||"—"}
-🔢 ${B("CODIGO:")} ${f.codigo}
+      gen:function(f){
+        var turno = getProfile().turno||'TARDE';
+        var freq = f.freq ? '\n\U0001f550 '+B('FRECUENCIA:')+' '+f.freq : '';
+        var obs  = f.obs  ? '\n\n\u270d\U0001f3fb '+B('OBSERVACION:')+' '+f.obs.toUpperCase() : '';
+        return '\U0001f6d1 '+B('CORREDOR')+' '+B(getCorredor())+'\U0001f68d \n'
+          +'\U0001f537'+B('TURNO')+' '+turno+' \U0001f536'+B(getCorredor())+'\U0001f536 \n'
+          +'\U0001f46e'+B('COV:')+' '+getCOV().toUpperCase()+'\n'
+          +'\U0001f68f '+B('PARADERO:')+' '+f.paradero.toUpperCase()+'\n'
+          +'\u267b\ufe0f '+B('SENTIDO:')+' '+f.sent+'\n'
+          +'\U0001f522 '+B('FECHA:')+' '+today()+'\n'
+          +'\U0001f68d '+B('RUTA:')+' '+f.ruta+'\n'
+          +'\U0001f522 '+B('PADRON:')+' '+f.padron
+          +freq+'\n'
+          +'\U0001f522 '+B('CODIGO:')+' '+f.codigo
+          +obs;
+      }
+    },
+  ],
 
-✍🏻 ${B("OBSERVACION:")} ${f.obs.toUpperCase()}`
+  servicio:[
+    {
+      id:'inicio', icon:'\U0001f7e2', name:'Inicio de Servicio',
+      desc:'Mensaje de inicio de turno',
+      fields:[
+        {id:'turno', label:'Turno', type:'sel', opts:['MA\u00d1ANA','TARDE','NOCHE','MADRUGADA'], autofill:'turno'},
+      ],
+      gen:function(f){
+        var sal={MA\u00d1ANA:'Buen d\u00eda',TARDE:'Buenas tardes',NOCHE:'Buenas noches',MADRUGADA:'Buenas noches'};
+        return (sal[f.turno]||'Buen d\u00eda')+' inicio de servicio\n'+B('COV:')+' '+getCOV();
+      }
+    },
+    {
+      id:'fin', icon:'\U0001f534', name:'T\u00e9rmino de Servicio',
+      desc:'Mensaje de fin de turno',
+      fields:[
+        {id:'relevo', label:'Tipo de t\u00e9rmino', type:'sel', opts:['sin relevo','con relevo']},
+        {id:'relevo_nombre', label:'Nombre y turno del relevo', type:'text', opt:true},
+      ],
+      gen:function(f){
+        var relevoLine = f.relevo==='con relevo' && f.relevo_nombre
+          ? '\n'+B('Relevo:')+' '+f.relevo_nombre : '';
+        return 'T\u00e9rmino de servicio\n'+B('COV:')+' '+getCOV()+relevoLine;
+      }
     },
   ],
 };
@@ -1419,10 +1466,44 @@ function showForm(cat,id,direct=false){
   if(direct) go("s-form"); else go("s-form");
 }
 
+
+function onSelOtro(sel, fieldId) {
+  var inp = document.getElementById('f-' + fieldId + '_otro');
+  if(inp) { inp.classList.toggle('show', sel.value === 'Otro'); if(sel.value !== 'Otro') inp.value = ''; }
+  upd();
+}
+function toggleMopt(btn) { btn.classList.toggle('on'); upd(); }
+function getMoptVals(fieldId) {
+  var el = document.getElementById('f-' + fieldId);
+  if(!el) return '';
+  return Array.from(el.querySelectorAll('.mopt.on')).map(function(b){return b.dataset.v;}).join(', ');
+}
+function onRelevoSel(sel) {
+  var ex = document.getElementById('relevo-extra');
+  if(ex) ex.classList.toggle('show', sel.value === 'con relevo');
+  upd();
+}
+
 function getVals(){
   if(!curTpl) return {};
-  const v={};
-  curTpl.fields.forEach(f=>{ const el=document.getElementById("f-"+f.id); v[f.id]=el?el.value.trim():""; });
+  var v = {};
+  curTpl.fields.forEach(function(f){
+    if(f.type === 'multisel') {
+      v[f.id] = getMoptVals(f.id);
+    } else if(f.type === 'sel-otro') {
+      var sel = document.getElementById('f-'+f.id);
+      var oth = document.getElementById('f-'+f.id+'_otro');
+      v[f.id] = sel ? (sel.value==='Otro' ? (oth?oth.value.trim():'') : sel.value) : '';
+    } else {
+      var el = document.getElementById('f-'+f.id);
+      v[f.id] = el ? el.value.trim() : '';
+    }
+    // Para relevo
+    if(f.id==='relevo_nombre') {
+      var el2 = document.getElementById('f-relevo_nombre');
+      v['relevo_nombre'] = el2 ? el2.value.trim() : '';
+    }
+  });
   return v;
 }
 
