@@ -628,10 +628,9 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   </div>
   <div class="dw-sec">
     <div class="dw-sec-title">📊 Google Sheets</div>
-    <div style="font-size:11px;color:var(--mut);margin-bottom:7px">URL del conector (Apps Script Web App)</div>
-    <input class="dw-input" id="sheet-url" type="url" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;margin-bottom:6px" oninput="autoSaveSheetUrl(this)">
-    <button onclick="testSheetConn()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">🔗 Verificar conexión con Sheets</button>
+    <button onclick="testSheetConn()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">🔗 Verificar conexión</button>
     <div id="sheet-test-result" style="font-size:11px;margin-top:6px;display:none"></div>
+    <div style="font-size:10px;color:var(--mut);margin-top:6px;line-height:1.5">Conector integrado • ID: ...fyPuwFDyYv6...</div>
   </div>
   <div class="dw-sec">
     <div class="dw-sec-title">🤖 Inteligencia Artificial</div>
@@ -1892,14 +1891,10 @@ var sheetConnected = false;
 var pendingAvisos = [];
 
 function getSheetURL() {
-  return ((getSettings2().sheetUrl)||'').trim();
+  return 'https://script.google.com/macros/s/AKfycbzdD5WE_AVmpqlp97t1Kgd8Y6q3yrx5gVLJFvXdSHePpU4gXQz8XFpcOhuhxTWdx5lOsQ/exec';
 }
 
-function autoSaveSheetUrl(el) {
-  var cfg = getSettings2();
-  cfg.sheetUrl = el.value.trim();
-  S.set('settings2', cfg);
-}
+function autoSaveSheetUrl(el) { /* URL fija en código */ }
 
 async function sheetGet(action, params) {
   var url = getSheetURL();
@@ -2050,10 +2045,8 @@ async function sendAdminAviso() {
 }
 
 async function testSheetConn() {
-  var url = document.getElementById('sheet-url').value.trim();
+  var url = getSheetURL();
   var res_el = document.getElementById('sheet-test-result');
-  if(!url) { res_el.style.display='block'; res_el.style.color='var(--rd)'; res_el.textContent='⚠️ Ingresa la URL primero'; return; }
-  var cfg = getSettings2(); cfg.sheetUrl = url; S.set('settings2',cfg);
   res_el.style.display='block'; res_el.style.color='var(--mut)'; res_el.textContent='Conectando…';
   try {
     var parts = ['action=ping'];
