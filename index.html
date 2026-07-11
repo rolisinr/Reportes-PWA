@@ -388,6 +388,74 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 .otro-inp.show{display:block}
 .relevo-extra{display:none}
 .relevo-extra.show{display:block;margin-top:6px}
+
+/* === ETAPA 3 - PROGRAMACIÓN === */
+.prog-btn{width:100%;background:#fff;border:1.5px solid #B8D4F0;border-radius:var(--r);
+  padding:11px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.06);
+  font-family:inherit;transition:border-color .15s;margin-bottom:9px;
+  background:linear-gradient(135deg,#F0F7FF 0%,#fff 100%)}
+.prog-btn:hover{border-color:var(--acc)}
+.prog-btn:active{transform:scale(.98)}
+
+.prog-filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.prog-filter-row::-webkit-scrollbar{display:none}
+.prog-fchip{background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;
+  padding:5px 12px;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;
+  white-space:nowrap;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.prog-fchip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+
+.prog-stats{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.prog-stat{background:#fff;border:1px solid var(--brd);border-radius:10px;
+  padding:5px 10px;font-size:11px;font-weight:700}
+.prog-stat.activo{color:var(--gr);border-color:var(--gr)}
+.prog-stat.qap{color:var(--or);border-color:var(--or)}
+.prog-stat.desc{color:var(--mut)}
+
+.prog-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.prog-item{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);
+  padding:10px 12px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.prog-item.qap-activo{border-color:var(--or);background:#FFFBF0}
+.prog-item.seleccionado{border-color:var(--acc);background:#EBF3FF}
+.prog-item-info{flex:1;min-width:0}
+.prog-item-nombre{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog-item-punto{font-size:11px;color:var(--mut);margin-top:1px}
+.prog-item-actions{display:flex;gap:5px;flex-shrink:0}
+.qap-ini-btn{background:var(--or);color:#fff;border:none;border-radius:var(--rs);
+  padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;
+  -webkit-tap-highlight-color:transparent}
+.qap-fin-btn{background:var(--gr);color:#fff;border:none;border-radius:var(--rs);
+  padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;
+  -webkit-tap-highlight-color:transparent}
+.qap-badge{font-size:10px;font-weight:700;color:var(--or);background:#FFF0D0;
+  border-radius:8px;padding:2px 6px;white-space:nowrap}
+.prog-sel-cb{width:20px;height:20px;border:2px solid var(--brd);border-radius:5px;
+  flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:13px;-webkit-tap-highlight-color:transparent}
+.prog-sel-cb.on{background:var(--acc);border-color:var(--acc)}
+
+.prog-empty{text-align:center;padding:30px 20px;color:var(--mut);font-size:13px;line-height:1.8}
+.prog-paste-area{background:var(--bg);border:1.5px dashed var(--brd);border-radius:var(--r);
+  padding:12px;font-size:13px;color:var(--txt);width:100%;min-height:120px;
+  font-family:inherit;outline:none;resize:vertical;margin-bottom:10px;line-height:1.5}
+.prog-paste-area:focus{border-color:var(--acc)}
+.prog-proc-btn{width:100%;background:var(--acc);color:#fff;border:none;border-radius:var(--r);
+  padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:8px;
+  -webkit-tap-highlight-color:transparent}
+.prog-proc-btn:active{opacity:.85}
+.prog-proc-btn:disabled{opacity:.5;cursor:default}
+.prog-qap-bar{background:#fff;border:1.5px solid var(--or);border-radius:var(--r);
+  padding:10px 13px;display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px}
+.prog-qap-count{font-size:13px;font-weight:700;color:var(--or)}
+.prog-sel-all-btn{background:none;border:1px solid var(--brd);border-radius:20px;
+  padding:4px 10px;font-size:11px;color:var(--mut);cursor:pointer;font-family:inherit}
+.prog-confirm-btn{width:100%;background:var(--or);color:#fff;border:none;border-radius:var(--r);
+  padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+  margin-bottom:calc(10px + var(--safe));-webkit-tap-highlight-color:transparent}
+.prog-confirm-btn:disabled{opacity:.4;cursor:default}
 </style>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -549,6 +617,15 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   </div>
 
   <!-- IA -->
+  <button class="prog-btn" onclick="openProg()">
+    <div style="font-size:22px">📅</div>
+    <div style="flex:1;text-align:left">
+      <div style="font-size:13px;font-weight:700;color:var(--txt)">Programación del turno</div>
+      <div style="font-size:11px;color:var(--mut)" id="prog-home-sub">Carga la distribución semanal</div>
+    </div>
+    <span style="color:var(--mut);font-size:16px">›</span>
+  </button>
+
   <button class="ia-main-btn" onclick="go('s-ia')">
     <div class="ia-mb-icon">🤖</div>
     <div class="ia-mb-txt">
@@ -687,6 +764,59 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   <div class="tpl-preview-box" id="b-preview">La vista previa aparece aquí…</div>
   <button class="add-ctpl-btn" onclick="saveCustomTpl()" style="margin-bottom:calc(12px + var(--safe))">✓ Guardar plantilla</button>
 </div>
+
+<!-- PROGRAMACIÓN -->
+<div class="screen" id="s-prog">
+  <div class="back-row" onclick="goBack()">
+    <span class="back-icon">‹</span><span class="back-lbl">Inicio</span>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div style="font-size:15px;font-weight:700">📅 Programación</div>
+    <button onclick="openProgPaste()" style="background:var(--bg);border:1.5px solid var(--brd);
+      border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--mut);
+      cursor:pointer;font-family:inherit">📋 Cargar</button>
+  </div>
+  <div id="prog-content">
+    <div class="prog-empty">
+      📅 Sin programación cargada<br>
+      <small>Toca "Cargar" para pegar la distribución semanal</small>
+    </div>
+  </div>
+</div>
+
+<!-- PEGAR PROGRAMACIÓN -->
+<div class="screen" id="s-prog-paste">
+  <div class="back-row" onclick="goBack()">
+    <span class="back-icon">‹</span><span class="back-lbl">Programación</span>
+  </div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:6px">📋 Cargar programación</div>
+  <div style="font-size:12px;color:var(--mut);margin-bottom:12px">
+    Copia el texto de WhatsApp y pégalo aquí. La IA reconocerá los datos automáticamente.
+  </div>
+  <textarea class="prog-paste-area" id="prog-texto" placeholder="Pega aquí la distribución semanal..."></textarea>
+  <button class="prog-proc-btn" id="prog-proc-btn" onclick="procesarProg()">
+    🤖 Procesar con IA
+  </button>
+  <div id="prog-proc-result" style="font-size:12px;color:var(--mut);text-align:center"></div>
+</div>
+
+<!-- QAP GRUPAL -->
+<div class="screen" id="s-prog-qap">
+  <div class="back-row" onclick="goBack()">
+    <span class="back-icon">‹</span><span class="back-lbl">Programación</span>
+  </div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:4px" id="qap-screen-title">☕ Iniciar QAP</div>
+  <div style="font-size:12px;color:var(--mut);margin-bottom:12px">Selecciona a quiénes vas a sacar a QAP</div>
+  <div class="prog-qap-bar">
+    <div class="prog-qap-count"><span id="qap-sel-count">0</span> seleccionados</div>
+    <button class="prog-sel-all-btn" onclick="toggleSelAll()">Todos / Ninguno</button>
+  </div>
+  <div class="prog-list" id="qap-sel-list"></div>
+  <button class="prog-confirm-btn" id="qap-confirm-btn" onclick="confirmarQAPGrupal()" disabled>
+    ☕ Confirmar QAP
+  </button>
+</div>
+
 </main>
 
 <!-- QUICK PREVIEW (servicio) -->
@@ -1137,254 +1267,250 @@ const getTurno = () => (getProfile().turno)||"TARDE";
 var TPLS = {
   vias:[
     {
-      id:'informe-via', icon:'\U0001f6e3\ufe0f', name:'Informe de V\u00edas',
-      desc:'Estado de v\u00eda, sem\u00e1foros y segregado',
+      id:'informe-via', icon:'🛣️', name:'Informe de Vías',
+      desc:'Estado de vía, semáforos y segregado',
       required:['ubicacion'],
       fields:[
-        {id:'ubicacion', label:'Ubicaci\u00f3n / Paradero', type:'text', autofill:'ubi'},
-        {id:'ns',  label:'Tr\u00e1nsito N/S', type:'sel', opts:['fluido','moderado','cargado','detenido']},
-        {id:'sn',  label:'Tr\u00e1nsito S/N', type:'sel', opts:['fluido','moderado','cargado','detenido']},
-        {id:'sem', label:'Sem\u00e1foros',    type:'sel', opts:['OPERATIVOS','NO OPERATIVOS']},
-        {id:'pnp', label:'Efectivo policial', type:'sel', opts:['S\u00cd contamos','NO contamos']},
-        {id:'pnp_det', label:'Detalle PNP',  type:'text', opt:true},
-        {id:'seg', label:'Segregado',  type:'sel-otro', opts:['con normalidad','con dificultades','cerrado temporalmente','con restricci\u00f3n']},
-        {id:'rec', label:'Personal de recaudo', type:'sel', opts:['S\u00cd, en punto','NO en el punto','No aplica']},
+        {id:'ubicacion', label:'Ubicación / Paradero', type:'text', autofill:'ubi'},
+        {id:'ns',  label:'Tránsito N/S', type:'sel', opts:['fluido','moderado','cargado','detenido']},
+        {id:'sn',  label:'Tránsito S/N', type:'sel', opts:['fluido','moderado','cargado','detenido']},
+        {id:'sem', label:'Semáforos',    type:'sel', opts:['OPERATIVOS','NO OPERATIVOS']},
+        {id:'pnp', label:'Efectivo policial', type:'sel', opts:['SÍ contamos','NO contamos']},
+        {id:'pnp_det', label:'Detalle PNP', type:'text', opt:true},
+        {id:'seg', label:'Segregado', type:'sel-otro', opts:['con normalidad','con dificultades','cerrado temporalmente','con restricción']},
+        {id:'rec', label:'Personal de recaudo', type:'sel', opts:['SÍ, en punto','NO en el punto','No aplica']},
         {id:'rec_par', label:'Paradero de recaudo', type:'text', opt:true},
         {id:'extra', label:'Novedad adicional', type:'text', opt:true},
       ],
       gen:function(f){
-        var pnp = f.pnp==='S\u00cd contamos'
-          ? '\U0001f539'+B('SI contamos')+' con presencia de EFECTIVO POLICIAL'+(f.pnp_det?' ('+f.pnp_det+')':'')+' \U0001f46e\U0001f3fb\u200d\u2642\ufe0f'
-          : '\U0001f539'+B('NO contamos')+' con presencia de EFECTIVO POLICIAL';
+        var pnp = f.pnp==='SÍ contamos'
+          ? '🔹'+B('SI contamos')+' con presencia de EFECTIVO POLICIAL'+(f.pnp_det?' ('+f.pnp_det+')':'')+' 👮🏻‍♂️'
+          : '🔹'+B('NO contamos')+' con presencia de EFECTIVO POLICIAL';
         var rec = f.rec==='No aplica' ? '' :
-          f.rec==='S\u00cd, en punto'
-            ? '\n\U0001f539Personal de recaudo'+(f.rec_par?' en paradero '+f.rec_par.toUpperCase():' en el punto')
-            : '\n\U0001f539NO contamos con personal de recaudo en el punto';
-        var extra = f.extra ? '\n\U0001f539'+f.extra : '';
-        return '\U0001f6e3\ufe0f'+B('INFORME DE VIAS')+'\U0001f6e3\ufe0f\n'
-          +'\U0001f4c6 '+B('Fecha:')+' '+today()+'\n'
-          +'\U0001f46e\U0001f3fb\u200d\u2640 '+B('COV:')+' '+getCOV()+'\n'
-          +'\U0001f4dd Lo que respecta a '+f.ubicacion+'\n'
-          +'\U0001f539Tr\u00e1nsito '+B(f.ns)+' N/S y '+B(f.sn)+' S/N \U0001f6e3\ufe0f\n'
-          +'\U0001f539Sem\u00e1foros '+B(f.sem)+' \U0001f6a6\n'
+          f.rec==='SÍ, en punto'
+            ? '\n🔹Personal de recaudo'+(f.rec_par?' en paradero '+f.rec_par.toUpperCase():' en el punto')
+            : '\n🔹NO contamos con personal de recaudo en el punto';
+        var extra = f.extra ? '\n🔹'+f.extra : '';
+        return '🛣️'+B('INFORME DE VIAS')+'🛣️\n'
+          +'📆 '+B('Fecha:')+' '+today()+'\n'
+          +'👮🏻‍♀ '+B('COV:')+' '+getCOV()+'\n'
+          +'📝 Lo que respecta a '+f.ubicacion+'\n'
+          +'🔹Tránsito '+B(f.ns)+' N/S y '+B(f.sn)+' S/N 🛣️\n'
+          +'🔹Semáforos '+B(f.sem)+' 🚦\n'
           +pnp+'\n'
-          +'\U0001f539Unidades del corredor entrando al SEGREGADO '+f.seg+' \U0001f68e'
+          +'🔹Unidades del corredor entrando al SEGREGADO '+f.seg+' 🚎'
           +rec+extra+'\n'
-          +'\U0001f4f8'+B('ADJUNTO FOTOS')+'\U0001f4f8';
+          +'📸'+B('ADJUNTO FOTOS')+'📸';
       }
     },
     {
-      id:'situacion', icon:'\U0001f6a8', name:'Situaci\u00f3n Actual',
-      desc:'Reporte r\u00e1pido con observaci\u00f3n puntual',
+      id:'situacion', icon:'🚨', name:'Situación Actual',
+      desc:'Reporte rápido con observación puntual',
       required:['obs'],
       fields:[
-        {id:'ubicacion', label:'Ubicaci\u00f3n', type:'text', autofill:'ubi'},
+        {id:'ubicacion', label:'Ubicación', type:'text', autofill:'ubi'},
         {id:'sent',  label:'Sentido', type:'sel', opts:['Ambos','S/N','N/S','E/O','O/E']},
-        {id:'obs',   label:'Observaci\u00f3n', type:'ta'},
-        {id:'media', label:'Adjunto', type:'sel', opts:['sin adjunto','FOTO \U0001f4f7','VIDEO \U0001f4f7','FOTO Y VIDEO \U0001f4f7']},
+        {id:'obs',   label:'Observación', type:'ta'},
+        {id:'media', label:'Adjunto', type:'sel', opts:['sin adjunto','FOTO 📷','VIDEO 📷','FOTO Y VIDEO 📷']},
       ],
       gen:function(f){
-        var ubiLine = f.ubicacion ? '\n\U0001f4cd '+B('UBICACION:')+' '+f.ubicacion : '';
-        var mediaLine = f.media!=='sin adjunto' ? '\n\U0001f4f7 ADJUNTO '+f.media : '';
-        return '\U0001f6a8 '+B('SITUACION ACTUAL')+' - '+B(getCorredor())+'\n'
-          +'\U0001f464  '+B('PERSONAL COV:')+'\n'
+        var ubiLine = f.ubicacion ? '\n📍 '+B('UBICACION:')+' '+f.ubicacion : '';
+        var mediaLine = f.media!=='sin adjunto' ? '\n📷 ADJUNTO '+f.media : '';
+        return '🚨 '+B('SITUACION ACTUAL')+' - '+B(getCorredor())+'\n'
+          +'👤  '+B('PERSONAL COV:')+'\n'
           +'       '+getCOV()+ubiLine+'\n'
-          +'\U0001f501  '+B('SENTIDO:')+' '+f.sent+'\n\n'
-          +'\u270d\U0001f3fc  '+B('OBSERVACION:')+'\n'
-          +'\u25aa\ufe0f'+f.obs
+          +'🔁  '+B('SENTIDO:')+' '+f.sent+'\n\n'
+          +'✍🏼  '+B('OBSERVACION:')+'\n'
+          +'▪️'+f.obs
           +mediaLine;
       }
     },
   ],
-
   obras:[
     {
-      id:'obras-via', icon:'\U0001f3d7\ufe0f', name:'Obras en V\u00eda',
-      desc:'Construcci\u00f3n o mantenimiento vial',
+      id:'obras-via', icon:'🏗️', name:'Obras en Vía',
+      desc:'Construcción o mantenimiento vial',
       required:['ubicacion','desc'],
       fields:[
-        {id:'ubicacion', label:'Ubicaci\u00f3n de la obra', type:'text'},
+        {id:'ubicacion', label:'Ubicación de la obra', type:'text'},
         {id:'empresa',   label:'Empresa ejecutora', type:'text'},
         {id:'contrat',   label:'Contratante', type:'text', opt:true},
-        {id:'duracion',  label:'Duraci\u00f3n / Horario', type:'text', opt:true},
-        {id:'desc',      label:'Descripci\u00f3n', type:'ta'},
-        {id:'ns',  label:'Tr\u00e1nsito N/S (opcional)', type:'sel', opts:['\u2014','fluido','moderado','cargado','detenido']},
-        {id:'sn',  label:'Tr\u00e1nsito S/N (opcional)', type:'sel', opts:['\u2014','fluido','moderado','cargado','detenido']},
-        {id:'afecta', label:'Afectaci\u00f3n al corredor', type:'sel-otro', opts:['NO afecta al corredor','S\u00cd, ocupa 1 carril','S\u00cd, ocupa el carril derecho']},
+        {id:'duracion',  label:'Duración / Horario', type:'text', opt:true},
+        {id:'desc',      label:'Descripción', type:'ta'},
+        {id:'ns', label:'Tránsito N/S', type:'sel', opts:['—','fluido','moderado','cargado','detenido']},
+        {id:'sn', label:'Tránsito S/N', type:'sel', opts:['—','fluido','moderado','cargado','detenido']},
+        {id:'afecta', label:'Afectación al corredor', type:'sel-otro', opts:['NO afecta al corredor','SÍ, ocupa 1 carril','SÍ, ocupa el carril derecho']},
       ],
       gen:function(f){
         var empresa  = f.empresa  ? '\n'+B('EMPRESA:')+' '+f.empresa  : '';
         var contrat  = f.contrat  ? '\n'+B('CONTRATANTE:')+' '+f.contrat  : '';
         var duracion = f.duracion ? '\n'+B('DURACION:')+' '+f.duracion : '';
-        var nsLine   = f.ns!=='\u2014' ? '\n'+B('TRANSITO N/S:')+' '+f.ns : '';
-        var snLine   = f.sn!=='\u2014' ? '\n'+B('TRANSITO S/N:')+' '+f.sn : '';
-        return '\U0001f3d7\ufe0f '+B('OBRAS EN VIA')+'\n'
+        var nsLine   = f.ns!=='—' ? '\n'+B('TRANSITO N/S:')+' '+f.ns : '';
+        var snLine   = f.sn!=='—' ? '\n'+B('TRANSITO S/N:')+' '+f.sn : '';
+        return '🏗 '+B('OBRAS EN VIA')+'\n'
           +B(today())+'\n\n'
           +B('UBICACION:')+' '+f.ubicacion
           +empresa+contrat+duracion+'\n\n'
           +B('DESCRIPCION:')+'\n'+f.desc
           +nsLine+snLine+'\n'
           +B('AFECTACION AL CORREDOR:')+' '+f.afecta+'\n\n'
-          +B('SE ADJUNTA IMAGENES')+' \u270d\ufe0f';
+          +B('SE ADJUNTA IMAGENES')+' ✍️';
       }
     },
   ],
-
   incidencia:[
     {
-      id:'inc-via', icon:'\U0001f6a6', name:'Incidencia en V\u00eda',
+      id:'inc-via', icon:'🚦', name:'Incidencia en Vía',
       desc:'Accidente u otro evento con detalle',
       required:['ubi','desc'],
       fields:[
-        {id:'ubi',    label:'Ubicaci\u00f3n', type:'text', autofill:'ubi'},
+        {id:'ubi',    label:'Ubicación', type:'text', autofill:'ubi'},
         {id:'sent',   label:'Sentido', type:'sel', opts:['Ambos','S/N','N/S','E/O','O/E']},
-        {id:'tipo',   label:'Tipo de evento', type:'sel-otro', opts:['Accidente vehicular','Accidente en ciclov\u00eda','Ca\u00edda de usuario','Veh\u00edculo varado','\u00c1rbol ca\u00eddo','Persona herida']},
-        {id:'desc',   label:'Descripci\u00f3n del hecho', type:'ta'},
-        {id:'pnp',    label:'Presencia policial', type:'sel', opts:['S\u00cd','NO']},
+        {id:'tipo',   label:'Tipo de evento', type:'sel-otro', opts:['Accidente vehicular','Accidente en ciclovía','Caída de usuario','Vehículo varado','Árbol caído','Persona herida']},
+        {id:'desc',   label:'Descripción del hecho', type:'ta'},
+        {id:'pnp',    label:'Presencia policial', type:'sel', opts:['SÍ','NO']},
         {id:'emergencias', label:'Emergencias (selecciona las que aplican)', type:'multisel', opts:['SAMU','PNP','Serenazgo','Bomberos']},
         {id:'accion', label:'Acciones tomadas', type:'text', opt:true},
-        {id:'estado', label:'Estado de la v\u00eda', type:'sel-otro', opts:['liberada, tr\u00e1nsito normal','parcialmente afectada','cerrada','restablecida']},
+        {id:'estado', label:'Estado de la vía', type:'sel-otro', opts:['liberada, tránsito normal','parcialmente afectada','cerrada','restablecida']},
       ],
       gen:function(f){
-        var emergLine = f.emergencias ? '\n\u25aa\ufe0f'+B('Emergencias:')+' '+f.emergencias : '';
-        var accionLine = f.accion ? '\n\u25aa\ufe0f'+B('Acciones:')+' '+f.accion : '';
-        return '\U0001f6a6 '+B('REPORTE DE INCIDENCIAS EN VIA')+'\n'
+        var emergLine = f.emergencias ? '\n▪️'+B('Emergencias:')+' '+f.emergencias : '';
+        var accionLine = f.accion ? '\n▪️'+B('Acciones:')+' '+f.accion : '';
+        return '🚦 '+B('REPORTE DE INCIDENCIAS EN VIA')+'\n'
           +B('COV:')+' '+getCOV()+'\n\n'
-          +'\U0001f4c6 '+B('FECHA:')+' '+today()+'\n'
-          +'\U0001f4cd '+B('UBICACION:')+' '+f.ubi+'\n'
-          +'\U0001f501 '+B('SENTIDO:')+' '+f.sent+'\n'
-          +'\U0001f552 '+B('HORA:')+' '+nowTime()+'\n\n'
-          +'\U0001f6a8 '+B('DETALLE:')+'\n'
-          +'\u25aa\ufe0f'+B('Tipo:')+' '+f.tipo+'\n'
-          +'\u25aa\ufe0f'+B('Descripcion:')+' '+f.desc+'\n'
-          +'\u25aa\ufe0f'+B('Presencia policial:')+' '+f.pnp
+          +'📆 '+B('FECHA:')+' '+today()+'\n'
+          +'📍 '+B('UBICACION:')+' '+f.ubi+'\n'
+          +'🔁 '+B('SENTIDO:')+' '+f.sent+'\n'
+          +'🕒 '+B('HORA:')+' '+nowTime()+'\n\n'
+          +'🚨 '+B('DETALLE:')+'\n'
+          +'▪️'+B('Tipo:')+' '+f.tipo+'\n'
+          +'▪️'+B('Descripcion:')+' '+f.desc+'\n'
+          +'▪️'+B('Presencia policial:')+' '+f.pnp
           +emergLine+accionLine+'\n'
-          +'\u25aa\ufe0f'+B('Estado de la via:')+' '+f.estado+'\n\n'
-          +'\U0001f4f8 Se adjunta im\u00e1genes';
+          +'▪️'+B('Estado de la via:')+' '+f.estado+'\n\n'
+          +'📸 Se adjunta imágenes';
       }
     },
     {
-      id:'inc-cc3', icon:'\U0001f6a7', name:'Incidencia R\u00e1pido',
+      id:'inc-cc3', icon:'🚧', name:'Incidencia Rápido',
       desc:'Reporte simplificado para situaciones puntuales',
       required:['lugar','obs'],
       fields:[
-        {id:'lugar', label:'Ubicaci\u00f3n', type:'text', autofill:'ubi'},
+        {id:'lugar', label:'Ubicación', type:'text', autofill:'ubi'},
         {id:'sent',  label:'Sentido', type:'sel', opts:['Ambos','S/N','N/S','E/O','O/E']},
-        {id:'obs',   label:'Observaci\u00f3n', type:'ta'},
+        {id:'obs',   label:'Observación', type:'ta'},
       ],
       gen:function(f){
-        return '\U0001f6a6'+B('REPORTE DE INCIDENCIAS')+' -'+B(getCorredor())+'\n'
+        return '🚦'+B('REPORTE DE INCIDENCIAS')+' - '+B(getCorredor())+'\n'
           +B('COV:')+' '+getCOV()+'\n'
-          +'\U0001f30d '+B('LUGAR:')+' '+f.lugar+'\n'
-          +'\U0001f9ed'+B('HORA:')+' '+nowTime()+'\n'
-          +'\U0001f503'+B('SENTIDO:')+' '+f.sent+'\n\n'
-          +'\U0001f6a8'+B('OBSERVACION:')+'\U0001f6a8\n'
+          +'🌍 '+B('LUGAR:')+' '+f.lugar+'\n'
+          +'🧭'+B('HORA:')+' '+nowTime()+'\n'
+          +'🔃'+B('SENTIDO:')+' '+f.sent+'\n\n'
+          +'🚨'+B('OBSERVACION:')+'🚨\n'
           +f.obs+'\n\n'
           +'- SE ADJUNTA IMAGENES.';
       }
     },
     {
-      id:'accidente-bus', icon:'\U0001f68c', name:'Accidente Bus / Ca\u00edda de Usuario',
+      id:'accidente-bus', icon:'🚌', name:'Accidente Bus / Caída de Usuario',
       desc:'Reporte con usuario afectado y datos completos',
       required:['ubi','padron','conductor','usuario','dni','obs'],
       fields:[
-        {id:'turno',     label:'Turno', type:'sel', opts:['MA\u00d1ANA','TARDE','NOCHE','MADRUGADA'], autofill:'turno'},
-        {id:'ubi',       label:'Ubicaci\u00f3n', type:'text', autofill:'ubi'},
+        {id:'turno',     label:'Turno', type:'sel', opts:['MAÑANA','TARDE','NOCHE','MADRUGADA'], autofill:'turno'},
+        {id:'ubi',       label:'Ubicación', type:'text', autofill:'ubi'},
         {id:'sent',      label:'Sentido', type:'sel', opts:['S/N','N/S']},
         {id:'placa',     label:'Placa del bus', type:'text', opt:true},
         {id:'ruta',      label:'Ruta', type:'text', opt:true},
-        {id:'padron',    label:'Padr\u00f3n', type:'text'},
+        {id:'padron',    label:'Padrón', type:'text'},
         {id:'conductor', label:'Nombre del conductor', type:'text'},
-        {id:'trasbordo', label:'Trasbordo', type:'sel', opts:['S\u00cd','NO']},
+        {id:'trasbordo', label:'Trasbordo', type:'sel', opts:['SÍ','NO']},
         {id:'usuario',   label:'Nombre usuario afectado', type:'text'},
         {id:'dni',       label:'DNI del usuario', type:'text'},
-        {id:'clinica',   label:'Cl\u00ednica / Hospital', type:'text', opt:true},
-        {id:'comisaria', label:'Comisar\u00eda', type:'text', opt:true},
-        {id:'adjunto',   label:'Adjunto', type:'sel', opts:['sin adjunto','FOTO \U0001f4f7','VIDEO \U0001f4f7','FOTO Y VIDEO \U0001f4f7']},
-        {id:'obs',       label:'Descripci\u00f3n del hecho', type:'ta'},
+        {id:'clinica',   label:'Clínica / Hospital', type:'text', opt:true},
+        {id:'comisaria', label:'Comisaría', type:'text', opt:true},
+        {id:'adjunto',   label:'Adjunto', type:'sel', opts:['sin adjunto','FOTO 📷','VIDEO 📷','FOTO Y VIDEO 📷']},
+        {id:'obs',       label:'Descripción del hecho', type:'ta'},
       ],
       gen:function(f){
-        var placa    = f.placa     ? '\n\U0001f6be '+B('PLACA:')+' '+f.placa     : '';
-        var ruta     = f.ruta      ? '\n\U0001f68d '+B('RUTA:')+' '+f.ruta       : '';
-        var clinica  = f.clinica   ? '\n'+B('CLINICA:')+' '+f.clinica             : '';
-        var comisaria= f.comisaria ? '\n'+B('COMISARIA:')+' '+f.comisaria        : '';
-        var adjunto  = f.adjunto!=='sin adjunto' ? '\n\U0001f4f7 ADJUNTO '+f.adjunto : '';
+        var placa     = f.placa     ? '\n🚾 '+B('PLACA:')+' '+f.placa : '';
+        var ruta      = f.ruta      ? '\n🚍 '+B('RUTA:')+' '+f.ruta : '';
+        var clinica   = f.clinica   ? '\n'+B('CLINICA:')+' '+f.clinica : '';
+        var comisaria = f.comisaria ? '\n'+B('COMISARIA:')+' '+f.comisaria : '';
+        var adjunto   = f.adjunto!=='sin adjunto' ? '\n📷 ADJUNTO '+f.adjunto : '';
         return B('REPORTE ACCIDENTE DE BUS - CAIDA DE USUARIO - T.')+' '+f.turno+'\n'
-          +'\U0001f468\U0001f3fc\u200d\u2708\ufe0f '+B('COV:')+' '+getCOV()+'\n'
-          +'\U0001f6cf\ufe0f '+B('UBICACION:')+' '+f.ubi+'\n'
-          +'\U0001f503 '+B('SENTIDO:')+' '+f.sent
+          +'👨🏼‍✈️ '+B('COV:')+' '+getCOV()+'\n'
+          +'🚏 '+B('UBICACION:')+' '+f.ubi+'\n'
+          +'🔃 '+B('SENTIDO:')+' '+f.sent
           +placa+ruta+'\n'
-          +'\U0001f522 '+B('PADRON:')+' '+f.padron+'\n'
-          +'\U0001f468\U0001f3fb\u200d\U0001f4bc '+B('CONDUCTOR:')+' '+f.conductor+'\n'
+          +'🔢 '+B('PADRON:')+' '+f.padron+'\n'
+          +'👨🏻‍💼 '+B('CONDUCTOR:')+' '+f.conductor+'\n'
           +B('TRASBORDO:')+' '+f.trasbordo+'\n\n'
           +B('DATOS DEL USUARIO AFECTADO:')+'\n'
           +B('Nombre:')+' '+f.usuario+'\n'
           +B('DNI:')+' '+f.dni+'\n'
-          +'\u23f0 '+B('HORA:')+' '+nowTime()+'\n'
-          +'\U0001f31e '+B('DIA:')+' '+today()
+          +'🕰 '+B('HORA:')+' '+nowTime()+'\n'
+          +'🌞 '+B('DIA:')+' '+today()
           +clinica+comisaria+'\n\n'
-          +'\U0001f50d '+B('OBSERVACION:')+'\n'
+          +'🔍 '+B('OBSERVACION:')+'\n'
           +f.obs+adjunto;
       }
     },
   ],
-
   demanda:[
     {
-      id:'demanda', icon:'\U0001f4ca', name:'Demanda',
-      desc:'Reporte de demanda con c\u00f3digo y observaci\u00f3n',
+      id:'demanda', icon:'📊', name:'Demanda',
+      desc:'Reporte de demanda con código y observación',
       required:['paradero','padron'],
       fields:[
         {id:'paradero', label:'Paradero', type:'text'},
         {id:'sent',     label:'Sentido', type:'sel', opts:['S/N','N/S']},
         {id:'ruta',     label:'Ruta', type:'sel-rutas'},
-        {id:'padron',   label:'Padr\u00f3n', type:'text'},
+        {id:'padron',   label:'Padrón', type:'text'},
         {id:'freq',     label:'Frecuencia (ej: 10:30 AM)', type:'text', opt:true},
-        {id:'codigo',   label:'C\u00f3digo', type:'sel', opts:['01','02','03','04','05','06']},
-        {id:'obs',      label:'Observaci\u00f3n', type:'text', opt:true},
+        {id:'codigo',   label:'Código', type:'sel', opts:['01','02','03','04','05','06']},
+        {id:'obs',      label:'Observación', type:'text', opt:true},
       ],
       gen:function(f){
         var turno = getProfile().turno||'TARDE';
-        var freq = f.freq ? '\n\U0001f550 '+B('FRECUENCIA:')+' '+f.freq : '';
-        var obs  = f.obs  ? '\n\n\u270d\U0001f3fb '+B('OBSERVACION:')+' '+f.obs.toUpperCase() : '';
-        return '\U0001f6d1 '+B('CORREDOR')+' '+B(getCorredor())+'\U0001f68d \n'
-          +'\U0001f537'+B('TURNO')+' '+turno+' \U0001f536'+B(getCorredor())+'\U0001f536 \n'
-          +'\U0001f46e'+B('COV:')+' '+getCOV().toUpperCase()+'\n'
-          +'\U0001f68f '+B('PARADERO:')+' '+f.paradero.toUpperCase()+'\n'
-          +'\u267b\ufe0f '+B('SENTIDO:')+' '+f.sent+'\n'
-          +'\U0001f522 '+B('FECHA:')+' '+today()+'\n'
-          +'\U0001f68d '+B('RUTA:')+' '+f.ruta+'\n'
-          +'\U0001f522 '+B('PADRON:')+' '+f.padron
+        var freq = f.freq ? '\n🕐 '+B('FRECUENCIA:')+' '+f.freq : '';
+        var obs  = f.obs  ? '\n\n✍🏻 '+B('OBSERVACION:')+' '+f.obs.toUpperCase() : '';
+        return '🛑 '+B('CORREDOR')+' '+B(getCorredor())+'🚍 \n'
+          +'🔷'+B('TURNO')+' '+turno+' 🔶'+B(getCorredor())+'🔶 \n'
+          +'👮'+B('COV:')+' '+getCOV().toUpperCase()+'\n'
+          +'🚏 '+B('PARADERO:')+' '+f.paradero.toUpperCase()+'\n'
+          +'♻️ '+B('SENTIDO:')+' '+f.sent+'\n'
+          +'🔢 '+B('FECHA:')+' '+today()+'\n'
+          +'🚍 '+B('RUTA:')+' '+f.ruta+'\n'
+          +'🔢 '+B('PADRON:')+' '+f.padron
           +freq+'\n'
-          +'\U0001f522 '+B('CODIGO:')+' '+f.codigo
+          +'🔢 '+B('CODIGO:')+' '+f.codigo
           +obs;
       }
     },
   ],
-
   servicio:[
     {
-      id:'inicio', icon:'\U0001f7e2', name:'Inicio de Servicio',
+      id:'inicio', icon:'🟢', name:'Inicio de Servicio',
       desc:'Mensaje de inicio de turno',
       fields:[
-        {id:'turno', label:'Turno', type:'sel', opts:['MA\u00d1ANA','TARDE','NOCHE','MADRUGADA'], autofill:'turno'},
+        {id:'turno', label:'Turno', type:'sel', opts:['MAÑANA','TARDE','NOCHE','MADRUGADA'], autofill:'turno'},
       ],
       gen:function(f){
-        var sal={MA\u00d1ANA:'Buen d\u00eda',TARDE:'Buenas tardes',NOCHE:'Buenas noches',MADRUGADA:'Buenas noches'};
-        return (sal[f.turno]||'Buen d\u00eda')+' inicio de servicio\n'+B('COV:')+' '+getCOV();
+        var sal={MAÑANA:'Buen día',TARDE:'Buenas tardes',NOCHE:'Buenas noches',MADRUGADA:'Buenas noches'};
+        return (sal[f.turno]||'Buen día')+' inicio de servicio\n'+B('COV:')+' '+getCOV();
       }
     },
     {
-      id:'fin', icon:'\U0001f534', name:'T\u00e9rmino de Servicio',
+      id:'fin', icon:'🔴', name:'Término de Servicio',
       desc:'Mensaje de fin de turno',
       fields:[
-        {id:'relevo', label:'Tipo de t\u00e9rmino', type:'sel', opts:['sin relevo','con relevo']},
+        {id:'relevo',        label:'Tipo de término', type:'sel', opts:['sin relevo','con relevo']},
         {id:'relevo_nombre', label:'Nombre y turno del relevo', type:'text', opt:true},
       ],
       gen:function(f){
-        var relevoLine = f.relevo==='con relevo' && f.relevo_nombre
+        var relLine = f.relevo==='con relevo'&&f.relevo_nombre
           ? '\n'+B('Relevo:')+' '+f.relevo_nombre : '';
-        return 'T\u00e9rmino de servicio\n'+B('COV:')+' '+getCOV()+relevoLine;
+        return 'Término de servicio\n'+B('COV:')+' '+getCOV()+relLine;
       }
     },
   ],
@@ -1719,6 +1845,7 @@ function init(){
   getDeviceId();
   updateHistCount();
   updateMisTplBtn();
+  updateProgHomeBtn();
   renderFavs();
 }
 
@@ -2431,19 +2558,16 @@ function renderCustomTplList(){
   var tpls=getCustomTpls();
   var el=document.getElementById('ctpl-list');
   if(!tpls.length){
-    el.innerHTML='<div style="color:var(--mut);text-align:center;padding:20px;font-size:13px">Sin plantillas personalizadas.<br>Crea la primera con el bot\u00f3n de abajo.</div>';
+    el.innerHTML='<div style="color:var(--mut);text-align:center;padding:20px;font-size:13px">Sin plantillas. Crea una con el boton de abajo.</div>';
     return;
   }
   var out='';
   for(var i=0;i<tpls.length;i++){
     var t=tpls[i];
+    var icon=t.icon||'📝';
     out+='<div class="ctpl-item">';
-    out+='<div class="ctpl-item-info" onclick="useCustomTpl('+i+')">'
-        +'<div class="ctpl-item-name">'+(t.icon||'\U0001f4dd')+' '+t.name+'</div>'
-        +'<div class="ctpl-item-sub">'+t.fields.length+' campo'+(t.fields.length!==1?'s':'')+'</div>'
-        +'</div>';
-    out+='<button class="ctpl-del" onclick="deleteCustomTpl('+i+')" '
-        +'style="background:none;border:none;font-size:18px;cursor:pointer;padding:6px;color:var(--rd)">\U0001f5d1\ufe0f</button>';
+    out+='<div class="ctpl-item-info" onclick="useCustomTpl('+i+')"><div class="ctpl-item-name">'+icon+' '+t.name+'</div><div class="ctpl-item-sub">'+t.fields.length+' campo'+(t.fields.length!==1?'s':'')+'</div></div>';
+    out+='<button style="background:none;border:none;font-size:18px;cursor:pointer;padding:6px;color:var(--rd)" onclick="deleteCustomTpl('+i+')">🗑️</button>';
     out+='</div>';
   }
   el.innerHTML=out;
