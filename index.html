@@ -269,6 +269,25 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 .ms-status{font-size:12px;font-weight:600;color:var(--txt)}
 .ms-timer{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--acc);letter-spacing:2px;display:none}
 .ms-cancel{width:100%;background:none;border:1px solid var(--brd);border-radius:var(--rs);padding:10px;font-size:13px;color:var(--mut);cursor:pointer;font-family:inherit}
+/* === FASE 3 === */
+.aviso-banner{background:linear-gradient(135deg,#1A6FC4,#0E4D8F);color:#fff;border-radius:var(--r);padding:11px 14px;margin-bottom:9px;display:none;align-items:flex-start;gap:10px;box-shadow:0 2px 8px rgba(26,111,196,.3)}
+.aviso-banner.show{display:flex}
+.aviso-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.aviso-body{flex:1;min-width:0}
+.aviso-lbl{font-size:10px;font-weight:700;opacity:.8;text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px}
+.aviso-msg{font-size:13px;font-weight:600;line-height:1.4}
+.aviso-dismiss{background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;flex-shrink:0;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.sheet-status{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+.sheet-status.ok{background:#16A34A}
+.sheet-status.off{background:var(--muted)}
+.admin-btn{background:none;border:none;font-size:18px;cursor:pointer;padding:4px;border-radius:8px;-webkit-tap-highlight-color:transparent;display:none}
+.admin-cov-item{background:#fff;border:1px solid var(--brd);border-radius:var(--rs);padding:10px 12px;margin-bottom:7px}
+.acov-name{font-size:13px;font-weight:700;color:var(--txt)}
+.acov-sub{font-size:11px;color:var(--mut);margin-top:2px}
+.aviso-form{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:12px;margin-bottom:12px}
+.admin-send-btn{width:100%;background:var(--acc);color:#fff;border:none;border-radius:var(--rs);padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}
+.admin-send-btn:disabled{opacity:.5;cursor:default}
+.sheet-badge{font-size:10px;color:var(--mut);display:flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:3px 8px}
 </style>
 </head>
 <body>
@@ -292,6 +311,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       <div class="hdr-date" id="hdrdate"></div>
     </div>
     <div class="hdr-btns">
+      <button class="admin-btn" id="admin-btn" onclick="openAdmin()" title="Admin">🛡️</button>
       <button class="icon-btn" onclick="openHistory()" title="Historial">🕐</button>
       <button class="icon-btn" onclick="openSettings()" title="Configuración">⚙️</button>
     </div>
@@ -333,6 +353,14 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 
 <!-- PANTALLA PRINCIPAL -->
 <div class="screen" id="s-cat">
+  <div class="aviso-banner" id="aviso-banner">
+    <div class="aviso-icon">📢</div>
+    <div class="aviso-body">
+      <div class="aviso-lbl">Aviso del supervisor</div>
+      <div class="aviso-msg" id="aviso-msg-txt"></div>
+    </div>
+    <button class="aviso-dismiss" onclick="dismissAviso()">✓ Leí</button>
+  </div>
   <div id="notif-banner" class="notif-banner">
     <span class="nb-txt" id="nb-txt">Activa notificaciones para recordatorios</span>
     <button class="nb-btn" onclick="requestNotifPerm()">Activar</button>
@@ -508,6 +536,30 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   </div>
   <div id="ia-result" style="display:none"></div>
 </div>
+
+<!-- ADMIN PANEL -->
+<div class="screen" id="s-admin">
+  <div class="back-row" onclick="goBack()">
+    <span class="back-icon">‹</span><span class="back-lbl">Inicio</span>
+  </div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:4px">🛡️ Panel Admin</div>
+  <div id="sheet-conn-badge" class="sheet-badge" style="margin-bottom:12px"><span class="sheet-status off" id="sheet-dot"></span><span id="sheet-conn-txt">Sin conexión</span></div>
+
+  <div class="aviso-form">
+    <div class="sec-lbl">Enviar aviso a los COVs</div>
+    <textarea class="fta" id="admin-aviso-txt" rows="3" placeholder="Escribe el aviso para todos los COVs..."></textarea>
+    <div style="display:flex;gap:7px;margin-top:8px">
+      <select class="fs" id="admin-aviso-para" style="flex:1">
+        <option value="todos">Todos los COVs</option>
+      </select>
+      <button class="admin-send-btn" id="send-aviso-btn" onclick="sendAdminAviso()" style="flex:none;width:auto;padding:11px 16px">✉️ Enviar</button>
+    </div>
+  </div>
+
+  <div class="sec-lbl">COVs registrados</div>
+  <button onclick="loadAdminCOVs()" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;color:var(--mut);cursor:pointer;font-family:inherit;margin-bottom:10px">🔄 Actualizar lista</button>
+  <div id="admin-covs"><div style="color:var(--mut);font-size:13px;text-align:center;padding:20px">Toca "Actualizar lista" para cargar los COVs</div></div>
+</div>
 </main>
 
 <!-- QUICK PREVIEW (servicio) -->
@@ -573,6 +625,13 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       <span class="dw-lbl" style="font-size:12px">Hora 2do aviso</span>
       <input class="dw-input" id="notif-h2" type="time" value="16:00">
     </div>
+  </div>
+  <div class="dw-sec">
+    <div class="dw-sec-title">📊 Google Sheets</div>
+    <div style="font-size:11px;color:var(--mut);margin-bottom:7px">URL del conector (Apps Script Web App)</div>
+    <input class="dw-input" id="sheet-url" type="url" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;margin-bottom:6px" oninput="autoSaveSheetUrl(this)">
+    <button onclick="testSheetConn()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">🔗 Verificar conexión con Sheets</button>
+    <div id="sheet-test-result" style="font-size:11px;margin-top:6px;display:none"></div>
   </div>
   <div class="dw-sec">
     <div class="dw-sec-title">🤖 Inteligencia Artificial</div>
@@ -1427,6 +1486,7 @@ function init(){
     renderProfile();
     checkNotifBanner();
     if(cfg.notif) scheduleNotifications(cfg);
+    initSheetConnection();
   } else {
     navStack.length=0; navStack.push("s-welcome");
     showScreen("s-welcome");
@@ -1823,6 +1883,196 @@ async function testGeminiAPI() {
   resEl.textContent = '⚠️ Sin conexión: ' + tested[0];
 }
 
+// =============================================
+// FASE 3 - GOOGLE SHEETS BACKEND
+// =============================================
+
+var isAdmin = false;
+var sheetConnected = false;
+var pendingAvisos = [];
+
+function getSheetURL() {
+  return ((getSettings2().sheetUrl)||'').trim();
+}
+
+function autoSaveSheetUrl(el) {
+  var cfg = getSettings2();
+  cfg.sheetUrl = el.value.trim();
+  S.set('settings2', cfg);
+}
+
+async function sheetGet(action, params) {
+  var url = getSheetURL();
+  if(!url) return null;
+  var parts = ['action=' + encodeURIComponent(action)];
+  if(params) {
+    Object.keys(params).forEach(function(k){
+      parts.push(k + '=' + encodeURIComponent(params[k]));
+    });
+  }
+  var r = await fetch(url + '?' + parts.join('&'));
+  return await r.json();
+}
+
+async function sheetPost(data) {
+  var url = getSheetURL();
+  if(!url) return null;
+  var r = await fetch(url, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  });
+  return await r.json();
+}
+
+async function initSheetConnection() {
+  var url = getSheetURL();
+  if(!url) return;
+  try {
+    var cfg = await sheetGet('config', {});
+    if(cfg && cfg.config) {
+      var local = getSettings2();
+      if(cfg.config.gemKey) local.gemKey = cfg.config.gemKey;
+      S.set('settings2', local);
+      sheetConnected = true;
+    }
+    var p = getProfile();
+    var did = getDeviceId();
+    var reg = await sheetGet('register', {
+      did: did, nombre: p.nombre||'', turno: p.turno||'', ubi: p.ubi||''
+    });
+    if(reg) {
+      isAdmin = reg.isAdmin === true;
+      var ab = document.getElementById('admin-btn');
+      if(ab) ab.style.display = isAdmin ? 'inline-flex' : 'none';
+    }
+    var avRes = await sheetGet('avisos', {did: did});
+    if(avRes && avRes.avisos && avRes.avisos.length > 0) {
+      pendingAvisos = avRes.avisos;
+      showAvisoBanner(pendingAvisos[0]);
+    }
+  } catch(e) {
+    console.log('Sheet no disponible:', e.message);
+  }
+}
+
+function showAvisoBanner(aviso) {
+  var banner = document.getElementById('aviso-banner');
+  var txt = document.getElementById('aviso-msg-txt');
+  if(banner && txt) {
+    txt.textContent = aviso.mensaje;
+    banner.dataset.id = aviso.id;
+    banner.classList.add('show');
+  }
+}
+
+async function dismissAviso() {
+  var banner = document.getElementById('aviso-banner');
+  var id = banner.dataset.id;
+  banner.classList.remove('show');
+  try {
+    await sheetPost({action: 'leido', id: id, did: getDeviceId()});
+  } catch(e) {}
+  pendingAvisos.shift();
+  if(pendingAvisos.length > 0) {
+    setTimeout(function(){showAvisoBanner(pendingAvisos[0]);}, 600);
+  }
+}
+
+async function openAdmin() {
+  if(!isAdmin) { showToast('⚠️ Acceso solo para administradores'); return; }
+  go('s-admin');
+  var dot = document.getElementById('sheet-dot');
+  var txt = document.getElementById('sheet-conn-txt');
+  if(sheetConnected) {
+    if(dot) { dot.className = 'sheet-status ok'; }
+    if(txt) txt.textContent = 'Conectado a Google Sheets';
+  } else {
+    if(dot) { dot.className = 'sheet-status off'; }
+    if(txt) txt.textContent = 'Sin conexión a Sheets';
+  }
+}
+
+async function loadAdminCOVs() {
+  var el = document.getElementById('admin-covs');
+  el.innerHTML = '<div style="color:var(--mut);font-size:13px;text-align:center;padding:20px">Cargando…</div>';
+  try {
+    var res = await sheetGet('covs', {did: getDeviceId()});
+    if(res && res.covs) {
+      renderCOVList(res.covs);
+    } else {
+      el.innerHTML = '<div style="color:var(--rd);font-size:12px;padding:10px">' + (res&&res.error||'Error al cargar') + '</div>';
+    }
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--rd);font-size:12px;padding:10px">⚠️ ' + e.message + '</div>';
+  }
+}
+
+function renderCOVList(covs) {
+  var now = Date.now();
+  var html = '';
+  covs.forEach(function(cov) {
+    var lastStr = 'nunca';
+    if(cov.ultimo) {
+      var mins = Math.round((now - new Date(cov.ultimo).getTime()) / 60000);
+      if(mins < 60) lastStr = mins + ' min atrás';
+      else if(mins < 1440) lastStr = Math.round(mins/60) + 'h atrás';
+      else lastStr = Math.round(mins/1440) + 'd atrás';
+    }
+    html += '<div class="admin-cov-item">' +
+      '<div class="acov-name">' + (cov.isAdmin ? '🛡️ ' : '👤 ') + (cov.nombre||'Sin nombre') + '</div>' +
+      '<div class="acov-sub">' + (cov.turno||'—') + ' · ' + (cov.ubi||'Sin punto') + ' · ' + lastStr + '</div>' +
+      '</div>';
+  });
+  document.getElementById('admin-covs').innerHTML = html ||
+    '<div style="color:var(--mut);text-align:center;padding:20px">Sin COVs registrados</div>';
+}
+
+async function sendAdminAviso() {
+  var msg = document.getElementById('admin-aviso-txt').value.trim();
+  var para = document.getElementById('admin-aviso-para').value;
+  if(!msg) { showToast('Escribe el mensaje del aviso'); return; }
+  var btn = document.getElementById('send-aviso-btn');
+  btn.textContent = 'Enviando…'; btn.disabled = true;
+  try {
+    var res = await sheetPost({action:'aviso', did:getDeviceId(), mensaje:msg, para:para});
+    if(res && res.ok) {
+      showToast('✓ Aviso enviado a todos los COVs');
+      document.getElementById('admin-aviso-txt').value = '';
+    } else {
+      showToast('⚠️ ' + (res&&res.error||'Error desconocido'));
+    }
+  } catch(e) {
+    showToast('⚠️ ' + e.message);
+  } finally {
+    btn.textContent = '✉️ Enviar'; btn.disabled = false;
+  }
+}
+
+async function testSheetConn() {
+  var url = document.getElementById('sheet-url').value.trim();
+  var res_el = document.getElementById('sheet-test-result');
+  if(!url) { res_el.style.display='block'; res_el.style.color='var(--rd)'; res_el.textContent='⚠️ Ingresa la URL primero'; return; }
+  var cfg = getSettings2(); cfg.sheetUrl = url; S.set('settings2',cfg);
+  res_el.style.display='block'; res_el.style.color='var(--mut)'; res_el.textContent='Conectando…';
+  try {
+    var parts = ['action=ping'];
+    var r = await fetch(url + '?' + parts.join('&'));
+    var d = await r.json();
+    if(d.pong) {
+      res_el.style.color='var(--gr)';
+      res_el.textContent='✓ Conexión OK · ' + (d.ts||'');
+      sheetConnected = true;
+      initSheetConnection();
+    } else {
+      res_el.style.color='var(--rd)';
+      res_el.textContent='⚠️ Respuesta inesperada: ' + JSON.stringify(d).substring(0,60);
+    }
+  } catch(e) {
+    res_el.style.color='var(--rd)';
+    res_el.textContent='⚠️ Error: ' + e.message;
+  }
+}
 function toggleGemVis(){
   var inp=document.getElementById('gem-key');
   if(inp) inp.type=inp.type==='password'?'text':'password';
