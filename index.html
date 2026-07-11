@@ -288,25 +288,6 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 .admin-send-btn{width:100%;background:var(--acc);color:#fff;border:none;border-radius:var(--rs);padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}
 .admin-send-btn:disabled{opacity:.5;cursor:default}
 .sheet-badge{font-size:10px;color:var(--mut);display:flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:3px 8px}
-/* === PERMISOS === */
-.perm-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:800;display:none;align-items:flex-end;justify-content:center}
-.perm-ov.open{display:flex}
-.perm-sheet{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px calc(20px + var(--safe));width:100%;max-width:520px;text-align:center}
-.perm-icon{font-size:44px;margin-bottom:10px}
-.perm-title{font-size:17px;font-weight:800;color:var(--txt);margin-bottom:8px}
-.perm-body{font-size:13px;color:var(--mut);line-height:1.6;margin-bottom:20px}
-.perm-btn-main{width:100%;background:var(--acc);color:#fff;border:none;border-radius:var(--r);padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;-webkit-tap-highlight-color:transparent}
-.perm-btn-skip{width:100%;background:none;border:none;color:var(--mut);font-size:13px;cursor:pointer;font-family:inherit;padding:6px;-webkit-tap-highlight-color:transparent}
-.guide-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;display:none;align-items:center;justify-content:center;padding:20px}
-.guide-ov.open{display:flex}
-.guide-card{background:#fff;border-radius:var(--r);padding:20px;width:100%;max-width:360px;max-height:80vh;overflow-y:auto}
-.guide-icon{font-size:36px;text-align:center;margin-bottom:8px}
-.guide-title{font-size:15px;font-weight:800;color:var(--txt);margin-bottom:12px;text-align:center}
-.guide-step{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
-.guide-num{background:var(--acc);color:#fff;border-radius:50%;width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px}
-.guide-txt{font-size:13px;color:var(--txt);line-height:1.5}
-.guide-txt b{color:var(--acc)}
-.guide-close{width:100%;background:var(--acc);color:#fff;border:none;border-radius:var(--rs);padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:12px}
 /* === FASE 5 === */
 .perm-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bg)}
 .perm-row:last-child{border-bottom:none}
@@ -337,38 +318,20 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 /* === FASE 6 === */
 .fav-section{margin-bottom:9px}
 .fav-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.fav-btn{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);
-  padding:10px 11px;cursor:pointer;-webkit-tap-highlight-color:transparent;
-  display:flex;align-items:center;gap:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);
-  transition:border-color .15s;font-family:inherit;position:relative}
+.fav-btn{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:10px 11px;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:border-color .15s;font-family:inherit;text-align:left;width:100%}
 .fav-btn:active{transform:scale(.97)}
-.fav-btn:hover{border-color:var(--acc)}
 .fav-icon{font-size:18px;flex-shrink:0}
-.fav-name{font-size:12px;font-weight:700;color:var(--txt);text-align:left;line-height:1.3}
+.fav-name{font-size:12px;font-weight:700;color:var(--txt);line-height:1.3}
 .fav-cat{font-size:10px;color:var(--mut)}
-.fav-del{position:absolute;top:4px;right:5px;font-size:12px;color:var(--mut);
-  background:none;border:none;cursor:pointer;padding:2px;line-height:1;
-  -webkit-tap-highlight-color:transparent;display:none}
-.fav-btn:hover .fav-del{display:block}
-.fav-edit-mode .fav-del{display:block}
-.fav-add{background:var(--bg);border:1.5px dashed var(--brd);border-radius:var(--r);
-  padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  gap:6px;font-size:12px;color:var(--mut);font-family:inherit;
-  -webkit-tap-highlight-color:transparent;transition:border-color .15s}
+.fav-add{background:var(--bg);border:1.5px dashed var(--brd);border-radius:var(--r);padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--mut);font-family:inherit;-webkit-tap-highlight-color:transparent}
 .fav-add:hover{border-color:var(--acc);color:var(--acc)}
-.fav-picker-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;
-  display:none;align-items:flex-end;justify-content:center}
+.fav-picker-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;display:none;align-items:flex-end;justify-content:center}
 .fav-picker-ov.open{display:flex}
-.fav-picker{background:#fff;border-radius:20px 20px 0 0;
-  padding:16px 14px calc(14px + var(--safe));width:100%;max-width:520px;
-  max-height:70vh;overflow-y:auto}
+.fav-picker{background:#fff;border-radius:20px 20px 0 0;padding:16px 14px calc(14px + var(--safe));width:100%;max-width:520px;max-height:70vh;overflow-y:auto}
 .fav-picker-title{font-size:13px;font-weight:700;margin-bottom:12px}
-.fav-pick-item{display:flex;align-items:center;gap:10px;padding:11px 12px;
-  border-radius:var(--rs);cursor:pointer;-webkit-tap-highlight-color:transparent;
-  transition:background .15s}
-.fav-pick-item:hover{background:var(--bg)}
+.fav-pick-item{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:var(--rs);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fav-pick-item:active{background:var(--bg)}
 .fav-pick-icon{font-size:18px;flex-shrink:0}
-.fav-pick-info{flex:1}
 .fav-pick-name{font-size:13px;font-weight:700}
 .fav-pick-cat{font-size:11px;color:var(--mut)}
 </style>
@@ -447,7 +410,10 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </div>
     <button class="aviso-dismiss" onclick="dismissAviso()">✓ Leí</button>
   </div>
-  <!-- notif banner removido - ahora usa permission sheet -->
+  <div id="notif-banner" class="notif-banner">
+    <span class="nb-txt" id="nb-txt">Activa notificaciones para recordatorios</span>
+    <button class="nb-btn" onclick="requestNotifPerm()">Activar</button>
+  </div>
 
   <div class="prof-card">
     <div class="prof-info" id="prof-display"></div>
@@ -477,14 +443,14 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     <button class="ed-save" onclick="saveProfile()">Guardar</button>
   </div>
 
-  <!-- ACCESO RÁPIDO -->
-  <div class="fav-section" id="fav-section" style="display:none">
+  <div class="fav-section">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
       <div class="sec-lbl" style="margin-bottom:0">Acceso rápido</div>
-      <button id="fav-edit-btn" onclick="toggleFavEdit()"
-        style="background:none;border:none;font-size:11px;color:var(--mut);cursor:pointer;font-family:inherit">Editar</button>
+      <button onclick="openFavPicker()" style="background:none;border:none;font-size:11px;color:var(--acc);cursor:pointer;font-family:inherit;font-weight:700">+ Agregar</button>
     </div>
-    <div class="fav-grid" id="fav-grid"></div>
+    <div class="fav-grid" id="fav-grid">
+      <button class="fav-add" onclick="openFavPicker()">+ Añadir acceso rápido</button>
+    </div>
   </div>
   <div class="sec-lbl">Reportes</div>
   <div class="cat-grid">
@@ -708,7 +674,6 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 <div class="drawer" id="dw-settings">
   <div class="drawer-handle"></div>
   <div class="drawer-title">⚙️ Configuración</div>
-
   <div class="dw-sec">
     <div class="dw-sec-title">Tamaño de letra</div>
     <div class="dw-row">
@@ -720,7 +685,21 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       </div>
     </div>
   </div>
-
+  <div class="dw-sec">
+    <div class="dw-sec-title">Grupos de Telegram</div>
+    <div class="dw-row">
+      <span class="dw-lbl" style="font-size:12px">QAP / Ingreso</span>
+      <input class="dw-input" id="tg-qap" placeholder="@grupo o t.me/...">
+    </div>
+    <div class="dw-row">
+      <span class="dw-lbl" style="font-size:12px">Demandas CC3</span>
+      <input class="dw-input" id="tg-dem" placeholder="@grupo o t.me/...">
+    </div>
+    <div class="dw-row">
+      <span class="dw-lbl" style="font-size:12px">Incidencias CC3</span>
+      <input class="dw-input" id="tg-inc" placeholder="@grupo o t.me/...">
+    </div>
+  </div>
   <div class="dw-sec">
     <div class="dw-sec-title">Permisos</div>
     <div class="perm-row">
@@ -749,55 +728,32 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       <input class="dw-input" id="notif-h2" type="time" value="16:00">
     </div>
   </div>
-
+  <div class="dw-sec">
+    <div class="dw-sec-title">🤖 Inteligencia Artificial</div>
+    <div style="font-size:11px;color:var(--mut);margin-bottom:7px">Clave API de Google AI Studio</div>
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <input class="dw-input" id="gem-key" type="password" placeholder="AIzaSy..." style="flex:1;font-family:monospace;font-size:11px">
+      <button onclick="toggleGemVis()" style="background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);padding:0 10px;cursor:pointer;font-size:14px">👁</button>
+    </div>
+    <div style="font-size:10px;color:var(--mut);line-height:1.5">Obtén tu clave en <b>aistudio.google.com</b>. Restringe el dominio a <b>rolisinr.github.io</b>.</div>
+  </div>
   <button class="dw-save" onclick="saveSettings()">Guardar configuración</button>
 </div>
 
-<!-- PERMISSION SHEETS -->
-<div class="perm-ov" id="perm-notif-ov">
-  <div class="perm-sheet">
-    <div class="perm-icon">🔔</div>
-    <div class="perm-title">Activa las notificaciones</div>
-    <div class="perm-body">El supervisor puede enviarte avisos urgentes directamente a tu celular aunque la app esté cerrada. También recibirás recordatorios de informe de vías en tu turno.</div>
-    <button class="perm-btn-main" onclick="doRequestNotif()">🔔 Activar notificaciones</button>
-    <button class="perm-btn-skip" onclick="skipPermNotif()">Ahora no</button>
+<!-- MINI IA OVERLAY -->
+<div class="mini-ov" id="mini-ov">
+  <div class="mini-sheet">
+    <div class="ms-title">🤖 IA — <span id="ms-tpl-name"></span></div>
+    <div class="ms-sub">Describe brevemente la situación. Gemini completará los campos del formulario.</div>
+    <div class="ms-rec-area">
+      <button class="ms-mic" id="ms-mic" onclick="msToggleRec()">🎤</button>
+      <div class="ms-status" id="ms-status">Toca para grabar</div>
+      <div class="ms-timer" id="ms-timer">00:00</div>
+    </div>
+    <button class="ms-cancel" onclick="closeMiniIA()">Cancelar</button>
   </div>
 </div>
-<div class="perm-ov" id="perm-mic-ov">
-  <div class="perm-sheet">
-    <div class="perm-icon">🎤</div>
-    <div class="perm-title">Acceso al micrófono</div>
-    <div class="perm-body">El Asistente IA necesita escucharte para redactar el reporte. Tu voz solo se procesa en el momento de grabar y no se almacena.</div>
-    <button class="perm-btn-main" onclick="doRequestMic()">🎤 Permitir micrófono</button>
-    <button class="perm-btn-skip" onclick="closePermMic()">Cancelar</button>
-  </div>
-</div>
-<div class="guide-ov" id="guide-notif-ov">
-  <div class="guide-card">
-    <div class="guide-icon">🛠️</div>
-    <div class="guide-title">Cómo activar notificaciones</div>
-    <div class="guide-step"><div class="guide-num">1</div><div class="guide-txt">Abre <b>Chrome</b> → toca los tres puntos <b>⋮</b> arriba a la derecha</div></div>
-    <div class="guide-step"><div class="guide-num">2</div><div class="guide-txt">Ve a <b>Configuración</b> → <b>Configuración del sitio</b></div></div>
-    <div class="guide-step"><div class="guide-num">3</div><div class="guide-txt">Toca <b>Notificaciones</b></div></div>
-    <div class="guide-step"><div class="guide-num">4</div><div class="guide-txt">Busca <b>covapp</b> en la lista y cambia a <b>Permitir</b></div></div>
-    <div class="guide-step"><div class="guide-num">5</div><div class="guide-txt">Vuelve a la app y recarga</div></div>
-    <button class="guide-close" onclick="document.getElementById('guide-notif-ov').classList.remove('open')">Entendido</button>
-  </div>
-</div>
-<div class="guide-ov" id="guide-mic-ov">
-  <div class="guide-card">
-    <div class="guide-icon">🎤</div>
-    <div class="guide-title">Cómo activar el micrófono</div>
-    <div class="guide-step"><div class="guide-num">1</div><div class="guide-txt">Abre <b>Chrome</b> → toca los tres puntos <b>⋮</b> arriba</div></div>
-    <div class="guide-step"><div class="guide-num">2</div><div class="guide-txt">Ve a <b>Configuración</b> → <b>Configuración del sitio</b></div></div>
-    <div class="guide-step"><div class="guide-num">3</div><div class="guide-txt">Toca <b>Micrófono</b></div></div>
-    <div class="guide-step"><div class="guide-num">4</div><div class="guide-txt">Busca <b>covapp</b> y cambia a <b>Permitir</b></div></div>
-    <div class="guide-step"><div class="guide-num">5</div><div class="guide-txt">Vuelve a la app y vuelve a intentarlo</div></div>
-    <button class="guide-close" onclick="document.getElementById('guide-mic-ov').classList.remove('open')">Entendido</button>
-  </div>
-</div>
-<!-- FAV PICKER -->
-<div class="fav-picker-ov" id="fav-picker-ov" onclick="closeFavPicker(event)">
+<div class="fav-picker-ov" id="fav-picker-ov" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="fav-picker">
     <div class="fav-picker-title">⭐ Agregar acceso rápido</div>
     <div id="fav-pick-list"></div>
@@ -911,12 +867,15 @@ function showScreen(id){
   document.getElementById(id).classList.add("active");
   window.scrollTo({top:0,behavior:"instant"});
 }
-function go(id){ navStack.push(id); showScreen(id); history.pushState({s:id},'',location.href); }
+function go(id){ navStack.push(id); showScreen(id); }
 function goBack(){
   if(navStack.length>1){ navStack.pop(); showScreen(navStack[navStack.length-1]); }
 }
 history.pushState(null,"",location.href);
-window.addEventListener("popstate",()=>{ history.pushState(null,"",location.href); goBack(); });
+window.addEventListener("popstate",function(){
+  goBack();
+  history.pushState(null,"",location.href);
+});
 
 // ═══════════════════════════════════════════
 // PROFILE
@@ -1508,13 +1467,19 @@ function doTelegram(){
 // ═══════════════════════════════════════════
 function openSettings(){
   updatePermStates();
+  updatePermStates();
   const cfg=getSettings2();
-  document.getElementById('fs-val').textContent=cfg.fs+'px';
-  document.getElementById('notif-h1').value=cfg.h1||'10:00';
-  document.getElementById('notif-h2').value=cfg.h2||'16:00';
-  var gkload=document.getElementById('gem-key'); if(gkload) gkload.value=cfg.gemKey||'';
-  document.getElementById('dw-overlay').classList.add('open');
-  document.getElementById('dw-settings').classList.add('open');
+  document.getElementById("tg-qap").value=cfg.tgQap||"";
+  document.getElementById("tg-dem").value=cfg.tgDem||"";
+  document.getElementById("tg-inc").value=cfg.tgInc||"";
+  document.getElementById("fs-val").textContent=cfg.fs+"px";
+  document.getElementById("notif-toggle").classList.toggle("on",cfg.notif);
+  document.getElementById("notif-h1").value=cfg.h1||"10:00";
+  document.getElementById("notif-h2").value=cfg.h2||"16:00";
+  document.getElementById("notif-times-row").style.display=cfg.notif?"flex":"none";
+  document.getElementById("notif-times-row2").style.display=cfg.notif?"flex":"none";
+  document.getElementById("dw-overlay").classList.add("open");
+  document.getElementById("dw-settings").classList.add("open");
 }
 function closeSettings(){
   document.getElementById("dw-overlay").classList.remove("open");
@@ -1536,14 +1501,17 @@ function toggleNotif(btn){
 }
 function saveSettings(){
   const cfg=getSettings2();
-  cfg.h1=document.getElementById('notif-h1').value;
-  cfg.h2=document.getElementById('notif-h2').value;
-  var gkel=document.getElementById('gem-key'); cfg.gemKey=gkel?gkel.value.trim():cfg.gemKey||'';
-  S.set('settings2',cfg);
-  document.documentElement.style.setProperty('--fs',cfg.fs+'px');
+  cfg.tgQap=document.getElementById("tg-qap").value.trim();
+  cfg.tgDem=document.getElementById("tg-dem").value.trim();
+  cfg.tgInc=document.getElementById("tg-inc").value.trim();
+  cfg.notif=document.getElementById("notif-toggle").classList.contains("on");
+  cfg.h1=document.getElementById("notif-h1").value;
+  cfg.h2=document.getElementById("notif-h2").value;
+  S.set("settings2",cfg);
+  document.documentElement.style.setProperty("--fs",cfg.fs+"px");
   if(cfg.notif) scheduleNotifications(cfg);
   closeSettings();
-  showToast('✓ Configuración guardada');
+  showToast("✓ Configuración guardada");
 }
 
 // ═══════════════════════════════════════════
@@ -1625,7 +1593,7 @@ function init(){
     if(cfg.notif) scheduleNotifications(cfg);
     initSheetConnection();
     initFirebase();
-    checkAndRequestPermissions();
+    if(Notification.permission==='granted') registerFCMToken();
   } else {
     navStack.length=0; navStack.push("s-welcome");
     showScreen("s-welcome");
@@ -1699,9 +1667,6 @@ var mRec=null, aChunks=[], rTimer=null, rSecs=0;
 var fmtTime=function(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
 
 async function startRec(micId, timerId, statusId) {
-  // Verificar permiso de micrófono primero
-  var micOk = await checkMicPermission();
-  if(!micOk) return false;
   try {
     var stream = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
     var mimes = ['audio/webm;codecs=opus','audio/webm','audio/ogg','audio/mp4'];
@@ -1964,43 +1929,6 @@ async function msToggleRec() {
   }
 }
 
-
-function autoSaveGemKey(el) {
-  var cfg = getSettings2();
-  cfg.gemKey = el.value.trim();
-  S.set('settings2', cfg);
-}
-
-async function testGeminiAPI() {
-  var cfg = getSettings2();
-  var key = (cfg.gemKey||'').trim();
-  var resEl = document.getElementById('test-api-result');
-  var btn = document.getElementById('test-api-btn');
-  if(!key) {
-    resEl.style.display='block'; resEl.style.color='var(--rd)';
-    resEl.textContent='⚠️ Sin clave API'; return;
-  }
-  btn.textContent='⏳ Verificando…'; btn.style.color='var(--or)';
-  resEl.style.display='none';
-  for(var mi=0; mi<GEMINI_MODELS.length; mi++) {
-    var model=GEMINI_MODELS[mi];
-    try {
-      var r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+key,
-        {method:'POST',headers:{'Content-Type':'application/json'},
-         body:JSON.stringify({contents:[{parts:[{text:'di OK'}]}],generationConfig:{temperature:0,maxOutputTokens:5}})});
-      if(r.ok) {
-        resEl.style.display='block'; resEl.style.color='var(--gr)';
-        resEl.textContent='✓ OK · '+model;
-        btn.textContent='🔗 Verificar'; btn.style.color='';
-        return;
-      }
-    } catch(e) {}
-  }
-  resEl.style.display='block'; resEl.style.color='var(--rd)';
-  resEl.textContent='⚠️ Sin conexión con Gemini';
-  btn.textContent='🔗 Verificar'; btn.style.color='';
-}
-
 // =============================================
 // FASE 3 - GOOGLE SHEETS BACKEND
 // =============================================
@@ -2010,10 +1938,14 @@ var sheetConnected = false;
 var pendingAvisos = [];
 
 function getSheetURL() {
-  return 'https://script.google.com/macros/s/AKfycbx-g2KIsgN0RuC0813Z2Skntd5ne5XN07Nv_kT0aSJSa12PAH3yY5lznz_cttUQx09PqA/exec';
+  return ((getSettings2().sheetUrl)||'').trim();
 }
 
-function autoSaveSheetUrl(el) { /* URL fija en código */ }
+function autoSaveSheetUrl(el) {
+  var cfg = getSettings2();
+  cfg.sheetUrl = el.value.trim();
+  S.set('settings2', cfg);
+}
 
 async function sheetGet(action, params) {
   var url = getSheetURL();
@@ -2176,8 +2108,10 @@ async function sendAdminAviso() {
 }
 
 async function testSheetConn() {
-  var url = getSheetURL();
+  var url = document.getElementById('sheet-url').value.trim();
   var res_el = document.getElementById('sheet-test-result');
+  if(!url) { res_el.style.display='block'; res_el.style.color='var(--rd)'; res_el.textContent='⚠️ Ingresa la URL primero'; return; }
+  var cfg = getSettings2(); cfg.sheetUrl = url; S.set('settings2',cfg);
   res_el.style.display='block'; res_el.style.color='var(--mut)'; res_el.textContent='Conectando…';
   try {
     var parts = ['action=ping'];
@@ -2203,7 +2137,7 @@ async function testSheetConn() {
 
 var FB_CONFIG = {
   apiKey: 'AIzaSyBIj8aYFt-vkVc55atTgfYVtZI2iWVvTI4',
-  authDomain: 'covapp-3fe9d.firebaseapp.com', // covapp.online
+  authDomain: 'covapp-3fe9d.firebaseapp.com',
   projectId: 'covapp-3fe9d',
   messagingSenderId: '1056777477300',
   appId: '1:1056777477300:web:d4b64af6fb85f8a7e54be1'
@@ -2294,82 +2228,6 @@ async function sendPushToAll(title, body) {
     showToast('⚠️ ' + e.message);
   }
 }
-// =============================================
-// GESTIÓN DE PERMISOS
-// =============================================
-
-function checkAndRequestPermissions() {
-  // Notificaciones: mostrar solo si no se ha pedido en las últimas 24h
-  var lastAsked = parseInt(localStorage.getItem('perm_notif_asked')||'0');
-  var hoursSince = (Date.now() - lastAsked) / 3600000;
-  if(Notification.permission === 'granted') {
-    registerFCMToken();
-  } else if(Notification.permission === 'denied') {
-    // No pedir de nuevo, pero mostrar badge en settings
-    document.getElementById('notif-banner').classList.remove('show');
-  } else if(hoursSince > 24 || lastAsked === 0) {
-    // Primera vez o pasaron 24h: mostrar el sheet
-    setTimeout(function(){
-      document.getElementById('perm-notif-ov').classList.add('open');
-    }, 2000);
-  }
-}
-
-async function doRequestNotif() {
-  document.getElementById('perm-notif-ov').classList.remove('open');
-  localStorage.setItem('perm_notif_asked', Date.now().toString());
-  var perm = await Notification.requestPermission();
-  if(perm === 'granted') {
-    showToast('✓ Notificaciones activadas');
-    var cfg = getSettings2();
-    scheduleNotifications(cfg);
-    await registerFCMToken();
-  } else if(perm === 'denied') {
-    setTimeout(function(){
-      document.getElementById('guide-notif-ov').classList.add('open');
-    }, 400);
-  }
-}
-
-function skipPermNotif() {
-  document.getElementById('perm-notif-ov').classList.remove('open');
-  localStorage.setItem('perm_notif_asked', Date.now().toString());
-}
-
-// Verificar micrófono antes de grabar
-async function checkMicPermission() {
-  try {
-    var result = await navigator.permissions.query({name: 'microphone'});
-    if(result.state === 'denied') {
-      document.getElementById('guide-mic-ov').classList.add('open');
-      return false;
-    }
-    if(result.state === 'prompt') {
-      document.getElementById('perm-mic-ov').classList.add('open');
-      return false;
-    }
-    return true; // granted
-  } catch(e) {
-    return true; // Si no soporta query, dejar que getUserMedia lo maneje
-  }
-}
-
-async function doRequestMic() {
-  document.getElementById('perm-mic-ov').classList.remove('open');
-  try {
-    var stream = await navigator.mediaDevices.getUserMedia({audio:true});
-    stream.getTracks().forEach(function(t){t.stop();});
-    showToast('✓ Micrófono habilitado');
-  } catch(e) {
-    setTimeout(function(){
-      document.getElementById('guide-mic-ov').classList.add('open');
-    }, 400);
-  }
-}
-
-function closePermMic() {
-  document.getElementById('perm-mic-ov').classList.remove('open');
-}
 
 // =============================================
 // FASE 5
@@ -2447,9 +2305,7 @@ function renderCustomTplList(){
 function updateMisTplBtn(){
   var tpls=getCustomTpls();
   var lbl=document.getElementById('mis-tpl-count-lbl');
-  if(lbl) lbl.textContent=tpls.length
-    ? tpls.length+' plantilla'+(tpls.length!==1?'s':'')
-    : 'Crea tus propias plantillas';
+  if(lbl) lbl.textContent=tpls.length ? tpls.length+' plantilla'+(tpls.length!==1?'s':'') : 'Crea tus propias plantillas';
 }
 
 function deleteCustomTpl(idx){
@@ -2574,112 +2430,75 @@ function generarResumen(){
 
 
 // =============================================
-// FASE 6 - ACCESO RÁPIDO (FAVORITOS)
+// FASE 6 - ACCESO RÁPIDO
 // =============================================
 
-function getFavs() { return S.get('favs') || []; }
-function saveFavs(arr) { S.set('favs', arr); }
+function getFavs(){return S.get('favs')||[];}
+function saveFavs(arr){S.set('favs',arr);}
 
-var favEditMode = false;
-
-function renderFavs() {
-  var favs = getFavs();
-  var sec = document.getElementById('fav-section');
-  var grid = document.getElementById('fav-grid');
-  if(!sec || !grid) return;
-  sec.style.display = (favs.length > 0 || true) ? 'block' : 'none';
-  var html2 = '';
-  favs.forEach(function(f, i) {
-    html2 += '<button class="fav-btn' + (favEditMode ? ' fav-edit-mode' : '') + '" onclick="useFav(' + i + ')">' +
-      '<div class="fav-icon">' + f.icon + '</div>' +
-      '<div><div class="fav-name">' + f.name + '</div>' +
-      '<div class="fav-cat">' + f.catName + '</div></div>' +
-      '<button class="fav-del" onclick="delFav(event,' + i + ')">×</button>' +
+function renderFavs(){
+  var favs=getFavs();
+  var grid=document.getElementById('fav-grid');
+  if(!grid) return;
+  var html2='';
+  favs.forEach(function(f,i){
+    html2+='<button class="fav-btn" onclick="useFav('+i+')">'+
+      '<div class="fav-icon">'+f.icon+'</div>'+
+      '<div><div class="fav-name">'+f.name+'</div><div class="fav-cat">'+f.catName+'</div></div>'+
       '</button>';
   });
-  html2 += '<button class="fav-add" onclick="openFavPicker()">' +
-    '<span style="font-size:16px">+</span><span>Agregar</span></button>';
-  grid.innerHTML = html2;
+  html2+='<button class="fav-add" onclick="openFavPicker()">+ Añadir</button>';
+  grid.innerHTML=html2;
 }
 
-function toggleFavEdit() {
-  favEditMode = !favEditMode;
-  var btn = document.getElementById('fav-edit-btn');
-  if(btn) btn.textContent = favEditMode ? 'Listo' : 'Editar';
-  renderFavs();
+function useFav(idx){
+  var fav=getFavs()[idx]; if(!fav) return;
+  if(fav.catId==='custom') useCustomTpl(fav.tplIdx);
+  else if(fav.direct) goDirectForm(fav.catId,fav.tplId);
+  else showForm(fav.catId,fav.tplId);
 }
 
-function delFav(e, idx) {
-  e.stopPropagation();
-  var favs = getFavs();
-  favs.splice(idx, 1);
-  saveFavs(favs);
-  renderFavs();
-  if(!favs.length) { favEditMode = false; var b = document.getElementById('fav-edit-btn'); if(b) b.textContent='Editar'; }
-}
-
-function useFav(idx) {
-  if(favEditMode) return;
-  var fav = getFavs()[idx];
-  if(!fav) return;
-  if(fav.catId === 'custom') {
-    useCustomTpl(fav.tplIdx);
-  } else if(fav.direct) {
-    goDirectForm(fav.catId, fav.tplId);
-  } else {
-    showForm(fav.catId, fav.tplId);
-  }
-}
-
-function openFavPicker() {
-  var el = document.getElementById('fav-pick-list');
-  var existing = getFavs().map(function(f){ return f.catId+'_'+f.tplId; });
-  var items = '';
-  var catNames = {vias:'Informe de Vías',obras:'Obras en Vía',incidencia:'Incidencias',demanda:'Demanda'};
-  Object.keys(TPLS).forEach(function(cat) {
-    TPLS[cat].forEach(function(t) {
-      var key = cat+'_'+t.id;
-      var already = existing.indexOf(key) >= 0;
-      if(!already) {
-        items += '<div class="fav-pick-item" onclick="addFav(\''+cat+'\',\''+t.id+'\',\''+t.name+'\',\''+t.icon+'\',\''+
-          (catNames[cat]||cat)+'\',false)">' +
-          '<div class="fav-pick-icon">'+t.icon+'</div>' +
-          '<div class="fav-pick-info"><div class="fav-pick-name">'+t.name+'</div>' +
+function openFavPicker(){
+  var el=document.getElementById('fav-pick-list');
+  var existing=getFavs().map(function(f){return f.catId+'_'+f.tplId;});
+  var catNames={vias:'Informe de Vías',obras:'Obras en Vía',incidencia:'Incidencias',demanda:'Demanda'};
+  var items='';
+  Object.keys(TPLS).forEach(function(cat){
+    TPLS[cat].forEach(function(t){
+      if(existing.indexOf(cat+'_'+t.id)<0){
+        items+='<div class="fav-pick-item" onclick="addFav(\''+cat+'\',\''+t.id+'\',\''+
+          t.name.replace(/'/g,"\'")+'\',\''+t.icon+'\',\''+
+          (catNames[cat]||cat)+'\')">'+
+          '<div class="fav-pick-icon">'+t.icon+'</div>'+
+          '<div><div class="fav-pick-name">'+t.name+'</div>'+
           '<div class="fav-pick-cat">'+(catNames[cat]||cat)+'</div></div></div>';
       }
     });
   });
-  getCustomTpls().forEach(function(t, i) {
-    var key = 'custom_ct'+i;
-    var already = existing.indexOf(key) >= 0;
-    if(!already) {
-      items += '<div class="fav-pick-item" onclick="addFavCustom('+i+',\''+t.name+'\',\''+t.icon+'\')">' +
-        '<div class="fav-pick-icon">'+(t.icon||'📝')+'</div>' +
-        '<div class="fav-pick-info"><div class="fav-pick-name">'+t.name+'</div>' +
-        '<div class="fav-pick-cat">Mis Plantillas</div></div></div>';
-    }
+  getCustomTpls().forEach(function(t,i){
+    items+='<div class="fav-pick-item" onclick="addFavCustom('+i+',\''+
+      t.name.replace(/'/g,"\'")+'\',' +'\''+
+      (t.icon||'📝')+'\')">'+
+      '<div class="fav-pick-icon">'+(t.icon||'📝')+'</div>'+
+      '<div><div class="fav-pick-name">'+t.name+'</div>'+
+      '<div class="fav-pick-cat">Mis Plantillas</div></div></div>';
   });
-  el.innerHTML = items || '<div style="color:var(--mut);text-align:center;padding:20px;font-size:13px">Todas las plantillas ya están agregadas</div>';
+  el.innerHTML=items||'<div style="color:var(--mut);text-align:center;padding:20px;font-size:13px">Todas las plantillas ya están agregadas</div>';
   document.getElementById('fav-picker-ov').classList.add('open');
 }
 
-function closeFavPicker(e) {
-  if(e.target === document.getElementById('fav-picker-ov'))
-    document.getElementById('fav-picker-ov').classList.remove('open');
-}
-
-function addFav(cat, tplId, name, icon, catName, direct) {
-  var favs = getFavs();
-  favs.push({catId:cat, tplId:tplId, name:name, icon:icon, catName:catName, direct:direct||false});
+function addFav(cat,tplId,name,icon,catName){
+  var favs=getFavs();
+  favs.push({catId:cat,tplId:tplId,name:name,icon:icon,catName:catName,direct:(cat==='obras'||cat==='demanda')});
   saveFavs(favs);
   document.getElementById('fav-picker-ov').classList.remove('open');
   renderFavs();
   showToast('⭐ Agregado al acceso rápido');
 }
 
-function addFavCustom(idx, name, icon) {
-  var favs = getFavs();
-  favs.push({catId:'custom', tplId:'ct'+idx, tplIdx:idx, name:name, icon:icon||'📝', catName:'Mis Plantillas'});
+function addFavCustom(idx,name,icon){
+  var favs=getFavs();
+  favs.push({catId:'custom',tplId:'ct'+idx,tplIdx:idx,name:name,icon:icon||'📝',catName:'Mis Plantillas'});
   saveFavs(favs);
   document.getElementById('fav-picker-ov').classList.remove('open');
   renderFavs();
