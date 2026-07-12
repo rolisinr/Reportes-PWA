@@ -1840,6 +1840,55 @@ function setProgF(f) {
   renderProgContent();
 }
 
+
+function quitaTildes(s) {
+  return (s||'').replace(/[áàä]/gi,'a').replace(/[éèë]/gi,'e')
+    .replace(/[íìï]/gi,'i').replace(/[óòö]/gi,'o')
+    .replace(/[úùü]/gi,'u').replace(/ñ/gi,'n');
+}
+
+function parsePipeFormat(text) {
+  var items = [];
+  var lines = text.split('\n');
+  lines.forEach(function(line) {
+    line = line.trim();
+    if(!line) return;
+    // Ignorar líneas que no tienen pipes
+    if(line.indexOf('|') < 0) return;
+    // Ignorar línea de encabezado
+    if(line.toUpperCase().indexOf('ORDEN') === 0) return;
+    var parts = line.split('|');
+    if(parts.length < 2) return;
+    var nombre = quitaTildes((parts[1]||'').trim());
+    if(!nombre) return;
+    var orden = parseInt(parts[0]) || null;
+    var punto = quitaTildes((parts[2]||'').trim());
+    var sentido = (parts[3]||'').trim() || null;
+    var funcion = (parts[4]||'').trim() || 'Tranquera';
+    var cat = (parts[5]||'activo').trim().toLowerCase();
+    // Normalizar categoría
+    if(cat.indexOf('descanso') >= 0) cat = 'descanso';
+    else if(cat.indexOf('apoyo') >= 0) cat = 'apoyo_zona';
+    else if(cat.indexOf('compensat') >= 0) cat = 'compensatorio';
+    else if(cat.indexOf('vacacion') >= 0) cat = 'vacaciones';
+    else if(cat.indexOf('supervisor') >= 0) cat = 'supervisor';
+    else cat = 'activo';
+    items.push({
+      orden: orden,
+      nombre: nombre,
+      punto: punto,
+      sentido: sentido,
+      funcion: funcion,
+      categoria: cat,
+      qap_estado: null,
+      qap_hora_ini: null,
+      qap_hora_fin: null,
+      qap_orden: null
+    });
+  });
+  return {zona: 'CENTRO', items: items};
+}
+
 async function procesarProg() {
   var texto = (document.getElementById('prog-texto').value||'').trim();
   var msg = document.getElementById('prog-proc-msg');
@@ -1848,23 +1897,27 @@ async function procesarProg() {
   btn.disabled = true; btn.textContent = '⏳ Procesando…';
   msg.textContent = '';
   try {
-    var prompt = 'Eres asistente de operaciones del Corredor ' + getCorredor() + ' Lima, Peru.\n'
-      + 'Analiza esta distribucion semanal y extrae cada COV.\n\n'
-      + 'REGLAS IMPORTANTES:\n'
-      + '- Responde UNICAMENTE con JSON valido, sin texto adicional, sin markdown, sin backticks\n'
-      + '- Los valores de strings deben estar en UNA SOLA LINEA, sin saltos de linea dentro\n'
-      + '- Usa solo caracteres ASCII en los valores, sin tildes ni caracteres especiales\n'
-      + '- No pongas coma al final del ultimo elemento\n\n'
-      + 'Para cada COV incluye estos campos exactos:\n'
-      + '{"orden":1,"nombre":"Lazo Alvarez Manuel","punto":"CONDE SUPERUNDA CDRA 1","sentido":"N/S","funcion":"Tranquera","categoria":"activo"}\n\n'
-      + 'categoria puede ser: activo | apoyo_zona | compensatorio | descanso | vacaciones | supervisor\n'
-      + 'Ignora posiciones con *** o vacias (sin COV asignado).\n\n'
-      + 'Formato de respuesta (SOLO ESTO, nada mas):\n'
-      + '{"zona":"CENTRO","items":[...]}\n\n'
+    var prompt = 'Analiza esta distribucion semanal de COVs del Corredor ' + getCorredor() + '.\n'
+      + 'Extrae CADA persona que aparece con su informacion.\n\n'
+      + 'RESPONDE UNICAMENTE con lineas en este formato exacto (sin encabezado, sin explicacion):\n'
+      + 'ORDEN|NOMBRE|PUNTO|SENTIDO|FUNCION|CATEGORIA\n\n'
+      + 'Donde:\n'
+      + '- ORDEN: numero de orden si aparece, si no pon 0\n'
+      + '- NOMBRE: nombre completo SIN tildes (reemplaza a->a, e->e, o->o, u->u, n->n)\n'
+      + '- PUNTO: nombre del paradero o punto asignado\n'
+      + '- SENTIDO: N/S o S/N o AMBOS o vacio\n'
+      + '- FUNCION: Tranquera, 1Tranquera, 2Tranquera, Ruteo, Apoyo, etc.\n'
+      + '- CATEGORIA: activo, descanso, apoyo_zona, compensatorio, vacaciones, supervisor\n\n'
+      + 'Ejemplo de respuesta:\n'
+      + '2|Canta De La Cruz Jose|P. ICA CDRA 2|N/S|Ruteo|activo\n'
+      + '3|Silvestre Rojas Roli|P. NAZARENAS CDRA 4|N/S|Tranquera|activo\n'
+      + '0|Barbaran Zevallos Raquel||||||descanso\n\n'
+      + 'Incluye TODOS: activos, descanso, apoyo, compensatorio, etc.\n'
+      + 'Ignora solo las posiciones vacias (sin nombre de COV).\n\n'
       + 'Distribucion:\n' + texto;
 
     var res = await callGeminiText(prompt);
-    var data = parseGemJSON(res.text);
+    var data = parsePipeFormat(res.text);
     if(data && data.items && data.items.length) {
       saveProgHoy(data);
       showToast('✓ ' + data.items.length + ' COVs cargados · ' + res.model);
