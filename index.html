@@ -1814,7 +1814,8 @@ function renderProgContent() {
       ? '<span style="font-size:10px;color:var(--mut);margin-left:4px">(' + item.categoria + ')</span>'
       : '';
     var btn = '';
-    if(item.categoria === 'activo') {
+    var sinQAP = ['descanso','vacaciones','compensatorio'].indexOf(item.categoria) >= 0;
+    if(!sinQAP) {
       if(isQap) {
         btn = '<button class="qfin-btn" data-idx="' + realIdx + '" onclick="finQAP(+this.dataset.idx)">✓ Fin</button>';
       } else {
@@ -1864,6 +1865,11 @@ function parsePipeFormat(text) {
     var orden = parseInt(parts[0]) || null;
     var punto = quitaTildes((parts[2]||'').trim());
     var sentido = (parts[3]||'').trim() || null;
+    // Auto-corregir sentido desde el nombre del punto (más confiable)
+    if(punto) {
+      if(punto.indexOf('N/S') >= 0) sentido = 'N/S';
+      else if(punto.indexOf('S/N') >= 0) sentido = 'S/N';
+    }
     var funcion = (parts[4]||'').trim() || 'Tranquera';
     var cat = (parts[5]||'activo').trim().toLowerCase();
     // Normalizar categoría
@@ -2017,7 +2023,7 @@ function finQAP(idx) {
 function abrirQAPGrupal() {
   var data = getProgHoy();
   if(!data||!data.items) return;
-  var activos = data.items.filter(function(x){return x.categoria==='activo'&&x.qap_estado!=='qap';});
+  var activos = data.items.filter(function(x){return ['descanso','vacaciones','compensatorio'].indexOf(x.categoria)<0 && x.qap_estado!=='qap';});
   var el = document.getElementById('qap-sel-list');
   el.innerHTML = activos.map(function(item, i){
     return '<div class="pi" id="qsel-' + i + '">'
@@ -2056,7 +2062,7 @@ function progSelAll() {
 function confirmarQAPGrupal() {
   var data = getProgHoy();
   if(!data||!data.items) return;
-  var activos = data.items.filter(function(x){return x.categoria==='activo'&&x.qap_estado!=='qap';});
+  var activos = data.items.filter(function(x){return ['descanso','vacaciones','compensatorio'].indexOf(x.categoria)<0 && x.qap_estado!=='qap';});
   var enQap = data.items.filter(function(x){return x.qap_estado==='qap';}).length;
   var selected = [];
   document.querySelectorAll('#qap-sel-list .pi-cb.on').forEach(function(cb){
