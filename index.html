@@ -1849,17 +1849,18 @@ async function procesarProg() {
   msg.textContent = '';
   try {
     var prompt = 'Eres asistente de operaciones del Corredor ' + getCorredor() + ' Lima, Peru.\n'
-      + 'Analiza esta distribucion semanal y extrae la informacion de cada COV.\n\n'
-      + 'Para cada COV extrae:\n'
-      + '- orden: numero (si tiene, si no null)\n'
-      + '- nombre: nombre completo\n'
-      + '- punto: paradero o ubicacion\n'
-      + '- sentido: N/S, S/N, o null\n'
-      + '- funcion: Tranquera, 1Tranquera, 2Tranquera, Ruteo, etc.\n'
-      + '- categoria: activo | apoyo_zona | compensatorio | descanso | vacaciones | supervisor\n\n'
-      + 'Ignora posiciones con *** o vacias.\n'
-      + 'Responde SOLO con JSON valido, sin markdown:\n'
-      + '{"zona":"CENTRO","items":[{"orden":1,"nombre":"...","punto":"...","sentido":"N/S","funcion":"Tranquera","categoria":"activo"}]}\n\n'
+      + 'Analiza esta distribucion semanal y extrae cada COV.\n\n'
+      + 'REGLAS IMPORTANTES:\n'
+      + '- Responde UNICAMENTE con JSON valido, sin texto adicional, sin markdown, sin backticks\n'
+      + '- Los valores de strings deben estar en UNA SOLA LINEA, sin saltos de linea dentro\n'
+      + '- Usa solo caracteres ASCII en los valores, sin tildes ni caracteres especiales\n'
+      + '- No pongas coma al final del ultimo elemento\n\n'
+      + 'Para cada COV incluye estos campos exactos:\n'
+      + '{"orden":1,"nombre":"Lazo Alvarez Manuel","punto":"CONDE SUPERUNDA CDRA 1","sentido":"N/S","funcion":"Tranquera","categoria":"activo"}\n\n'
+      + 'categoria puede ser: activo | apoyo_zona | compensatorio | descanso | vacaciones | supervisor\n'
+      + 'Ignora posiciones con *** o vacias (sin COV asignado).\n\n'
+      + 'Formato de respuesta (SOLO ESTO, nada mas):\n'
+      + '{"zona":"CENTRO","items":[...]}\n\n'
       + 'Distribucion:\n' + texto;
 
     var res = await callGeminiText(prompt);
@@ -2127,8 +2128,27 @@ async function callGemini(audioB64, mimeType, prompt) {
 function parseGemJSON(text) {
   var s=text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
   var i=s.indexOf('{'), j=s.lastIndexOf('}');
-  if(i<0||j<0) throw new Error('Sin JSON en respuesta');
-  return JSON.parse(s.slice(i,j+1));
+  if(i<0||j<0) throw new Error('Sin JSON en respuesta de IA');
+  var raw=s.slice(i,j+1);
+  // Fix 1: quitar comas finales antes de } o ]
+  var clean=raw.replace(/,\s*([}\]])/g,'$1');
+  try { return JSON.parse(clean); } catch(e1) {
+    // Fix 2: eliminar saltos de línea dentro de strings
+    try {
+      var c2=clean.replace(/([^\\])\n/g,'$1 ').replace(/([^\\])\r/g,'$1 ');
+      return JSON.parse(c2);
+    } catch(e2) {
+      // Fix 3: extraer solo el array de items si existe
+      var m=clean.match(/"items"\s*:\s*(\[.*\])/s);
+      if(m){
+        try {
+          var arr=JSON.parse(m[1].replace(/,\s*]/g,']').replace(/([^\\])\n/g,'$1 '));
+          return {items:arr};
+        } catch(e3){}
+      }
+      throw new Error('JSON inválido: '+e1.message);
+    }
+  }
 }
 
 // -- RECORDING --
