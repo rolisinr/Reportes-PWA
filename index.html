@@ -28,8 +28,8 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
 .hdr-title{font-size:15px;font-weight:700}
 .hdr-title span{color:var(--acc)}
 .hdr-r{display:flex;align-items:center;gap:10px}
-.hdr-clock{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
-.hdr-date{font-size:10px;color:var(--mut)}
+.hdr-clock{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.hdr-date{font-size:11px;color:var(--mut);margin-left:3px}
 .hdr-btns{display:flex;gap:6px}
 .icon-btn{background:none;border:none;font-size:18px;cursor:pointer;padding:4px;border-radius:8px;-webkit-tap-highlight-color:transparent;line-height:1}
 .icon-btn:active{background:var(--bg)}
@@ -77,12 +77,18 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 /* CAT GRID */
 .sec-lbl{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
 .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px}
-.cat-btn{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:12px 11px;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;gap:3px;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:border-color .15s;position:relative}
+.cat-btn{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:13px 14px 13px 12px;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:row;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:border-color .15s;border-left:4px solid var(--cc,var(--acc))}
 .cat-btn:active{transform:scale(.97)}
-.cat-icon{font-size:20px;line-height:1}
-.cat-name{font-size:13px;font-weight:700}
-.cat-sub{font-size:10px;color:var(--mut)}
-.cat-strip{height:3px;border-radius:2px;margin-top:2px}
+.cat-icon{font-size:24px;line-height:1;flex-shrink:0}
+.cat-info{flex:1}
+.cat-name{font-size:14px;font-weight:800}
+.cat-sub{font-size:10px;color:var(--mut);margin-top:2px}
+.cat-strip{display:none}
+[data-cat="vias"]{--cc:#16A34A;background:#F0FBF4}
+[data-cat="incidencia"]{--cc:#DC2626;background:#FEF5F5}
+[data-cat="obras"]{--cc:#C07800;background:#FFFCF0}
+[data-cat="demanda"]{--cc:#7C3AED;background:#F7F3FF}
+.cat-btn:hover{border-left-color:var(--cc,var(--acc))}
 
 /* SERVICIO BLOCK */
 .srv-block{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:9px}
@@ -378,84 +384,65 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 .rutas-wrap{display:flex;flex-wrap:wrap;gap:2px;margin-bottom:8px;min-height:30px}
 .add-ruta-row{display:flex;gap:6px}
 
-/* === ETAPA 2 === */
-.multisel{display:flex;flex-wrap:wrap;gap:6px}
-.mopt{background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;
-  padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;
-  font-family:inherit;color:var(--mut);-webkit-tap-highlight-color:transparent;transition:all .15s}
-.mopt.on{background:var(--acc);border-color:var(--acc);color:#fff}
-.otro-inp{margin-top:6px;display:none}
-.otro-inp.show{display:block}
-.relevo-extra{display:none}
-.relevo-extra.show{display:block;margin-top:6px}
-
-/* === ETAPA 3 - PROGRAMACIÓN === */
+/* ── PROGRAMACIÓN ── */
 .prog-btn{width:100%;background:#fff;border:1.5px solid #B8D4F0;border-radius:var(--r);
-  padding:11px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.06);
-  font-family:inherit;transition:border-color .15s;margin-bottom:9px;
+  padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;
+  font-family:inherit;margin-top:9px;-webkit-tap-highlight-color:transparent;
   background:linear-gradient(135deg,#F0F7FF 0%,#fff 100%)}
-.prog-btn:hover{border-color:var(--acc)}
 .prog-btn:active{transform:scale(.98)}
-
-.prog-filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
-.prog-filter-row::-webkit-scrollbar{display:none}
-.prog-fchip{background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;
-  padding:5px 12px;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;
-  white-space:nowrap;font-family:inherit;-webkit-tap-highlight-color:transparent}
-.prog-fchip.on{background:var(--acc);border-color:var(--acc);color:#fff}
-
-.prog-stats{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-.prog-stat{background:#fff;border:1px solid var(--brd);border-radius:10px;
-  padding:5px 10px;font-size:11px;font-weight:700}
-.prog-stat.activo{color:var(--gr);border-color:var(--gr)}
-.prog-stat.qap{color:var(--or);border-color:var(--or)}
-.prog-stat.desc{color:var(--mut)}
-
+.prog-filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:10px;scrollbar-width:none}
+.prog-filters::-webkit-scrollbar{display:none}
+.pfchip{background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;
+  padding:5px 12px;font-size:12px;font-weight:600;color:var(--mut);
+  cursor:pointer;white-space:nowrap;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.pfchip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.prog-stats{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.pstat{font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;border:1px solid}
+.pstat.a{color:var(--gr);border-color:var(--gr);background:#F0FBF4}
+.pstat.q{color:var(--or);border-color:var(--or);background:#FFFBF0}
+.pstat.o{color:var(--mut);border-color:var(--brd)}
 .prog-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-.prog-item{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);
-  padding:10px 12px;display:flex;align-items:center;gap:10px;
-  box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.prog-item.qap-activo{border-color:var(--or);background:#FFFBF0}
-.prog-item.seleccionado{border-color:var(--acc);background:#EBF3FF}
-.prog-item-info{flex:1;min-width:0}
-.prog-item-nombre{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prog-item-punto{font-size:11px;color:var(--mut);margin-top:1px}
-.prog-item-actions{display:flex;gap:5px;flex-shrink:0}
-.qap-ini-btn{background:var(--or);color:#fff;border:none;border-radius:var(--rs);
-  padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;
+.pi{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);
+  padding:9px 12px;display:flex;align-items:center;gap:9px;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);transition:border-color .15s}
+.pi.inqap{border-color:var(--or);background:#FFFBF0}
+.pi.sel{border-color:var(--acc);background:#EBF3FF}
+.pi-info{flex:1;min-width:0}
+.pi-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pi-sub{font-size:11px;color:var(--mut);margin-top:1px}
+.pi-badge{font-size:10px;font-weight:700;color:var(--or);background:#FFF0D0;
+  border-radius:8px;padding:2px 7px;margin-top:2px;display:inline-block}
+.pi-btns{display:flex;gap:5px;flex-shrink:0}
+.qini-btn{background:var(--or);color:#fff;border:none;border-radius:var(--rs);
+  padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;
   -webkit-tap-highlight-color:transparent}
-.qap-fin-btn{background:var(--gr);color:#fff;border:none;border-radius:var(--rs);
-  padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;
+.qfin-btn{background:var(--gr);color:#fff;border:none;border-radius:var(--rs);
+  padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;
   -webkit-tap-highlight-color:transparent}
-.qap-badge{font-size:10px;font-weight:700;color:var(--or);background:#FFF0D0;
-  border-radius:8px;padding:2px 6px;white-space:nowrap}
-.prog-sel-cb{width:20px;height:20px;border:2px solid var(--brd);border-radius:5px;
-  flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-size:13px;-webkit-tap-highlight-color:transparent}
-.prog-sel-cb.on{background:var(--acc);border-color:var(--acc)}
-
+.pi-cb{width:20px;height:20px;border:2px solid var(--brd);border-radius:5px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;
+  -webkit-tap-highlight-color:transparent;user-select:none}
+.pi-cb.on{background:var(--acc);border-color:var(--acc);color:#fff}
 .prog-empty{text-align:center;padding:30px 20px;color:var(--mut);font-size:13px;line-height:1.8}
-.prog-paste-area{background:var(--bg);border:1.5px dashed var(--brd);border-radius:var(--r);
-  padding:12px;font-size:13px;color:var(--txt);width:100%;min-height:120px;
+.prog-paste{background:var(--bg);border:1.5px dashed var(--brd);border-radius:var(--r);
+  padding:12px;font-size:13px;color:var(--txt);width:100%;min-height:100px;
   font-family:inherit;outline:none;resize:vertical;margin-bottom:10px;line-height:1.5}
-.prog-paste-area:focus{border-color:var(--acc)}
+.prog-paste:focus{border-color:var(--acc)}
 .prog-proc-btn{width:100%;background:var(--acc);color:#fff;border:none;border-radius:var(--r);
   padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
   display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:8px;
   -webkit-tap-highlight-color:transparent}
-.prog-proc-btn:active{opacity:.85}
-.prog-proc-btn:disabled{opacity:.5;cursor:default}
-.prog-qap-bar{background:#fff;border:1.5px solid var(--or);border-radius:var(--r);
-  padding:10px 13px;display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:10px}
-.prog-qap-count{font-size:13px;font-weight:700;color:var(--or)}
-.prog-sel-all-btn{background:none;border:1px solid var(--brd);border-radius:20px;
-  padding:4px 10px;font-size:11px;color:var(--mut);cursor:pointer;font-family:inherit}
-.prog-confirm-btn{width:100%;background:var(--or);color:#fff;border:none;border-radius:var(--r);
+.qap-bar{display:flex;align-items:center;justify-content:space-between;
+  background:#fff;border:1.5px solid var(--or);border-radius:var(--r);
+  padding:9px 12px;margin-bottom:10px}
+.qap-count{font-size:13px;font-weight:700;color:var(--or)}
+.qap-confirm{width:100%;background:var(--or);color:#fff;border:none;border-radius:var(--r);
   padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
   margin-bottom:calc(10px + var(--safe));-webkit-tap-highlight-color:transparent}
-.prog-confirm-btn:disabled{opacity:.4;cursor:default}
+.qap-confirm:disabled{opacity:.4;cursor:default}
+.grp-btn{width:100%;background:var(--or);color:#fff;border:none;border-radius:var(--r);
+  padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
+  margin-bottom:9px;-webkit-tap-highlight-color:transparent}
 </style>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -616,7 +603,6 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </button>
   </div>
 
-  <!-- IA -->
   <button class="prog-btn" onclick="openProg()">
     <div style="font-size:22px">📅</div>
     <div style="flex:1;text-align:left">
@@ -626,6 +612,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     <span style="color:var(--mut);font-size:16px">›</span>
   </button>
 
+  <!-- IA -->
   <button class="ia-main-btn" onclick="go('s-ia')">
     <div class="ia-mb-icon">🤖</div>
     <div class="ia-mb-txt">
@@ -765,56 +752,37 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   <button class="add-ctpl-btn" onclick="saveCustomTpl()" style="margin-bottom:calc(12px + var(--safe))">✓ Guardar plantilla</button>
 </div>
 
-<!-- PROGRAMACIÓN -->
+<!-- PROGRAMACIÓN PANTALLA PRINCIPAL -->
 <div class="screen" id="s-prog">
-  <div class="back-row" onclick="goBack()">
-    <span class="back-icon">‹</span><span class="back-lbl">Inicio</span>
-  </div>
+  <div class="back-row" onclick="goBack()"><span class="back-icon">‹</span><span class="back-lbl">Inicio</span></div>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
     <div style="font-size:15px;font-weight:700">📅 Programación</div>
-    <button onclick="openProgPaste()" style="background:var(--bg);border:1.5px solid var(--brd);
-      border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--mut);
-      cursor:pointer;font-family:inherit">📋 Cargar</button>
+    <button onclick="go('s-prog-paste')" style="background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">📋 Cargar</button>
   </div>
-  <div id="prog-content">
-    <div class="prog-empty">
-      📅 Sin programación cargada<br>
-      <small>Toca "Cargar" para pegar la distribución semanal</small>
-    </div>
-  </div>
+  <div id="prog-content"><div class="prog-empty">📅 Sin programación cargada<br><small>Toca "Cargar" para pegar la distribución semanal</small></div></div>
 </div>
 
 <!-- PEGAR PROGRAMACIÓN -->
 <div class="screen" id="s-prog-paste">
-  <div class="back-row" onclick="goBack()">
-    <span class="back-icon">‹</span><span class="back-lbl">Programación</span>
-  </div>
+  <div class="back-row" onclick="goBack()"><span class="back-icon">‹</span><span class="back-lbl">Programación</span></div>
   <div style="font-size:15px;font-weight:700;margin-bottom:6px">📋 Cargar programación</div>
-  <div style="font-size:12px;color:var(--mut);margin-bottom:12px">
-    Copia el texto de WhatsApp y pégalo aquí. La IA reconocerá los datos automáticamente.
-  </div>
-  <textarea class="prog-paste-area" id="prog-texto" placeholder="Pega aquí la distribución semanal..."></textarea>
-  <button class="prog-proc-btn" id="prog-proc-btn" onclick="procesarProg()">
-    🤖 Procesar con IA
-  </button>
-  <div id="prog-proc-result" style="font-size:12px;color:var(--mut);text-align:center"></div>
+  <div style="font-size:12px;color:var(--mut);margin-bottom:12px">Copia el texto de WhatsApp y pégalo aquí. La IA reconocerá los datos automáticamente.</div>
+  <textarea class="prog-paste" id="prog-texto" placeholder="Pega aquí la distribución semanal..."></textarea>
+  <button class="prog-proc-btn" id="prog-proc-btn" onclick="procesarProg()">🤖 Procesar con IA</button>
+  <div id="prog-proc-msg" style="font-size:12px;color:var(--mut);text-align:center;min-height:20px"></div>
 </div>
 
-<!-- QAP GRUPAL -->
+<!-- QAP GRUPAL SELECCIÓN -->
 <div class="screen" id="s-prog-qap">
-  <div class="back-row" onclick="goBack()">
-    <span class="back-icon">‹</span><span class="back-lbl">Programación</span>
-  </div>
-  <div style="font-size:15px;font-weight:700;margin-bottom:4px" id="qap-screen-title">☕ Iniciar QAP</div>
+  <div class="back-row" onclick="goBack()"><span class="back-icon">‹</span><span class="back-lbl">Programación</span></div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:4px">☕ Iniciar QAP Grupal</div>
   <div style="font-size:12px;color:var(--mut);margin-bottom:12px">Selecciona a quiénes vas a sacar a QAP</div>
-  <div class="prog-qap-bar">
-    <div class="prog-qap-count"><span id="qap-sel-count">0</span> seleccionados</div>
-    <button class="prog-sel-all-btn" onclick="toggleSelAll()">Todos / Ninguno</button>
+  <div class="qap-bar">
+    <span class="qap-count"><span id="qap-sel-n">0</span> seleccionados</span>
+    <button onclick="progSelAll()" style="background:none;border:1px solid var(--brd);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--mut);cursor:pointer;font-family:inherit">Todos / Ninguno</button>
   </div>
   <div class="prog-list" id="qap-sel-list"></div>
-  <button class="prog-confirm-btn" id="qap-confirm-btn" onclick="confirmarQAPGrupal()" disabled>
-    ☕ Confirmar QAP
-  </button>
+  <button class="qap-confirm" id="qap-confirm-btn" onclick="confirmarQAPGrupal()" disabled>☕ Confirmar QAP</button>
 </div>
 
 </main>
@@ -824,6 +792,10 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   <div class="quick-sheet">
     <div class="qs-title" id="qs-title"></div>
     <div class="qs-prev" id="qs-prev"></div>
+    <div id="qs-relevo-row" style="display:none;margin:8px 0 0">
+      <div style="font-size:11px;color:var(--mut);margin-bottom:4px">Relevo (nombre y turno):</div>
+      <input id="qs-relevo-inp" class="fi" type="text" placeholder="Ej: Pérez Juan - Turno Tarde" oninput="updateRelevoMsg()">
+    </div>
     <div class="qs-btns">
       <button class="act-btn act-copy" onclick="quickCopy()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
@@ -842,7 +814,6 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 <div class="drawer" id="dw-settings">
   <div class="drawer-handle"></div>
   <div class="drawer-title">⚙️ Configuración</div>
-
   <div class="dw-sec">
     <div class="dw-sec-title">Tamaño de letra</div>
     <div class="dw-row">
@@ -855,6 +826,22 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </div>
   </div>
 
+  <div class="dw-sec">
+    <div class="dw-sec-title">Corredor</div>
+    <div class="turno-seg" id="corr-sel" style="margin-bottom:0">
+      <button class="turno-opt" data-v="TGA" onclick="selCorredor(this)">TGA</button>
+      <button class="turno-opt" data-v="SJL" onclick="selCorredor(this)">SJL</button>
+      <button class="turno-opt" data-v="PAB" onclick="selCorredor(this)">PAB</button>
+    </div>
+  </div>
+  <div class="dw-sec">
+    <div class="dw-sec-title">Rutas del corredor</div>
+    <div class="rutas-wrap" id="rutas-wrap"></div>
+    <div class="add-ruta-row">
+      <input class="dw-input" id="nueva-ruta" type="text" placeholder="Ej: 307" style="flex:1;width:auto" onkeydown="if(event.key==='Enter')addRuta()">
+      <button onclick="addRuta()" style="background:var(--acc);color:#fff;border:none;border-radius:var(--rs);padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">+ Agregar</button>
+    </div>
+  </div>
   <div class="dw-sec">
     <div class="dw-sec-title">Permisos</div>
     <div class="perm-row">
@@ -872,28 +859,6 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       <button class="perm-req-btn" id="perm-mic-btn" onclick="handleMicPerm()">Activar</button>
     </div>
   </div>
-
-  <div class="dw-sec">
-    <div class="dw-sec-title">Corredor</div>
-    <div class="turno-seg" id="corr-sel" style="margin-bottom:0">
-      <button class="turno-opt" data-v="TGA" onclick="selCorredor(this)">TGA</button>
-      <button class="turno-opt" data-v="SJL" onclick="selCorredor(this)">SJL</button>
-      <button class="turno-opt" data-v="PAB" onclick="selCorredor(this)">PAB</button>
-    </div>
-  </div>
-
-  <div class="dw-sec">
-    <div class="dw-sec-title">Rutas del corredor</div>
-    <div class="rutas-wrap" id="rutas-wrap"></div>
-    <div class="add-ruta-row">
-      <input class="dw-input" id="nueva-ruta" type="text" placeholder="Ej: 307"
-        style="flex:1;width:auto" onkeydown="if(event.key==='Enter')addRuta()">
-      <button onclick="addRuta()" style="background:var(--acc);color:#fff;border:none;
-        border-radius:var(--rs);padding:9px 14px;font-size:12px;font-weight:700;
-        cursor:pointer;font-family:inherit">+ Agregar</button>
-    </div>
-  </div>
-
   <div class="dw-sec">
     <div class="dw-sec-title">Recordatorio de informe de vías</div>
     <div class="dw-row">
@@ -907,20 +872,33 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   </div>
 
   <div class="dw-sec">
-    <div class="dw-sec-title">Google Sheets</div>
-    <div style="font-size:11px;color:var(--mut);margin-bottom:8px;line-height:1.5">
-      La clave de IA y configuración global se leen automáticamente desde el Sheet.
-    </div>
-    <button onclick="testSheetConn()" style="width:100%;background:var(--bg);
-      border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;
-      font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">
-      🔗 Verificar conexión</button>
+    <div class="dw-sec-title">📊 Google Sheets</div>
+    <div style="font-size:11px;color:var(--mut);margin-bottom:8px">Clave IA y configuración global vienen del Sheet automáticamente.</div>
+    <button onclick="testSheetConn()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">🔗 Verificar conexión</button>
     <div id="sheet-test-result" style="font-size:11px;margin-top:6px;display:none"></div>
   </div>
-
   <button class="dw-save" onclick="saveSettings()">Guardar configuración</button>
 </div>
 
+<!-- MINI IA OVERLAY -->
+<div class="mini-ov" id="mini-ov">
+  <div class="mini-sheet">
+    <div class="ms-title">🤖 IA — <span id="ms-tpl-name"></span></div>
+    <div class="ms-sub">Describe brevemente la situación. Gemini completará los campos del formulario.</div>
+    <div class="ms-rec-area">
+      <button class="ms-mic" id="ms-mic" onclick="msToggleRec()">🎤</button>
+      <div class="ms-status" id="ms-status">Toca para grabar</div>
+      <div class="ms-timer" id="ms-timer">00:00</div>
+    </div>
+    <button class="ms-cancel" onclick="closeMiniIA()">Cancelar</button>
+  </div>
+</div>
+<div class="fav-picker-ov" id="fav-picker-ov" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="fav-picker">
+    <div class="fav-picker-title">⭐ Agregar acceso rápido</div>
+    <div id="fav-pick-list"></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1023,7 +1001,7 @@ if(screen.orientation && screen.orientation.lock) screen.orientation.lock("portr
 // ═══════════════════════════════════════════
 // NAVIGATION STACK
 // ═══════════════════════════════════════════
-const navStack = ["s-welcome"];
+const navStack = [];
 function showScreen(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
@@ -1031,31 +1009,22 @@ function showScreen(id){
 }
 function go(id){
   navStack.push(id);
-  history.pushState({covapp:true,len:navStack.length},'');
+  history.pushState(null,"");
   showScreen(id);
 }
 function goBack(){
   if(navStack.length>1){
     navStack.pop();
     showScreen(navStack[navStack.length-1]);
-    history.replaceState({covapp:true,len:navStack.length},'');
   }
+  // Si ya estamos en la raíz, no hacer nada (no sale de la app)
 }
 
-history.replaceState({covapp:true,len:1,guard:true},'');
-history.pushState({covapp:true,len:1},'');
-window.addEventListener('popstate',function(e){
-  if(e.state&&e.state.covapp){
-    if(navStack.length>1){
-      navStack.pop();
-      showScreen(navStack[navStack.length-1]);
-      history.replaceState({covapp:true,len:navStack.length},'');
-    } else {
-      history.pushState({covapp:true,len:1},'');
-    }
-  } else {
-    history.pushState({covapp:true,len:navStack.length},'');
-  }
+// Sentinela: intercepta el botón físico de retroceso en Android
+history.pushState(null,"");
+window.addEventListener("popstate",function(){
+  goBack();
+  history.pushState(null,""); // re-empuja para seguir interceptando
 });
 
 // ═══════════════════════════════════════════
@@ -1214,24 +1183,20 @@ function quickService(type){
   const t = nowTime();
   const sal = {MAÑANA:"Buen día",TARDE:"Buenas tardes",NOCHE:"Buenas noches"}[p.turno]||"Buenos días";
   const msgs = {
-    "inicio":   `${sal} inicio de servicio
-${B("COV:")} ${n}
-${B("Hora:")} ${t}`,
-    "termino":  `Término de servicio
-${B("COV:")} ${n}
-${B("Hora:")} ${t}`,
-    "qap-ini":  `${B("INICIO DE QAP")}
-${B("COV:")} ${n}
-${B("Hora:")} ${t}`,
-    "qap-fin":  `${B("FIN DE QAP")}
-${B("COV:")} ${n}
-${B("Hora:")} ${t}`,
+    "inicio":   `${sal} inicio de servicio\n${B("COV:")} ${n}`,
+    "termino":  `Término de servicio\n${B("COV:")} ${n}`,
+    "qap-ini":  `${B("INICIO DE QAP")}\n${B("COV:")} ${n}`,
+    "qap-fin":  `${B("FIN DE QAP")}\n${B("COV:")} ${n}`,
   };
   const titles = {"inicio":"Inicio de Servicio","termino":"Término de Servicio","qap-ini":"Inicio de QAP","qap-fin":"Fin de QAP"};
   quickMsg = msgs[type]||"";
   quickCat = "servicio";
   document.getElementById("qs-title").textContent = titles[type]||"";
   document.getElementById("qs-prev").textContent = quickMsg;
+  var rr=document.getElementById('qs-relevo-row');
+  if(rr) rr.style.display=type==='termino'?'block':'none';
+  var ri=document.getElementById('qs-relevo-inp');
+  if(ri) ri.value='';
   document.getElementById("quick-overlay").classList.add("open");
 }
 function closeQuick(e){
@@ -1264,253 +1229,229 @@ const getCOV = () => (getProfile().nombre)||"";
 const getUbi = () => (getProfile().ubi)||"";
 const getTurno = () => (getProfile().turno)||"TARDE";
 
-var TPLS = {
+const TPLS = {
   vias:[
     {
-      id:'informe-via', icon:'🛣️', name:'Informe de Vías',
-      desc:'Estado de vía, semáforos y segregado',
-      required:['ubicacion'],
+      id:"informe-via", icon:"🛣️", name:"Informe de Vías",
+      desc:"Estado de vía, semáforos y segregado",
+      required:["ubicacion","ns","sn"],
       fields:[
-        {id:'ubicacion', label:'Ubicación / Paradero', type:'text', autofill:'ubi'},
-        {id:'ns',  label:'Tránsito N/S', type:'sel', opts:['fluido','moderado','cargado','detenido']},
-        {id:'sn',  label:'Tránsito S/N', type:'sel', opts:['fluido','moderado','cargado','detenido']},
-        {id:'sem', label:'Semáforos',    type:'sel', opts:['OPERATIVOS','NO OPERATIVOS']},
-        {id:'pnp', label:'Efectivo policial', type:'sel', opts:['SÍ contamos','NO contamos']},
-        {id:'pnp_det', label:'Detalle PNP', type:'text', opt:true},
-        {id:'seg', label:'Segregado', type:'sel-otro', opts:['con normalidad','con dificultades','cerrado temporalmente','con restricción']},
-        {id:'rec', label:'Personal de recaudo', type:'sel', opts:['SÍ, en punto','NO en el punto','No aplica']},
-        {id:'rec_par', label:'Paradero de recaudo', type:'text', opt:true},
-        {id:'extra', label:'Novedad adicional', type:'text', opt:true},
+        {id:"ubicacion", label:"Ubicación / Paradero", type:"text", autofill:"ubi"},
+        {id:"ns",  label:"Tránsito N/S", type:"sel", opts:["fluido","moderado","cargado","detenido"]},
+        {id:"sn",  label:"Tránsito S/N", type:"sel", opts:["fluido","moderado","cargado","detenido"]},
+        {id:"sem", label:"Semáforos",    type:"sel", opts:["OPERATIVOS","NO OPERATIVOS"]},
+        {id:"pnp", label:"Efectivo policial", type:"sel", opts:["SÍ contamos","NO contamos"]},
+        {id:"pnp_det", label:"Detalle PNP", type:"text", opt:true},
+        {id:"seg", label:"Segregado",    type:"sel", opts:["con normalidad","con dificultades","con restricción","Otro"]},
+        {id:"rec", label:"Personal de recaudo", type:"sel", opts:["SÍ, en punto","NO en el punto","No aplica"]},
+        {id:"rec_par", label:"Paradero de recaudo", type:"text", opt:true},
+        {id:"extra", label:"Novedad adicional", type:"text", opt:true},
       ],
-      gen:function(f){
-        var pnp = f.pnp==='SÍ contamos'
-          ? '🔹'+B('SI contamos')+' con presencia de EFECTIVO POLICIAL'+(f.pnp_det?' ('+f.pnp_det+')':'')+' 👮🏻‍♂️'
-          : '🔹'+B('NO contamos')+' con presencia de EFECTIVO POLICIAL';
-        var rec = f.rec==='No aplica' ? '' :
-          f.rec==='SÍ, en punto'
-            ? '\n🔹Personal de recaudo'+(f.rec_par?' en paradero '+f.rec_par.toUpperCase():' en el punto')
-            : '\n🔹NO contamos con personal de recaudo en el punto';
-        var extra = f.extra ? '\n🔹'+f.extra : '';
-        return '🛣️'+B('INFORME DE VIAS')+'🛣️\n'
-          +'📆 '+B('Fecha:')+' '+today()+'\n'
-          +'👮🏻‍♀ '+B('COV:')+' '+getCOV()+'\n'
-          +'📝 Lo que respecta a '+f.ubicacion+'\n'
-          +'🔹Tránsito '+B(f.ns)+' N/S y '+B(f.sn)+' S/N 🛣️\n'
-          +'🔹Semáforos '+B(f.sem)+' 🚦\n'
-          +pnp+'\n'
-          +'🔹Unidades del corredor entrando al SEGREGADO '+f.seg+' 🚎'
-          +rec+extra+'\n'
-          +'📸'+B('ADJUNTO FOTOS')+'📸';
+      gen: f => {
+        const pnp = f.pnp==="SÍ contamos"
+          ? `🔹${B("SÍ contamos")} con presencia de EFECTIVO POLICIAL${f.pnp_det?" ("+f.pnp_det+")":""} 👮🏻‍♂️`
+          : `🔹${B("NO contamos")} con presencia de EFECTIVO POLICIAL`;
+        const rec = f.rec==="No aplica" ? "" :
+          f.rec==="SÍ, en punto"
+          ? `\n🔹Personal de recaudo${f.rec_par?" en paradero "+f.rec_par.toUpperCase():" en el punto"}`
+          : `\n🔹NO contamos con personal de recaudo en el punto`;
+        return `🛣️${B("INFORME DE VIAS")}🛣️
+📆 ${B("Fecha:")} ${today()}
+👮🏻‍♀ ${B("COV:")} ${getCOV()}
+📝 Lo que respecta a ${f.ubicacion}
+🔹Tránsito ${B(f.ns)} N/S y ${B(f.sn)} S/N 🛣️
+🔹Semáforos ${B(f.sem)} 🚦
+${pnp}
+🔹Unidades del corredor entrando al ${B("SEGREGADO")} ${f.seg} 🚎${rec}${f.extra?"\n🔹"+f.extra:""}
+📸${B("ADJUNTO FOTOS")}📸`;
       }
     },
     {
-      id:'situacion', icon:'🚨', name:'Situación Actual',
-      desc:'Reporte rápido con observación puntual',
-      required:['obs'],
+      id:"situacion", icon:"🚨", name:"Situación Actual",
+      desc:"Reporte rápido con observación puntual",
+      required:["obs"],
       fields:[
-        {id:'ubicacion', label:'Ubicación', type:'text', autofill:'ubi'},
-        {id:'sent',  label:'Sentido', type:'sel', opts:['Ambos','S/N','N/S','E/O','O/E']},
-        {id:'obs',   label:'Observación', type:'ta'},
-        {id:'media', label:'Adjunto', type:'sel', opts:['sin adjunto','FOTO 📷','VIDEO 📷','FOTO Y VIDEO 📷']},
+        {id:"ubicacion", label:"Ubicación", type:"text", autofill:"ubi"},
+        {id:"sent",  label:"Sentido", type:"sel", opts:["Ambos","S/N","N/S","E/O","O/E"]},
+        {id:"obs",   label:"Observación", type:"ta"},
+        {id:"media", label:"Adjunto", type:"sel", opts:["sin adjunto","FOTO 📷","VIDEO 📷","FOTO Y VIDEO 📷"]},
       ],
-      gen:function(f){
-        var ubiLine = f.ubicacion ? '\n📍 '+B('UBICACION:')+' '+f.ubicacion : '';
-        var mediaLine = f.media!=='sin adjunto' ? '\n📷 ADJUNTO '+f.media : '';
-        return '🚨 '+B('SITUACION ACTUAL')+' - '+B(getCorredor())+'\n'
-          +'👤  '+B('PERSONAL COV:')+'\n'
-          +'       '+getCOV()+ubiLine+'\n'
-          +'🔁  '+B('SENTIDO:')+' '+f.sent+'\n\n'
-          +'✍🏼  '+B('OBSERVACION:')+'\n'
-          +'▪️'+f.obs
-          +mediaLine;
+      gen: f => {
+        const ubiLine = f.ubicacion ? `\n📍 ${B("UBICACION:")} ${f.ubicacion}` : "";
+        const mediaLine = f.media!=="sin adjunto" ? `\n📷 ADJUNTO ${f.media}` : "";
+        return `🚨 ${B("SITUACION ACTUAL")} - ${B(getCorredor())}
+👤  ${B("PERSONAL COV:")} 
+       ${getCOV()}${ubiLine}
+🔁  ${B("SENTIDO:")} ${f.sent}
+
+✍🏼  ${B("OBSERVACION:")} 
+▪️${f.obs}${mediaLine}`;
       }
     },
   ],
   obras:[
     {
-      id:'obras-via', icon:'🏗️', name:'Obras en Vía',
-      desc:'Construcción o mantenimiento vial',
-      required:['ubicacion','desc'],
+      id:"obras-via", icon:"🏗️", name:"Obras en Vía",
+      desc:"Construcción o mantenimiento vial",
+      required:["ubicacion","desc"],
       fields:[
-        {id:'ubicacion', label:'Ubicación de la obra', type:'text'},
-        {id:'empresa',   label:'Empresa ejecutora', type:'text'},
-        {id:'contrat',   label:'Contratante', type:'text', opt:true},
-        {id:'duracion',  label:'Duración / Horario', type:'text', opt:true},
-        {id:'desc',      label:'Descripción', type:'ta'},
-        {id:'ns', label:'Tránsito N/S', type:'sel', opts:['—','fluido','moderado','cargado','detenido']},
-        {id:'sn', label:'Tránsito S/N', type:'sel', opts:['—','fluido','moderado','cargado','detenido']},
-        {id:'afecta', label:'Afectación al corredor', type:'sel-otro', opts:['NO afecta al corredor','SÍ, ocupa 1 carril','SÍ, ocupa el carril derecho']},
+        {id:"ubicacion",label:"Ubicación de la obra", type:"text"},
+        {id:"empresa",  label:"Empresa ejecutora", type:"text"},
+        {id:"contrat",  label:"Contratante", type:"text"},
+        {id:"duracion", label:"Duración / Horario", type:"text"},
+        {id:"desc",     label:"Descripción", type:"ta"},
+        {id:"ns", label:"Tránsito N/S", type:"sel", opts:["—","fluido","moderado","cargado","detenido"]},
+        {id:"sn", label:"Tránsito S/N", type:"sel", opts:["—","fluido","moderado","cargado","detenido"]},
+        {id:"afecta",   label:"Afectación al corredor", type:"sel", opts:["NO afecta carril del corredor","SÍ, ocupa 1 carril","SÍ, ocupa el carril derecho"]},
       ],
-      gen:function(f){
-        var empresa  = f.empresa  ? '\n'+B('EMPRESA:')+' '+f.empresa  : '';
-        var contrat  = f.contrat  ? '\n'+B('CONTRATANTE:')+' '+f.contrat  : '';
-        var duracion = f.duracion ? '\n'+B('DURACION:')+' '+f.duracion : '';
-        var nsLine   = f.ns!=='—' ? '\n'+B('TRANSITO N/S:')+' '+f.ns : '';
-        var snLine   = f.sn!=='—' ? '\n'+B('TRANSITO S/N:')+' '+f.sn : '';
-        return '🏗 '+B('OBRAS EN VIA')+'\n'
-          +B(today())+'\n\n'
-          +B('UBICACION:')+' '+f.ubicacion
-          +empresa+contrat+duracion+'\n\n'
-          +B('DESCRIPCION:')+'\n'+f.desc
-          +nsLine+snLine+'\n'
-          +B('AFECTACION AL CORREDOR:')+' '+f.afecta+'\n\n'
-          +B('SE ADJUNTA IMAGENES')+' ✍️';
-      }
+      gen: f =>
+(() => {
+        const empLine  = f.empresa  ? `\n${B("EMPRESA:")} ${f.empresa}`  : "";
+        const conLine  = f.contrat  ? `\n${B("CONTRATANTE:")} ${f.contrat}` : "";
+        const durLine  = f.duracion ? `\n${B("DURACION:")} ${f.duracion}` : "";
+        const nsLine   = f.ns!=="—" ? `\n${B("TRANSITO N/S:")} ${f.ns}` : "";
+        const snLine   = f.sn!=="—" ? `\n${B("TRANSITO S/N:")} ${f.sn}` : "";
+        return `🏗 ${B("OBRAS EN VIA")}
+${B(today())}
+
+${B("COV:")} ${getCOV()}
+${B("UBICACION DE LA OBRA:")} ${f.ubicacion}${empLine}${conLine}${durLine}
+
+${B("DESCRIPCION:")}
+${f.desc}${nsLine}${snLine}
+${B("AFECTACION AL CORREDOR:")} ${f.afecta.toUpperCase()}
+
+${B("SE ADJUNTA IMAGENES")} ✍️`;
+      })()
     },
   ],
   incidencia:[
     {
-      id:'inc-via', icon:'🚦', name:'Incidencia en Vía',
-      desc:'Accidente u otro evento con detalle',
-      required:['ubi','desc'],
+      id:"inc-via", icon:"🚦", name:"Incidencia en Vía",
+      desc:"Accidente u otro evento con detalle completo",
+      required:["ubi","desc","accion"],
       fields:[
-        {id:'ubi',    label:'Ubicación', type:'text', autofill:'ubi'},
-        {id:'sent',   label:'Sentido', type:'sel', opts:['Ambos','S/N','N/S','E/O','O/E']},
-        {id:'tipo',   label:'Tipo de evento', type:'sel-otro', opts:['Accidente vehicular','Accidente en ciclovía','Caída de usuario','Vehículo varado','Árbol caído','Persona herida']},
-        {id:'desc',   label:'Descripción del hecho', type:'ta'},
-        {id:'pnp',    label:'Presencia policial', type:'sel', opts:['SÍ','NO']},
-        {id:'emergencias', label:'Emergencias (selecciona las que aplican)', type:'multisel', opts:['SAMU','PNP','Serenazgo','Bomberos']},
-        {id:'accion', label:'Acciones tomadas', type:'text', opt:true},
-        {id:'estado', label:'Estado de la vía', type:'sel-otro', opts:['liberada, tránsito normal','parcialmente afectada','cerrada','restablecida']},
+        {id:"ubi",    label:"Ubicación", type:"text", autofill:"ubi"},
+        {id:"sent",   label:"Sentido", type:"sel", opts:["N/S","S/N","Ambos"]},
+        {id:"tipo",      label:"Tipo de evento", type:"sel", opts:["Accidente vehicular","Accidente en ciclovía","Caída de usuario","Vehículo varado","Árbol caído","Persona herida","Otro"]},
+        {id:"tipo_otro", label:"Especificar (si elegiste Otro)", type:"text", opt:true},
+        {id:"desc",   label:"Descripción del hecho", type:"ta"},
+        {id:"pnp",    label:"Presencia policial", type:"sel", opts:["SÍ","NO"]},
+        {id:"samu",   label:"Emergencias", type:"sel", opts:["—","SAMU en el lugar","SAMU en camino","Serenazgo","PNP en el lugar","Bomberos","No se requirió"]},
+        {id:"accion", label:"Acciones tomadas", type:"text"},
+        {id:"estado", label:"Estado de la vía", type:"sel", opts:["liberada, tránsito normal","parcialmente afectada","cerrada"]},
       ],
-      gen:function(f){
-        var emergLine = f.emergencias ? '\n▪️'+B('Emergencias:')+' '+f.emergencias : '';
-        var accionLine = f.accion ? '\n▪️'+B('Acciones:')+' '+f.accion : '';
-        return '🚦 '+B('REPORTE DE INCIDENCIAS EN VIA')+'\n'
-          +B('COV:')+' '+getCOV()+'\n\n'
-          +'📆 '+B('FECHA:')+' '+today()+'\n'
-          +'📍 '+B('UBICACION:')+' '+f.ubi+'\n'
-          +'🔁 '+B('SENTIDO:')+' '+f.sent+'\n'
-          +'🕒 '+B('HORA:')+' '+nowTime()+'\n\n'
-          +'🚨 '+B('DETALLE:')+'\n'
-          +'▪️'+B('Tipo:')+' '+f.tipo+'\n'
-          +'▪️'+B('Descripcion:')+' '+f.desc+'\n'
-          +'▪️'+B('Presencia policial:')+' '+f.pnp
-          +emergLine+accionLine+'\n'
-          +'▪️'+B('Estado de la via:')+' '+f.estado+'\n\n'
-          +'📸 Se adjunta imágenes';
+      gen: f => {
+        const tipoFinal = (f.tipo==='Otro'&&f.tipo_otro) ? f.tipo_otro : f.tipo;
+        const samuLine  = f.samu!=='—' ? `\n▪️${B("Emergencias:")} ${f.samu}` : "";
+        const accionLine= f.accion ? `\n▪️${B("Acciones:")} ${f.accion}` : "";
+        return `🚦 ${B("REPORTE DE INCIDENCIAS EN VIA")}
+${B("COV:")} ${getCOV()}
+
+📆 ${B("FECHA:")} ${today()}
+📍 ${B("UBICACION:")} ${f.ubi}
+🔁 ${B("SENTIDO:")} ${f.sent}
+🕒 ${B("HORA:")} ${nowTime()}
+
+🚨 ${B("DETALLE DE LA INCIDENCIA:")}
+▪️${B("Tipo:")} ${tipoFinal}
+▪️${B("Descripción:")} ${f.desc}
+▪️${B("Presencia policial:")} ${f.pnp}${samuLine}${accionLine}
+▪️${B("Estado de la vía:")} ${f.estado}
+
+📸 Se adjunta imágenes`;
       }
     },
     {
-      id:'inc-cc3', icon:'🚧', name:'Incidencia Rápido',
-      desc:'Reporte simplificado para situaciones puntuales',
-      required:['lugar','obs'],
+      id:"inc-cc3", icon:"🚧", name:"Incidencia CC.3 – Rápido",
+      desc:"Reporte simplificado para situaciones puntuales",
+      required:["lugar","obs"],
       fields:[
-        {id:'lugar', label:'Ubicación', type:'text', autofill:'ubi'},
-        {id:'sent',  label:'Sentido', type:'sel', opts:['Ambos','S/N','N/S','E/O','O/E']},
-        {id:'obs',   label:'Observación', type:'ta'},
+        {id:"lugar", label:"Ubicación", type:"text", autofill:"ubi"},
+        {id:"sent",  label:"Sentido", type:"sel", opts:["N/S","S/N","Ambos"]},
+        {id:"obs",   label:"Observación", type:"ta"},
       ],
-      gen:function(f){
-        return '🚦'+B('REPORTE DE INCIDENCIAS')+' - '+B(getCorredor())+'\n'
-          +B('COV:')+' '+getCOV()+'\n'
-          +'🌍 '+B('LUGAR:')+' '+f.lugar+'\n'
-          +'🧭'+B('HORA:')+' '+nowTime()+'\n'
-          +'🔃'+B('SENTIDO:')+' '+f.sent+'\n\n'
-          +'🚨'+B('OBSERVACION:')+'🚨\n'
-          +f.obs+'\n\n'
-          +'- SE ADJUNTA IMAGENES.';
-      }
+      gen: f =>
+`🚦${B("REPORTE DE INCIDENCIAS EN VIA CC.3 -TGA")}
+${B("COV:")} ${getCOV()}
+📍 ${B("UBICACION:")} ${f.lugar}
+🧭${B("HORA:")} ${nowTime()}
+🔃${B("SENTIDO:")} ${f.sent}
+
+🚨${B("OBSERVACION:")}🚨
+${f.obs}
+
+- SE ADJUNTA IMAGENES.`
     },
     {
-      id:'accidente-bus', icon:'🚌', name:'Accidente Bus / Caída de Usuario',
-      desc:'Reporte con usuario afectado y datos completos',
-      required:['ubi','padron','conductor','usuario','dni','obs'],
+      id:"accidente-bus", icon:"🚌", name:"Accidente Bus / Caída de Usuario",
+      desc:"Reporte con usuario afectado y datos completos",
+      required:["ubi","placa","padron","conductor","usuario","dni","obs"],
       fields:[
-        {id:'turno',     label:'Turno', type:'sel', opts:['MAÑANA','TARDE','NOCHE','MADRUGADA'], autofill:'turno'},
-        {id:'ubi',       label:'Ubicación', type:'text', autofill:'ubi'},
-        {id:'sent',      label:'Sentido', type:'sel', opts:['S/N','N/S']},
-        {id:'placa',     label:'Placa del bus', type:'text', opt:true},
-        {id:'ruta',      label:'Ruta', type:'text', opt:true},
-        {id:'padron',    label:'Padrón', type:'text'},
-        {id:'conductor', label:'Nombre del conductor', type:'text'},
-        {id:'trasbordo', label:'Trasbordo', type:'sel', opts:['SÍ','NO']},
-        {id:'usuario',   label:'Nombre usuario afectado', type:'text'},
-        {id:'dni',       label:'DNI del usuario', type:'text'},
-        {id:'clinica',   label:'Clínica / Hospital', type:'text', opt:true},
-        {id:'comisaria', label:'Comisaría', type:'text', opt:true},
-        {id:'adjunto',   label:'Adjunto', type:'sel', opts:['sin adjunto','FOTO 📷','VIDEO 📷','FOTO Y VIDEO 📷']},
-        {id:'obs',       label:'Descripción del hecho', type:'ta'},
+        {id:"turno",     label:"Turno", type:"sel", opts:["MAÑANA","TARDE","NOCHE","MADRUGADA"], autofill:"turno"},
+        {id:"ubi",       label:"Ubicación", type:"text", autofill:"ubi"},
+        {id:"sent",      label:"Sentido", type:"sel", opts:["N/S","S/N"]},
+        {id:"placa",     label:"Placa del bus", type:"text"},
+        {id:"ruta",      label:"Ruta", type:"text"},
+        {id:"padron",    label:"Padrón", type:"text"},
+        {id:"conductor", label:"Nombre del conductor", type:"text"},
+        {id:"trasbordo", label:"Trasbordo", type:"sel", opts:["SÍ","NO"]},
+        {id:"usuario",   label:"Nombre usuario afectado", type:"text"},
+        {id:"dni",       label:"DNI del usuario", type:"text"},
+        {id:"clinica",   label:"Clínica / Hospital", type:"text"},
+        {id:"comisaria", label:"Comisaría", type:"text"},
+        {id:"obs",       label:"Descripción del hecho", type:"ta"},
       ],
-      gen:function(f){
-        var placa     = f.placa     ? '\n🚾 '+B('PLACA:')+' '+f.placa : '';
-        var ruta      = f.ruta      ? '\n🚍 '+B('RUTA:')+' '+f.ruta : '';
-        var clinica   = f.clinica   ? '\n'+B('CLINICA:')+' '+f.clinica : '';
-        var comisaria = f.comisaria ? '\n'+B('COMISARIA:')+' '+f.comisaria : '';
-        var adjunto   = f.adjunto!=='sin adjunto' ? '\n📷 ADJUNTO '+f.adjunto : '';
-        return B('REPORTE ACCIDENTE DE BUS - CAIDA DE USUARIO - T.')+' '+f.turno+'\n'
-          +'👨🏼‍✈️ '+B('COV:')+' '+getCOV()+'\n'
-          +'🚏 '+B('UBICACION:')+' '+f.ubi+'\n'
-          +'🔃 '+B('SENTIDO:')+' '+f.sent
-          +placa+ruta+'\n'
-          +'🔢 '+B('PADRON:')+' '+f.padron+'\n'
-          +'👨🏻‍💼 '+B('CONDUCTOR:')+' '+f.conductor+'\n'
-          +B('TRASBORDO:')+' '+f.trasbordo+'\n\n'
-          +B('DATOS DEL USUARIO AFECTADO:')+'\n'
-          +B('Nombre:')+' '+f.usuario+'\n'
-          +B('DNI:')+' '+f.dni+'\n'
-          +'🕰 '+B('HORA:')+' '+nowTime()+'\n'
-          +'🌞 '+B('DIA:')+' '+today()
-          +clinica+comisaria+'\n\n'
-          +'🔍 '+B('OBSERVACION:')+'\n'
-          +f.obs+adjunto;
-      }
+      gen: f =>
+`${B("REPORTE ACCIDENTE DE BUS - CAÍDA DE USUARIO - TGA T.")} ${f.turno}
+${B("COV:")} ${getCOV()}
+🚏 ${B("UBICACION:")} ${f.ubi}
+🔃 ${B("SENTIDO:")} ${f.sent}
+🚾 ${B("PLACA:")} ${f.placa}
+🚍 ${B("BUS:")} ${f.ruta}
+🔢 ${B("PADRON:")} ${f.padron}
+👨🏻‍💼 ${B("CONDUCTOR:")} ${f.conductor}
+${B("TRASBORDO:")} ${f.trasbordo}
+
+${B("DATOS DEL USUARIO AFECTADO:")}
+${B("Nombre:")} ${f.usuario}
+${B("DNI:")} ${f.dni}
+🕰 ${B("HORA:")} ${nowTime()}
+🌞 ${B("DÍA:")} ${today()}
+${B("CLÍNICA:")} ${f.clinica}
+${B("COMISARÍA:")} ${f.comisaria}
+
+🔍 ${B("OBSERVACION:")}
+${f.obs}`
     },
   ],
   demanda:[
     {
-      id:'demanda', icon:'📊', name:'Demanda',
-      desc:'Reporte de demanda con código y observación',
-      required:['paradero','padron'],
+      id:"demanda", icon:"🚍", name:"Demanda",
+      desc:"Reporte de demanda con código y observación",
+      required:["paradero","padron","obs"],
       fields:[
-        {id:'paradero', label:'Paradero', type:'text'},
-        {id:'sent',     label:'Sentido', type:'sel', opts:['S/N','N/S']},
-        {id:'ruta',     label:'Ruta', type:'sel-rutas'},
-        {id:'padron',   label:'Padrón', type:'text'},
-        {id:'freq',     label:'Frecuencia (ej: 10:30 AM)', type:'text', opt:true},
-        {id:'codigo',   label:'Código', type:'sel', opts:['01','02','03','04','05','06']},
-        {id:'obs',      label:'Observación', type:'text', opt:true},
+        {id:"paradero", label:"Paradero", type:"text"},
+        {id:"sent",     label:"Sentido", type:"sel", opts:["S/N","N/S"]},
+        {id:"ruta",     label:"Ruta", type:"sel", get opts(){ return getRutas(); }},
+        {id:"padron",   label:"Padrón", type:"text"},
+        {id:"freq",     label:"Frecuencia (ej: 10:30 AM)", type:"text", opt:true},
+        {id:"codigo",   label:"Código", type:"sel", opts:["01","02","03","04","05","06"]},
+        {id:"obs",      label:"Observación", type:"text", opt:true},
       ],
-      gen:function(f){
-        var turno = getProfile().turno||'TARDE';
-        var freq = f.freq ? '\n🕐 '+B('FRECUENCIA:')+' '+f.freq : '';
-        var obs  = f.obs  ? '\n\n✍🏻 '+B('OBSERVACION:')+' '+f.obs.toUpperCase() : '';
-        return '🛑 '+B('CORREDOR')+' '+B(getCorredor())+'🚍 \n'
-          +'🔷'+B('TURNO')+' '+turno+' 🔶'+B(getCorredor())+'🔶 \n'
-          +'👮'+B('COV:')+' '+getCOV().toUpperCase()+'\n'
-          +'🚏 '+B('PARADERO:')+' '+f.paradero.toUpperCase()+'\n'
-          +'♻️ '+B('SENTIDO:')+' '+f.sent+'\n'
-          +'🔢 '+B('FECHA:')+' '+today()+'\n'
-          +'🚍 '+B('RUTA:')+' '+f.ruta+'\n'
-          +'🔢 '+B('PADRON:')+' '+f.padron
-          +freq+'\n'
-          +'🔢 '+B('CODIGO:')+' '+f.codigo
-          +obs;
-      }
-    },
-  ],
-  servicio:[
-    {
-      id:'inicio', icon:'🟢', name:'Inicio de Servicio',
-      desc:'Mensaje de inicio de turno',
-      fields:[
-        {id:'turno', label:'Turno', type:'sel', opts:['MAÑANA','TARDE','NOCHE','MADRUGADA'], autofill:'turno'},
-      ],
-      gen:function(f){
-        var sal={MAÑANA:'Buen día',TARDE:'Buenas tardes',NOCHE:'Buenas noches',MADRUGADA:'Buenas noches'};
-        return (sal[f.turno]||'Buen día')+' inicio de servicio\n'+B('COV:')+' '+getCOV();
-      }
-    },
-    {
-      id:'fin', icon:'🔴', name:'Término de Servicio',
-      desc:'Mensaje de fin de turno',
-      fields:[
-        {id:'relevo',        label:'Tipo de término', type:'sel', opts:['sin relevo','con relevo']},
-        {id:'relevo_nombre', label:'Nombre y turno del relevo', type:'text', opt:true},
-      ],
-      gen:function(f){
-        var relLine = f.relevo==='con relevo'&&f.relevo_nombre
-          ? '\n'+B('Relevo:')+' '+f.relevo_nombre : '';
-        return 'Término de servicio\n'+B('COV:')+' '+getCOV()+relLine;
+      gen: f => {
+        const turno = getProfile().turno||'TARDE';
+        const freqLine = f.freq ? `\n🕐 ${B("FRECUENCIA:")} ${f.freq}` : "";
+        const obsLine  = f.obs  ? `\n\n✍🏻 ${B("OBSERVACION:")} ${f.obs.toUpperCase()}` : "";
+        return `🛑 ${B("CORREDOR")} ${B(getCorredor())}🚍 
+🔷${B("TURNO")} ${turno} 🔷 🔶${B(getCorredor())}🔶 
+👮${B("COV:")} ${getCOV().toUpperCase()}
+🚏 ${B("PARADERO:")} ${f.paradero.toUpperCase()}
+♻️ ${B("SENTIDO:")} ${f.sent}
+🔢 ${B("FECHA:")} ${today()}
+🚍 ${B("RUTA:")} ${f.ruta}
+🔢 ${B("PADRON:")} ${f.padron}${freqLine}
+🔢 ${B("CODIGO:")} ${f.codigo}${obsLine}`;
       }
     },
   ],
@@ -1592,44 +1533,10 @@ function showForm(cat,id,direct=false){
   if(direct) go("s-form"); else go("s-form");
 }
 
-
-function onSelOtro(sel, fieldId) {
-  var inp = document.getElementById('f-' + fieldId + '_otro');
-  if(inp) { inp.classList.toggle('show', sel.value === 'Otro'); if(sel.value !== 'Otro') inp.value = ''; }
-  upd();
-}
-function toggleMopt(btn) { btn.classList.toggle('on'); upd(); }
-function getMoptVals(fieldId) {
-  var el = document.getElementById('f-' + fieldId);
-  if(!el) return '';
-  return Array.from(el.querySelectorAll('.mopt.on')).map(function(b){return b.dataset.v;}).join(', ');
-}
-function onRelevoSel(sel) {
-  var ex = document.getElementById('relevo-extra');
-  if(ex) ex.classList.toggle('show', sel.value === 'con relevo');
-  upd();
-}
-
 function getVals(){
   if(!curTpl) return {};
-  var v = {};
-  curTpl.fields.forEach(function(f){
-    if(f.type === 'multisel') {
-      v[f.id] = getMoptVals(f.id);
-    } else if(f.type === 'sel-otro') {
-      var sel = document.getElementById('f-'+f.id);
-      var oth = document.getElementById('f-'+f.id+'_otro');
-      v[f.id] = sel ? (sel.value==='Otro' ? (oth?oth.value.trim():'') : sel.value) : '';
-    } else {
-      var el = document.getElementById('f-'+f.id);
-      v[f.id] = el ? el.value.trim() : '';
-    }
-    // Para relevo
-    if(f.id==='relevo_nombre') {
-      var el2 = document.getElementById('f-relevo_nombre');
-      v['relevo_nombre'] = el2 ? el2.value.trim() : '';
-    }
-  });
+  const v={};
+  curTpl.fields.forEach(f=>{ const el=document.getElementById("f-"+f.id); v[f.id]=el?el.value.trim():""; });
   return v;
 }
 
@@ -1716,13 +1623,12 @@ function doTelegram(){
 function openSettings(){
   updatePermStates();
   var cfg=getSettings2();
+  document.querySelectorAll('#corr-sel .turno-opt').forEach(function(b){b.classList.toggle('sel',b.dataset.v===cfg.corredor||(!cfg.corredor&&b.dataset.v==='TGA'));});
+  renderRutasChips(cfg.rutas||['301','303','305','336','372']);
+  updateCorredorBadge();
   var fv=document.getElementById('fs-val'); if(fv) fv.textContent=(cfg.fs||14)+'px';
   var h1=document.getElementById('notif-h1'); if(h1) h1.value=cfg.h1||'10:00';
   var h2=document.getElementById('notif-h2'); if(h2) h2.value=cfg.h2||'16:00';
-  document.querySelectorAll('#corr-sel .turno-opt').forEach(function(b){
-    b.classList.toggle('sel',b.dataset.v===(cfg.corredor||'TGA'));
-  });
-  renderRutasChips(cfg.rutas||['301','303','305','336','372']);
   document.getElementById('dw-overlay').classList.add('open');
   document.getElementById('dw-settings').classList.add('open');
 }
@@ -1816,6 +1722,310 @@ function showToast(msg){
 // ═══════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════
+
+function updateRelevoMsg(){
+  var inp = document.getElementById('qs-relevo-inp');
+  var prev = document.getElementById('qs-prev');
+  if(!inp||!prev) return;
+  var base = quickMsg || '';
+  prev.textContent = inp.value.trim()
+    ? base + '\n' + B('Relevo:') + ' ' + inp.value.trim()
+    : base;
+}
+
+
+// ══════════════════════════════════════
+// PROGRAMACIÓN + QAP GRUPAL
+// ══════════════════════════════════════
+var progFiltro = 'todos';
+  // usado por quickService y relevo
+
+function getProgHoy() {
+  var d = S.get('prog_hoy');
+  if(d && d.fecha === today()) return d;
+  return null;
+}
+function saveProgHoy(data) {
+  data.fecha = today();
+  S.set('prog_hoy', data);
+}
+
+function openProg() {
+  renderProgContent();
+  go('s-prog');
+}
+
+function updateProgHomeBtn() {
+  var sub = document.getElementById('prog-home-sub');
+  if(!sub) return;
+  var d = getProgHoy();
+  if(d && d.items && d.items.length) {
+    var act = d.items.filter(function(x){return x.categoria==='activo';}).length;
+    var qap = d.items.filter(function(x){return x.qap_estado==='qap';}).length;
+    sub.textContent = act + ' activos' + (qap ? ' · ' + qap + ' en QAP' : '');
+  } else {
+    sub.textContent = 'Carga la distribución semanal';
+  }
+}
+
+function renderProgContent() {
+  var el = document.getElementById('prog-content');
+  var data = getProgHoy();
+  if(!data || !data.items || !data.items.length) {
+    el.innerHTML = '<div class="prog-empty">📅 Sin programación cargada<br><small>Toca "Cargar" para pegar la distribución semanal</small></div>';
+    return;
+  }
+  var items = data.items;
+  var activos = items.filter(function(x){return x.categoria==='activo';});
+  var enQap   = items.filter(function(x){return x.qap_estado==='qap';});
+  var otros   = items.filter(function(x){return x.categoria!=='activo';});
+
+  var filtered = items;
+  if(progFiltro==='activo') filtered = items.filter(function(x){return x.categoria==='activo'&&x.qap_estado!=='qap';});
+  else if(progFiltro==='qap') filtered = items.filter(function(x){return x.qap_estado==='qap';});
+  else if(progFiltro==='ns')  filtered = items.filter(function(x){return x.sentido==='N/S';});
+  else if(progFiltro==='sn')  filtered = items.filter(function(x){return x.sentido==='S/N';});
+
+  var fnames = {todos:'Todos',activo:'Activos',ns:'N/S',sn:'S/N',qap:'En QAP'};
+  var fkeys  = ['todos','activo','ns','sn','qap'];
+  var fHTML = '<div class="prog-filters">';
+  fkeys.forEach(function(f){
+    fHTML += '<button class="pfchip' + (progFiltro===f?' on':'') + '" data-f="' + f + '" onclick="setProgF(this.dataset.f)">' + fnames[f] + '</button>';
+  });
+  fHTML += '</div>';
+
+  var statsHTML = '<div class="prog-stats">'
+    + '<span class="pstat a">✓ ' + activos.length + ' activos</span>'
+    + (enQap.length ? '<span class="pstat q">☕ ' + enQap.length + ' en QAP</span>' : '')
+    + (otros.length ? '<span class="pstat o">· ' + otros.length + ' otros</span>' : '')
+    + '</div>';
+
+  var grpBtn = '<button class="grp-btn" onclick="abrirQAPGrupal()">☕ QAP Grupal</button>';
+
+  var listHTML = '<div class="prog-list">';
+  filtered.forEach(function(item, fi) {
+    var realIdx = data.items.indexOf(item);
+    var isQap = item.qap_estado === 'qap';
+    var cls = 'pi' + (isQap ? ' inqap' : '');
+    var badge = isQap
+      ? '<div class="pi-badge">☕ ' + item.qap_orden + '° · ' + item.qap_hora_ini + '</div>'
+      : '';
+    var catNote = item.categoria !== 'activo'
+      ? '<span style="font-size:10px;color:var(--mut);margin-left:4px">(' + item.categoria + ')</span>'
+      : '';
+    var btn = '';
+    if(item.categoria === 'activo') {
+      if(isQap) {
+        btn = '<button class="qfin-btn" data-idx="' + realIdx + '" onclick="finQAP(+this.dataset.idx)">✓ Fin</button>';
+      } else {
+        btn = '<button class="qini-btn" data-idx="' + realIdx + '" onclick="iniQAP(+this.dataset.idx)">☕ QAP</button>';
+      }
+    }
+    listHTML += '<div class="' + cls + '">'
+      + '<div class="pi-info">'
+      + '<div class="pi-name">' + (item.orden ? item.orden + '. ' : '') + item.nombre + catNote + '</div>'
+      + '<div class="pi-sub">' + (item.punto||'') + (item.sentido ? ' · ' + item.sentido : '') + (item.funcion ? ' · ' + item.funcion : '') + '</div>'
+      + badge
+      + '</div>'
+      + '<div class="pi-btns">' + btn + '</div>'
+      + '</div>';
+  });
+  listHTML += '</div>';
+
+  el.innerHTML = statsHTML + fHTML + grpBtn + listHTML;
+}
+
+function setProgF(f) {
+  progFiltro = f;
+  renderProgContent();
+}
+
+async function procesarProg() {
+  var texto = (document.getElementById('prog-texto').value||'').trim();
+  var msg = document.getElementById('prog-proc-msg');
+  if(texto.length < 50) { msg.textContent = '⚠️ Pega el texto completo de la programación'; return; }
+  var btn = document.getElementById('prog-proc-btn');
+  btn.disabled = true; btn.textContent = '⏳ Procesando…';
+  msg.textContent = '';
+  try {
+    var prompt = 'Eres asistente de operaciones del Corredor ' + getCorredor() + ' Lima, Peru.\n'
+      + 'Analiza esta distribucion semanal y extrae la informacion de cada COV.\n\n'
+      + 'Para cada COV extrae:\n'
+      + '- orden: numero (si tiene, si no null)\n'
+      + '- nombre: nombre completo\n'
+      + '- punto: paradero o ubicacion\n'
+      + '- sentido: N/S, S/N, o null\n'
+      + '- funcion: Tranquera, 1Tranquera, 2Tranquera, Ruteo, etc.\n'
+      + '- categoria: activo | apoyo_zona | compensatorio | descanso | vacaciones | supervisor\n\n'
+      + 'Ignora posiciones con *** o vacias.\n'
+      + 'Responde SOLO con JSON valido, sin markdown:\n'
+      + '{"zona":"CENTRO","items":[{"orden":1,"nombre":"...","punto":"...","sentido":"N/S","funcion":"Tranquera","categoria":"activo"}]}\n\n'
+      + 'Distribucion:\n' + texto;
+
+    var res = await callGeminiText(prompt);
+    var data = parseGemJSON(res.text);
+    if(data && data.items && data.items.length) {
+      saveProgHoy(data);
+      showToast('✓ ' + data.items.length + ' COVs cargados · ' + res.model);
+      updateProgHomeBtn();
+      goBack();
+      renderProgContent();
+    } else {
+      msg.textContent = '⚠️ No se detectaron COVs. Verifica que el texto sea la distribución semanal.';
+    }
+  } catch(e) {
+    msg.textContent = '⚠️ ' + e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = '🤖 Procesar con IA';
+  }
+}
+
+async function callGeminiText(prompt) {
+  var cfg = getSettings2();
+  var key = (cfg.gemKey||'').trim();
+  if(!key) throw new Error('Sin clave API. Verifica la conexión con el Sheet.');
+  var lastErr = null;
+  for(var mi=0; mi<GEMINI_MODELS.length; mi++) {
+    var model = GEMINI_MODELS[mi];
+    try {
+      var r = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+key,
+        {method:'POST', headers:{'Content-Type':'application/json'},
+         body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.1,maxOutputTokens:4000}})}
+      );
+      if(r.status===429||r.status===503){lastErr=new Error('Cuota: '+model);continue;}
+      if(!r.ok){var e=await r.json();throw new Error((e.error&&e.error.message)||'Error '+r.status);}
+      var d=await r.json();
+      var text=(d.candidates&&d.candidates[0]&&d.candidates[0].content&&
+        d.candidates[0].content.parts&&d.candidates[0].content.parts[0]&&
+        d.candidates[0].content.parts[0].text)||'';
+      if(!text) throw new Error('Respuesta vacía');
+      return {text:text,model:model};
+    } catch(e){
+      lastErr=e;
+      if(mi===GEMINI_MODELS.length-1) throw lastErr;
+    }
+  }
+  throw lastErr;
+}
+
+function iniQAP(idx) {
+  var data = getProgHoy();
+  if(!data||!data.items||idx>=data.items.length) return;
+  var enQap = data.items.filter(function(x){return x.qap_estado==='qap';}).length;
+  var item = data.items[idx];
+  item.qap_estado = 'qap';
+  item.qap_hora_ini = nowTime();
+  item.qap_ts_ini = Date.now();
+  item.qap_orden = enQap + 1;
+  saveProgHoy(data);
+  renderProgContent();
+  updateProgHomeBtn();
+  var msg = '☕ ' + B('INICIO DE QAP') + '\n' + B('COV:') + ' ' + item.nombre + '\n' + B('Punto:') + ' ' + item.punto + '\n' + B('Hora:') + ' ' + item.qap_hora_ini;
+  quickMsg = msg;
+  document.getElementById('qs-title').textContent = 'Inicio QAP';
+  document.getElementById('qs-prev').textContent = msg;
+  var rr = document.getElementById('qs-relevo-row');
+  if(rr) rr.style.display = 'none';
+  document.getElementById('quick-overlay').classList.add('open');
+}
+
+function finQAP(idx) {
+  var data = getProgHoy();
+  if(!data||!data.items||idx>=data.items.length) return;
+  var item = data.items[idx];
+  item.qap_estado = 'retorno';
+  item.qap_hora_fin = nowTime();
+  item.qap_ts_fin = Date.now();
+  saveProgHoy(data);
+  renderProgContent();
+  updateProgHomeBtn();
+  var msg = '⏰ ' + B('FIN DE QAP') + '\n' + B('COV:') + ' ' + item.nombre + '\n' + B('Punto:') + ' ' + item.punto + '\n' + B('Hora regreso:') + ' ' + item.qap_hora_fin;
+  quickMsg = msg;
+  document.getElementById('qs-title').textContent = 'Fin QAP';
+  document.getElementById('qs-prev').textContent = msg;
+  var rr = document.getElementById('qs-relevo-row');
+  if(rr) rr.style.display = 'none';
+  document.getElementById('quick-overlay').classList.add('open');
+}
+
+function abrirQAPGrupal() {
+  var data = getProgHoy();
+  if(!data||!data.items) return;
+  var activos = data.items.filter(function(x){return x.categoria==='activo'&&x.qap_estado!=='qap';});
+  var el = document.getElementById('qap-sel-list');
+  el.innerHTML = activos.map(function(item, i){
+    return '<div class="pi" id="qsel-' + i + '">'
+      + '<div class="pi-cb" id="qcb-' + i + '" data-i="' + i + '" onclick="toggleQapCb(+this.dataset.i)"></div>'
+      + '<div class="pi-info">'
+      + '<div class="pi-name">' + (item.orden?item.orden+'. ':'') + item.nombre + '</div>'
+      + '<div class="pi-sub">' + (item.punto||'') + (item.sentido?' · '+item.sentido:'') + '</div>'
+      + '</div></div>';
+  }).join('');
+  document.getElementById('qap-sel-n').textContent = '0';
+  document.getElementById('qap-confirm-btn').disabled = true;
+  go('s-prog-qap');
+}
+
+function toggleQapCb(i) {
+  var cb = document.getElementById('qcb-' + i);
+  cb.classList.toggle('on');
+  cb.textContent = cb.classList.contains('on') ? '✓' : '';
+  var n = document.querySelectorAll('#qap-sel-list .pi-cb.on').length;
+  document.getElementById('qap-sel-n').textContent = n;
+  document.getElementById('qap-confirm-btn').disabled = (n === 0);
+}
+
+function progSelAll() {
+  var cbs = document.querySelectorAll('#qap-sel-list .pi-cb');
+  var anyOn = document.querySelector('#qap-sel-list .pi-cb.on');
+  cbs.forEach(function(cb){
+    if(anyOn){ cb.classList.remove('on'); cb.textContent=''; }
+    else { cb.classList.add('on'); cb.textContent='✓'; }
+  });
+  var n = anyOn ? 0 : cbs.length;
+  document.getElementById('qap-sel-n').textContent = n;
+  document.getElementById('qap-confirm-btn').disabled = (n === 0);
+}
+
+function confirmarQAPGrupal() {
+  var data = getProgHoy();
+  if(!data||!data.items) return;
+  var activos = data.items.filter(function(x){return x.categoria==='activo'&&x.qap_estado!=='qap';});
+  var enQap = data.items.filter(function(x){return x.qap_estado==='qap';}).length;
+  var selected = [];
+  document.querySelectorAll('#qap-sel-list .pi-cb.on').forEach(function(cb){
+    var i = parseInt(cb.dataset.i);
+    if(activos[i]) selected.push(activos[i]);
+  });
+  if(!selected.length) return;
+  var hora = nowTime();
+  var msgLines = ['☕ ' + B('INICIO DE QAP GRUPAL'), '🕐 ' + B('Hora:') + ' ' + hora, ''];
+  selected.forEach(function(item, si){
+    var orden = enQap + si + 1;
+    var realIdx = data.items.indexOf(item);
+    if(realIdx >= 0) {
+      data.items[realIdx].qap_estado = 'qap';
+      data.items[realIdx].qap_hora_ini = hora;
+      data.items[realIdx].qap_ts_ini = Date.now();
+      data.items[realIdx].qap_orden = orden;
+    }
+    msgLines.push(orden + '° ' + item.nombre + ' - ' + item.punto);
+  });
+  saveProgHoy(data);
+  var msg = msgLines.join('\n');
+  quickMsg = msg;
+  document.getElementById('qs-title').textContent = 'QAP Grupal';
+  document.getElementById('qs-prev').textContent = msg;
+  var rr = document.getElementById('qs-relevo-row');
+  if(rr) rr.style.display = 'none';
+  document.getElementById('quick-overlay').classList.add('open');
+  goBack();
+  renderProgContent();
+  updateProgHomeBtn();
+  showToast('✓ QAP iniciado para ' + selected.length + ' COVs');
+}
+
 function init(){
   // Apply saved font size
   const cfg=getSettings2();
@@ -1845,8 +2055,8 @@ function init(){
   getDeviceId();
   updateHistCount();
   updateMisTplBtn();
-  updateProgHomeBtn();
   renderFavs();
+  updateProgHomeBtn();
 }
 
 if("serviceWorker" in navigator) {
@@ -2201,7 +2411,7 @@ function getCorredor(){return (getSettings2().corredor)||'TGA';}
 function getCorrNombre(){var m={TGA:'Corredor Azul',SJL:'Corredor Morado',PAB:'Corredor Rojo'};return m[getCorredor()]||'Corredor';}
 function getRutas(){return (getSettings2().rutas)||['301','303','305','336','372'];}
 function getSheetURL() {
-  return ((getSettings2().sheetUrl)||'').trim();
+  return 'https://script.google.com/macros/s/AKfycbx-g2KIsgN0RuC0813Z2Skntd5ne5XN07Nv_kT0aSJSa12PAH3yY5lznz_cttUQx09PqA/exec';
 }
 
 function autoSaveSheetUrl(el) {
@@ -2238,40 +2448,31 @@ async function initSheetConnection() {
   var url = getSheetURL();
   if(!url) return;
   try {
-    // 1. Config (incluye gemKey)
     var cfg = await sheetGet('config', {});
     if(cfg && cfg.config) {
       var local = getSettings2();
-      if(cfg.config.gemKey) { local.gemKey = cfg.config.gemKey; S.set('settings2', local); }
+      if(cfg.config.gemKey) local.gemKey = cfg.config.gemKey;
+      S.set('settings2', local);
       sheetConnected = true;
     }
-    // 2. Registrar dispositivo
     var p = getProfile();
     var did = getDeviceId();
     var reg = await sheetGet('register', {
-      did:did, nombre:p.nombre||'', turno:p.turno||'', ubi:p.ubi||''
+      did: did, nombre: p.nombre||'', turno: p.turno||'', ubi: p.ubi||''
     });
     if(reg) {
       isAdmin = reg.isAdmin === true;
       var ab = document.getElementById('admin-btn');
       if(ab) ab.style.display = isAdmin ? 'inline-flex' : 'none';
-      // Si es admin, mostrar badge en header
-      updateAdminUI();
     }
-    // 3. Avisos pendientes
-    var avRes = await sheetGet('avisos', {did:did});
+    var avRes = await sheetGet('avisos', {did: did});
     if(avRes && avRes.avisos && avRes.avisos.length > 0) {
       pendingAvisos = avRes.avisos;
       showAvisoBanner(pendingAvisos[0]);
     }
   } catch(e) {
-    console.warn('Sheet no disponible:', e.message);
+    console.log('Sheet no disponible:', e.message);
   }
-}
-
-function updateAdminUI() {
-  var ab = document.getElementById('admin-btn');
-  if(ab) ab.style.display = isAdmin ? 'inline-flex' : 'none';
 }
 
 function showAvisoBanner(aviso) {
@@ -2380,10 +2581,8 @@ async function sendAdminAviso() {
 }
 
 async function testSheetConn() {
-  var url = document.getElementById('sheet-url').value.trim();
+  var url = getSheetURL();
   var res_el = document.getElementById('sheet-test-result');
-  if(!url) { res_el.style.display='block'; res_el.style.color='var(--rd)'; res_el.textContent='⚠️ Ingresa la URL primero'; return; }
-  var cfg = getSettings2(); cfg.sheetUrl = url; S.set('settings2',cfg);
   res_el.style.display='block'; res_el.style.color='var(--mut)'; res_el.textContent='Conectando…';
   try {
     var parts = ['action=ping'];
@@ -2558,7 +2757,7 @@ function renderCustomTplList(){
   var tpls=getCustomTpls();
   var el=document.getElementById('ctpl-list');
   if(!tpls.length){
-    el.innerHTML='<div style="color:var(--mut);text-align:center;padding:20px;font-size:13px">Sin plantillas. Crea una con el boton de abajo.</div>';
+    el.innerHTML='<div style="color:var(--mut);text-align:center;padding:20px;font-size:13px">Sin plantillas. Crea una con el botón de abajo.</div>';
     return;
   }
   var out='';
@@ -2566,7 +2765,10 @@ function renderCustomTplList(){
     var t=tpls[i];
     var icon=t.icon||'📝';
     out+='<div class="ctpl-item">';
-    out+='<div class="ctpl-item-info" onclick="useCustomTpl('+i+')"><div class="ctpl-item-name">'+icon+' '+t.name+'</div><div class="ctpl-item-sub">'+t.fields.length+' campo'+(t.fields.length!==1?'s':'')+'</div></div>';
+    out+='<div class="ctpl-item-info" onclick="useCustomTpl('+i+')">';
+    out+='<div class="ctpl-item-name">'+icon+' '+t.name+'</div>';
+    out+='<div class="ctpl-item-sub">'+t.fields.length+' campo'+(t.fields.length!==1?'s':'')+'</div>';
+    out+='</div>';
     out+='<button style="background:none;border:none;font-size:18px;cursor:pointer;padding:6px;color:var(--rd)" onclick="deleteCustomTpl('+i+')">🗑️</button>';
     out+='</div>';
   }
@@ -2830,6 +3032,10 @@ function deleteHistItem(id){
   showToast('Eliminado');
 }
 
+function toggleGemVis(){
+  var inp=document.getElementById('gem-key');
+  if(inp) inp.type=inp.type==='password'?'text':'password';
+}
 </script>
 </body>
 </html>
