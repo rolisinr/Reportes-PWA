@@ -1886,6 +1886,17 @@ function parsePipeFormat(text) {
       qap_orden: null
     });
   });
+  // Si no hay items del formato pipe, intentar JSON como fallback
+  if(items.length === 0) {
+    try {
+      var jdata = parseGemJSON(text);
+      if(jdata && jdata.items && jdata.items.length) {
+        // Normalizar items del JSON
+        jdata.items.forEach(function(it){ it.nombre = quitaTildes(it.nombre||''); it.punto = quitaTildes(it.punto||''); });
+        return jdata;
+      }
+    } catch(e) {}
+  }
   return {zona: 'CENTRO', items: items};
 }
 
