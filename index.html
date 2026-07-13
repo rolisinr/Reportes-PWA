@@ -1002,16 +1002,20 @@ if(screen.orientation && screen.orientation.lock) screen.orientation.lock("portr
 // NAVIGATION STACK
 // ═══════════════════════════════════════════
 const navStack = [];
-var _navId = 0; // Contador único para entradas del historial
+var _navId = 0;
+var _popBusy = false; // Bloqueo anti-doble-disparo
 
 function showScreen(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  window.scrollTo({top:0,behavior:"instant"});
+  try {
+    document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
+    var el = document.getElementById(id);
+    if(el) el.classList.add("active");
+    window.scrollTo({top:0,behavior:"instant"});
+  } catch(e){}
 }
 function go(id){
   navStack.push(id);
-  history.pushState({nid:++_navId},""); // estado único — el navegador los distingue
+  history.pushState({nid:++_navId},"");
   showScreen(id);
 }
 function goBack(){
@@ -1019,14 +1023,32 @@ function goBack(){
     navStack.pop();
     showScreen(navStack[navStack.length-1]);
   }
-  // Si ya estamos en la raíz, no hacer nada (no sale de la app)
 }
 
-// Sentinela: intercepta el botón físico de retroceso en Android
+// Dos entradas iniciales para tener margen en todos los niveles
+history.replaceState({nid:-1, guard:true},"");
 history.pushState({nid:0},"");
-window.addEventListener("popstate",function(){
+
+window.addEventListener("popstate", function(e){
+  // Si ya estamos manejando un retroceso, ignorar
+  if(_popBusy) return;
+  _popBusy = true;
+
+  // Si llegamos al guard, volver a empujar y quedarnos
+  if(e.state && e.state.guard){
+    history.pushState({nid:++_navId},"");
+    showScreen(navStack[navStack.length-1]||"s-cat");
+    setTimeout(function(){ _popBusy = false; }, 200);
+    return;
+  }
+
+  // Actualizar UI
   goBack();
-  history.pushState({nid:++_navId},""); // re-empuja con ID único
+  // Re-empujar SIEMPRE para garantizar que hay historial adelante
+  history.pushState({nid:++_navId},"");
+
+  // Liberar el bloqueo después de 200ms (evita doble disparo por toque rápido)
+  setTimeout(function(){ _popBusy = false; }, 200);
 });
 
 // ═══════════════════════════════════════════
