@@ -1003,7 +1003,6 @@ if(screen.orientation && screen.orientation.lock) screen.orientation.lock("portr
 // ═══════════════════════════════════════════
 const navStack = [];
 var _navId = 0;
-var _popBusy = false; // Bloqueo anti-doble-disparo
 
 function showScreen(id){
   try {
@@ -1013,42 +1012,28 @@ function showScreen(id){
     window.scrollTo({top:0,behavior:"instant"});
   } catch(e){}
 }
+
 function go(id){
   navStack.push(id);
-  history.pushState({nid:++_navId},"");
   showScreen(id);
+  // go() NO empuja al historial del navegador
+  // El historial se maneja únicamente en el handler de popstate
 }
+
 function goBack(){
-  if(navStack.length>1){
+  if(navStack.length > 1){
     navStack.pop();
     showScreen(navStack[navStack.length-1]);
   }
 }
 
-// Dos entradas iniciales para tener margen en todos los niveles
-history.replaceState({nid:-1, guard:true},"");
+// Dos entradas centinela — siempre hay margen para interceptar el retroceso
+history.pushState({nid:-1},"");
 history.pushState({nid:0},"");
 
-window.addEventListener("popstate", function(e){
-  // Si ya estamos manejando un retroceso, ignorar
-  if(_popBusy) return;
-  _popBusy = true;
-
-  // Si llegamos al guard, volver a empujar y quedarnos
-  if(e.state && e.state.guard){
-    history.pushState({nid:++_navId},"");
-    showScreen(navStack[navStack.length-1]||"s-cat");
-    setTimeout(function(){ _popBusy = false; }, 200);
-    return;
-  }
-
-  // Actualizar UI
-  goBack();
-  // Re-empujar SIEMPRE para garantizar que hay historial adelante
-  history.pushState({nid:++_navId},"");
-
-  // Liberar el bloqueo después de 200ms (evita doble disparo por toque rápido)
-  setTimeout(function(){ _popBusy = false; }, 200);
+window.addEventListener("popstate", function(){
+  goBack();                                   // retroceder en el stack de la app
+  history.pushState({nid:++_navId},"");       // re-empujar para seguir interceptando
 });
 
 // ═══════════════════════════════════════════
