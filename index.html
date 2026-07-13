@@ -1003,6 +1003,7 @@ if(screen.orientation && screen.orientation.lock) screen.orientation.lock("portr
 // ═══════════════════════════════════════════
 const navStack = [];
 var _navId = 0;
+var _hashBusy = false;
 
 function showScreen(id){
   try {
@@ -1015,25 +1016,55 @@ function showScreen(id){
 
 function go(id){
   navStack.push(id);
+  _hashBusy = true;
+  // Cada pantalla tiene un hash único — Chrome lo trata como navegación real
+  history.pushState({nid:++_navId}, "", "#nav" + navStack.length);
+  setTimeout(function(){ _hashBusy = false; }, 50);
   showScreen(id);
-  // go() NO empuja al historial del navegador
-  // El historial se maneja únicamente en el handler de popstate
 }
 
 function goBack(){
   if(navStack.length > 1){
     navStack.pop();
-    showScreen(navStack[navStack.length-1]);
+    _hashBusy = true;
+    history.replaceState({nid:++_navId}, "", "#nav" + navStack.length);
+    setTimeout(function(){ _hashBusy = false; }, 50);
+    showScreen(navStack[navStack.length - 1]);
   }
 }
 
-// Dos entradas centinela — siempre hay margen para interceptar el retroceso
-history.pushState({nid:-1},"");
-history.pushState({nid:0},"");
+// Entrada guard (#nav0) + entrada inicial (#nav1)
+// Chrome ve dos URLs distintas → nunca sale sin disparar popstate
+history.pushState({guard: true}, "", "#nav0");
+history.pushState({nid: 0},     "", "#nav1");
 
-window.addEventListener("popstate", function(){
-  goBack();                                   // retroceder en el stack de la app
-  history.pushState({nid:++_navId},"");       // re-empujar para seguir interceptando
+window.addEventListener("popstate", function(e){
+  if(_hashBusy) return;
+
+  var hash  = location.hash || "#nav1";
+  var level = parseInt(hash.replace("#nav", "")) || 0;
+
+  if(level < 1 || (e.state && e.state.guard)){
+    // Llegamos al guard — volver al nivel actual sin salir
+    _hashBusy = true;
+    history.pushState({nid: ++_navId}, "", "#nav" + (navStack.length || 1));
+    setTimeout(function(){ _hashBusy = false; }, 50);
+    showScreen(navStack[navStack.length - 1] || "s-cat");
+    return;
+  }
+
+  // Retroceder hasta el nivel indicado por el hash
+  while(navStack.length > level && navStack.length > 1){
+    navStack.pop();
+  }
+  showScreen(navStack[navStack.length - 1]);
+
+  // Re-sincronizar hash si hay diferencia
+  if(level !== navStack.length){
+    _hashBusy = true;
+    history.pushState({nid: ++_navId}, "", "#nav" + navStack.length);
+    setTimeout(function(){ _hashBusy = false; }, 50);
+  }
 });
 
 // ═══════════════════════════════════════════
