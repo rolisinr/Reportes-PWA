@@ -459,7 +459,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 
 <!-- HEADER -->
 <header class="hdr">
-  <div class="hdr-l"><div class="hdr-logo">🛣️</div><div class="hdr-title">COV <span>Reportes</span></div></div>
+  <div class="hdr-l"><div class="hdr-logo">🛣️</div><div class="hdr-title"><span>COV</span> Reporta</div></div>
   <div class="hdr-center">
     <span class="hdr-clock" id="clock">--:--</span>
     <span class="hdr-sep">·</span>
@@ -479,13 +479,13 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   <div class="welcome-wrap">
     <div class="welcome-logo">🛣️</div>
     <div>
-      <div class="welcome-title">Reportes <span>TGA</span></div>
-      <p style="font-size:13px;color:var(--mut);margin-top:4px">Corredor Azul – Lima</p>
+      <div class="welcome-title"><span>COV</span> Reporta </div>
+      <p style="font-size:13px;color:var(--mut);margin-top:4px">Corredores Complementarios </p>
     </div>
     <p class="welcome-sub">Para comenzar, ingresa tu nombre completo como aparece en los reportes.</p>
     <div class="welcome-field">
-      <div class="fl">Tu nombre COV</div>
-      <input class="big-input" id="w-name" type="text" autocomplete="name" placeholder="Ej: Mamani Cuadros Ana"
+      <div class="fl">Tu nombre</div>
+      <input class="big-input" id="w-name" type="text" autocomplete="name" placeholder=""
         onkeydown="if(event.key==='Enter')completeWelcome()">
     </div>
     <div class="welcome-field" style="margin-top:-8px">
@@ -493,12 +493,12 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       <div class="turno-seg" id="w-turno">
         <button class="turno-opt" data-v="MAÑANA" onclick="selWTurno(this)">Mañana</button>
         <button class="turno-opt" data-v="TARDE" onclick="selWTurno(this)">Tarde</button>
-        <button class="turno-opt" data-v="NOCHE" onclick="selWTurno(this)">Noche</button>
+        <!--<button class="turno-opt" data-v="NOCHE" onclick="selWTurno(this)">Noche</button> -->
       </div>
     </div>
     <div class="welcome-field" style="margin-top:-8px">
-      <div class="fl">Tu punto / tranquera habitual</div>
-      <input class="big-input" id="w-ubi" type="text" placeholder="Ej: Paradero Virú / Tranquera Alcázar"
+      <div class="fl">Ubicación/Paradero</div>
+      <input class="big-input" id="w-ubi" type="text" placeholder=" "
         onkeydown="if(event.key==='Enter')completeWelcome()">
     </div>
     <button class="welcome-btn" onclick="completeWelcome()">Comenzar →</button>
@@ -527,7 +527,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     <div class="ed-title">Mis datos</div>
     <div class="ed-fields">
       <div class="ed-row">
-        <div class="ed-lbl">Nombre COV</div>
+        <div class="ed-lbl">Nombre</div>
         <input class="ed-inp" id="ed-nombre" type="text" autocomplete="name">
       </div>
       <div class="ed-row">
@@ -535,12 +535,12 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
         <div class="turno-seg" id="ed-turno">
           <button class="turno-opt" data-v="MAÑANA" onclick="selETurno(this)">Mañana</button>
           <button class="turno-opt" data-v="TARDE" onclick="selETurno(this)">Tarde</button>
-          <button class="turno-opt" data-v="NOCHE" onclick="selETurno(this)">Noche</button>
+<!--         <button class="turno-opt" data-v="NOCHE" onclick="selETurno(this)">Noche</button> */  TURNO NOCHE DESACTIVADO-->
         </div>
       </div>
       <div class="ed-row">
         <div class="ed-lbl">Punto / Tranquera</div>
-        <input class="ed-inp" id="ed-ubi" type="text" placeholder="Ej: Paradero Virú / Tranquera Alcázar">
+        <input class="ed-inp" id="ed-ubi" type="text" placeholder=" ">
       </div>
     </div>
     <button class="ed-save" onclick="saveProfile()">Guardar</button>
@@ -552,7 +552,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     <button class="cat-btn" data-cat="vias" onclick="showTpl('vias')">
       <div class="cat-icon">🛣️</div>
       <div class="cat-info">
-        <div class="cat-name">Informe de Vías</div>
+        <div class="cat-name">Informe de Vía</div>
         <div class="cat-sub">2 plantillas</div>
       </div>
     </button>
@@ -593,12 +593,12 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </button>
     <button class="srv-btn" onclick="quickService('qap-ini')">
       <div class="sb-icon">☕</div>
-      <div class="sb-txt">Inicio</div>
+      <div class="sb-txt">Salida</div>
       <div class="sb-sub">QAP</div>
     </button>
     <button class="srv-btn" onclick="quickService('qap-fin')">
       <div class="sb-icon">⏰</div>
-      <div class="sb-txt">Fin</div>
+      <div class="sb-txt">Retorno</div>
       <div class="sb-sub">QAP</div>
     </button>
   </div>
@@ -606,8 +606,8 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   <button class="prog-btn" onclick="openProg()">
     <div style="font-size:22px">📅</div>
     <div style="flex:1;text-align:left">
-      <div style="font-size:13px;font-weight:700;color:var(--txt)">Programación del turno</div>
-      <div style="font-size:11px;color:var(--mut)" id="prog-home-sub">Carga la distribución semanal</div>
+      <div style="font-size:13px;font-weight:700;color:var(--txt)">Programación</div>
+      <div style="font-size:11px;color:var(--mut)" id="prog-home-sub">Cargar la distribución</div>
     </div>
     <span style="color:var(--mut);font-size:16px">›</span>
   </button>
@@ -616,8 +616,8 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   <button class="ia-main-btn" onclick="go('s-ia')">
     <div class="ia-mb-icon">🤖</div>
     <div class="ia-mb-txt">
-      <div class="ia-mb-name">Generar reporte con IA</div>
-      <div class="ia-mb-sub">Habla y Gemini redacta el reporte</div>
+      <div class="ia-mb-name">Generar reporte con Voz</div>
+      <div class="ia-mb-sub">Habla y se redacta el reporte</div>
     </div>
     <span class="ia-mb-arr">›</span>
   </button>
@@ -645,7 +645,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   <div id="form-badge"></div>
   <div class="form-hdr">
     <div class="form-title" id="form-title"></div>
-    <button class="ia-form-btn" onclick="openMiniIA()">🎤 IA</button>
+    <button class="ia-form-btn" onclick="openMiniIA()">🎤 Con Voz</button>
     <button class="reset-btn" onclick="resetForm()">🗑 Vaciar</button>
   </div>
   <div id="cache-note" class="cache-note" style="margin-bottom:8px;display:none"></div>
@@ -684,12 +684,12 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   <div class="back-row" onclick="goBack()">
     <span class="back-icon">‹</span><span class="back-lbl">Inicio</span>
   </div>
-  <div style="font-size:15px;font-weight:700;margin-bottom:12px">🤖 Asistente IA <span style="font-size:11px;color:var(--mut);font-weight:400">Gemini</span></div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px">🤖 Asistente <span style="font-size:11px;color:var(--mut);font-weight:400">Modo Voz</span></div>
   <div class="ia-tabs">
     <button class="ia-tab on" id="ia-tab-libre" onclick="setIAMode('libre')">Detectar plantilla</button>
     <button class="ia-tab" id="ia-tab-narr" onclick="setIAMode('narrador')">Solo texto</button>
   </div>
-  <div class="ia-hint" id="ia-hint">Habla describiendo la situación y Gemini detectará el tipo de reporte y completará los campos automáticamente.</div>
+  <div class="ia-hint" id="ia-hint">Habla describiendo la situación y se detectará el tipo de reporte y completará los campos automáticamente.</div>
   <div class="ia-record-area">
     <button class="ia-mic-btn" id="ia-mic" onclick="iaToggleRec()">🎤</button>
     <div class="ia-status" id="ia-status">Toca para grabar</div>
@@ -719,9 +719,9 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </div>
   </div>
 
-  <div class="sec-lbl">COVs registrados</div>
+  <div class="sec-lbl">Usuarios</div>
   <button onclick="loadAdminCOVs()" style="width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;color:var(--mut);cursor:pointer;font-family:inherit;margin-bottom:10px">🔄 Actualizar lista</button>
-  <div id="admin-covs"><div style="color:var(--mut);font-size:13px;text-align:center;padding:20px">Toca "Actualizar lista" para cargar los COVs</div></div>
+  <div id="admin-covs"><div style="color:var(--mut);font-size:13px;text-align:center;padding:20px">Toca "Actualizar lista" para cargar usuarios</div></div>
 </div>
 
 <!-- MIS PLANTILLAS -->
@@ -759,16 +759,16 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     <div style="font-size:15px;font-weight:700">📅 Programación</div>
     <button onclick="go('s-prog-paste')" style="background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">📋 Cargar</button>
   </div>
-  <div id="prog-content"><div class="prog-empty">📅 Sin programación cargada<br><small>Toca "Cargar" para pegar la distribución semanal</small></div></div>
+  <div id="prog-content"><div class="prog-empty">📅 Sin programación cargada<br><small>Toca "Cargar"</small></div></div>
 </div>
 
 <!-- PEGAR PROGRAMACIÓN -->
 <div class="screen" id="s-prog-paste">
   <div class="back-row" onclick="goBack()"><span class="back-icon">‹</span><span class="back-lbl">Programación</span></div>
   <div style="font-size:15px;font-weight:700;margin-bottom:6px">📋 Cargar programación</div>
-  <div style="font-size:12px;color:var(--mut);margin-bottom:12px">Copia el texto de WhatsApp y pégalo aquí. La IA reconocerá los datos automáticamente.</div>
+  <div style="font-size:12px;color:var(--mut);margin-bottom:12px">Copia la programacion manual.</div>
   <textarea class="prog-paste" id="prog-texto" placeholder="Pega aquí la distribución semanal..."></textarea>
-  <button class="prog-proc-btn" id="prog-proc-btn" onclick="procesarProg()">🤖 Procesar con IA</button>
+  <button class="prog-proc-btn" id="prog-proc-btn" onclick="procesarProg()">🤖 Procesar</button>
   <div id="prog-proc-msg" style="font-size:12px;color:var(--mut);text-align:center;min-height:20px"></div>
 </div>
 
@@ -1095,7 +1095,7 @@ function completeWelcome(){
 // CAT META
 // ═══════════════════════════════════════════
 const CAT = {
-  vias:      {label:"Informe de Vías",  cc:"#16A34A"},
+  vias:      {label:"Informe de Vía",   cc:"#16A34A"},
   obras:     {label:"Obras en Vía",     cc:"#C07800"},
   incidencia:{label:"Incidencias",      cc:"#DC2626"},
   demanda:   {label:"Demanda",          cc:"#7C3AED"},
@@ -1232,7 +1232,7 @@ const getTurno = () => (getProfile().turno)||"TARDE";
 const TPLS = {
   vias:[
     {
-      id:"informe-via", icon:"🛣️", name:"Informe de Vías",
+      id:"informe-via", icon:"🛣️", name:"Informe de Vía",
       desc:"Estado de vía, semáforos y segregado",
       required:["ubicacion","ns","sn"],
       fields:[
@@ -1240,30 +1240,32 @@ const TPLS = {
         {id:"ns",  label:"Tránsito N/S", type:"sel", opts:["fluido","moderado","cargado","detenido"]},
         {id:"sn",  label:"Tránsito S/N", type:"sel", opts:["fluido","moderado","cargado","detenido"]},
         {id:"sem", label:"Semáforos",    type:"sel", opts:["OPERATIVOS","NO OPERATIVOS"]},
-        {id:"pnp", label:"Efectivo policial", type:"sel", opts:["SÍ contamos","NO contamos"]},
+        {id:"pnp", label:"Efectivo policial", type:"sel", opts:["SÍ","NO"]},
         {id:"pnp_det", label:"Detalle PNP", type:"text", opt:true},
-        {id:"seg", label:"Segregado",    type:"sel", opts:["con normalidad","con dificultades","con restricción","Otro"]},
-        {id:"rec", label:"Personal de recaudo", type:"sel", opts:["SÍ, en punto","NO en el punto","No aplica"]},
-        {id:"rec_par", label:"Paradero de recaudo", type:"text", opt:true},
+        {id:"seg", label:"Ingreso del bus al Segregado",    type:"sel", opts:["con normalidad","con dificultades","con desvio temporal","Otro"]},
+        {id:"rec", label:"Personal de recaudo", type:"sel", opts:["SÍ","NO"]},
         {id:"extra", label:"Novedad adicional", type:"text", opt:true},
       ],
       gen: f => {
-        const pnp = f.pnp==="SÍ contamos"
-          ? `🔹${B("SÍ contamos")} con presencia de EFECTIVO POLICIAL${f.pnp_det?" ("+f.pnp_det+")":""} 👮🏻‍♂️`
-          : `🔹${B("NO contamos")} con presencia de EFECTIVO POLICIAL`;
+        const pnp = f.pnp==="SÍ"
+          ? `- ${B("SÍ contamos")} con presencia de EFECTIVO POLICIAL${f.pnp_det?" ("+f.pnp_det+")":""}`
+          : `- ${B("NO contamos")} con presencia de EFECTIVO POLICIAL`;
         const rec = f.rec==="No aplica" ? "" :
-          f.rec==="SÍ, en punto"
-          ? `\n🔹Personal de recaudo${f.rec_par?" en paradero "+f.rec_par.toUpperCase():" en el punto"}`
-          : `\n🔹NO contamos con personal de recaudo en el punto`;
+          f.rec==="SÍ"
+          ? `\n- Personal de recaudo${f.rec_par?" en paradero "+f.rec_par.toUpperCase():" en el punto"}`
+          : `\n- NO contamos con personal de recaudo en el punto`;
         return `🛣️${B("INFORME DE VIAS")}🛣️
-📆 ${B("Fecha:")} ${today()}
-👮🏻‍♀ ${B("COV:")} ${getCOV()}
-📝 Lo que respecta a ${f.ubicacion}
-🔹Tránsito ${B(f.ns)} N/S y ${B(f.sn)} S/N 🛣️
-🔹Semáforos ${B(f.sem)} 🚦
+🙋‍♂️ ${B("COV:")} ${getCOV()}
+📆 ${B("FECHA:")} ${today()}
+🕒 ${B("HORA:")} ${nowTime()}
+
+📍 Lo que respecta: ${f.ubicacion}
+- Tránsito ${B(f.ns)} N/S y ${B(f.sn)} S/N 
+- Semáforos ${B(f.sem)} 🚦
 ${pnp}
-🔹Unidades del corredor entrando al ${B("SEGREGADO")} ${f.seg} 🚎${rec}${f.extra?"\n🔹"+f.extra:""}
-📸${B("ADJUNTO FOTOS")}📸`;
+- Unidades del corredor entrando al ${B("SEGREGADO")} ${f.seg} ${rec}${f.extra?"\n- "+f.extra:""}
+
+📷${B("SE ADJUNTA IMAGENES ")}📸`;
       }
     },
     {
@@ -1274,18 +1276,21 @@ ${pnp}
         {id:"ubicacion", label:"Ubicación", type:"text", autofill:"ubi"},
         {id:"sent",  label:"Sentido", type:"sel", opts:["Ambos","S/N","N/S","E/O","O/E"]},
         {id:"obs",   label:"Observación", type:"ta"},
-        {id:"media", label:"Adjunto", type:"sel", opts:["sin adjunto","FOTO 📷","VIDEO 📷","FOTO Y VIDEO 📷"]},
+        {id:"media", label:"Adjunto", type:"sel", opts:["sin adjunto","📷 SE ADJUNTA IMAGENES 📸","📹SE ADJUNTA VIDEO 📹","Se adjunta FOTO Y VIDEO📷"]},
       ],
       gen: f => {
         const ubiLine = f.ubicacion ? `\n📍 ${B("UBICACION:")} ${f.ubicacion}` : "";
-        const mediaLine = f.media!=="sin adjunto" ? `\n📷 ADJUNTO ${f.media}` : "";
+        const mediaLine = f.media!=="sin adjunto" ? `\n ${f.media}` : "";
         return `🚨 ${B("SITUACION ACTUAL")} - ${B(getCorredor())}
-👤  ${B("PERSONAL COV:")} 
-       ${getCOV()}${ubiLine}
+🙋‍♂️ ${B("COV:")} ${getCOV()}
+📆 ${B("FECHA:")} ${today()}
+🕒 ${B("HORA:")} ${nowTime()}
+
+📍 ${B("UBICACION:")} ${f.ubi}
 🔁  ${B("SENTIDO:")} ${f.sent}
 
 ✍🏼  ${B("OBSERVACION:")} 
-▪️${f.obs}${mediaLine}`;
+${f.obs}${mediaLine}`;
       }
     },
   ],
@@ -1299,10 +1304,10 @@ ${pnp}
         {id:"empresa",  label:"Empresa ejecutora", type:"text"},
         {id:"contrat",  label:"Contratante", type:"text"},
         {id:"duracion", label:"Duración / Horario", type:"text"},
-        {id:"desc",     label:"Descripción", type:"ta"},
+        {id:"desc",     label:"Descripción / Observación", type:"ta"},
         {id:"ns", label:"Tránsito N/S", type:"sel", opts:["—","fluido","moderado","cargado","detenido"]},
         {id:"sn", label:"Tránsito S/N", type:"sel", opts:["—","fluido","moderado","cargado","detenido"]},
-        {id:"afecta",   label:"Afectación al corredor", type:"sel", opts:["NO afecta carril del corredor","SÍ, ocupa 1 carril","SÍ, ocupa el carril derecho"]},
+        {id:"afecta",   label:"Afectación al corredor", type:"sel", opts:["NO afecta carril del corredor","SÍ afecta el carril del corredor","SÍ, se hace desvio temporal"]},
       ],
       gen: f =>
 (() => {
@@ -1312,32 +1317,32 @@ ${pnp}
         const nsLine   = f.ns!=="—" ? `\n${B("TRANSITO N/S:")} ${f.ns}` : "";
         const snLine   = f.sn!=="—" ? `\n${B("TRANSITO S/N:")} ${f.sn}` : "";
         return `🏗 ${B("OBRAS EN VIA")}
-${B(today())}
+🙋‍♂️ ${B("COV:")} ${getCOV()}
+📆 ${B("FECHA:")} ${today()}
+🕒 ${B("HORA:")} ${nowTime()}
 
-${B("COV:")} ${getCOV()}
-${B("UBICACION DE LA OBRA:")} ${f.ubicacion}${empLine}${conLine}${durLine}
-
-${B("DESCRIPCION:")}
+📍  ${B("UBICACION DE LA OBRA:")} ${f.ubicacion}${empLine}${conLine}${durLine}
+🚨 ${B("AFECTACION AL CORREDOR:")} ${f.afecta.toUpperCase()}
+✍ ${B("DESCRIPCION:")}
 ${f.desc}${nsLine}${snLine}
-${B("AFECTACION AL CORREDOR:")} ${f.afecta.toUpperCase()}
 
-${B("SE ADJUNTA IMAGENES")} ✍️`;
+📷${B("SE ADJUNTA IMAGENES ")}📸`;
       })()
     },
   ],
   incidencia:[
     {
-      id:"inc-via", icon:"🚦", name:"Incidencia en Vía",
+      id:"inc-via", icon:"🚦", name:"Incidencia en Vía - Detallado",
       desc:"Accidente u otro evento con detalle completo",
       required:["ubi","desc","accion"],
       fields:[
         {id:"ubi",    label:"Ubicación", type:"text", autofill:"ubi"},
-        {id:"sent",   label:"Sentido", type:"sel", opts:["N/S","S/N","Ambos"]},
+        {id:"sent",   label:"Sentido", type:"sel", opts:["Ambos","N/S","S/N","E/O","O/E"]},
         {id:"tipo",      label:"Tipo de evento", type:"sel", opts:["Accidente vehicular","Accidente en ciclovía","Caída de usuario","Vehículo varado","Árbol caído","Persona herida","Otro"]},
         {id:"tipo_otro", label:"Especificar (si elegiste Otro)", type:"text", opt:true},
         {id:"desc",   label:"Descripción del hecho", type:"ta"},
         {id:"pnp",    label:"Presencia policial", type:"sel", opts:["SÍ","NO"]},
-        {id:"samu",   label:"Emergencias", type:"sel", opts:["—","SAMU en el lugar","SAMU en camino","Serenazgo","PNP en el lugar","Bomberos","No se requirió"]},
+        {id:"samu",   label:"Emergencias en el punto", type:"sel", opts:["—","SAMU","PNP","Serenazgo","Ambulancia","Bomberos","No se requirió"]},
         {id:"accion", label:"Acciones tomadas", type:"text"},
         {id:"estado", label:"Estado de la vía", type:"sel", opts:["liberada, tránsito normal","parcialmente afectada","cerrada"]},
       ],
@@ -1345,13 +1350,14 @@ ${B("SE ADJUNTA IMAGENES")} ✍️`;
         const tipoFinal = (f.tipo==='Otro'&&f.tipo_otro) ? f.tipo_otro : f.tipo;
         const samuLine  = f.samu!=='—' ? `\n▪️${B("Emergencias:")} ${f.samu}` : "";
         const accionLine= f.accion ? `\n▪️${B("Acciones:")} ${f.accion}` : "";
-        return `🚦 ${B("REPORTE DE INCIDENCIAS EN VIA")}
-${B("COV:")} ${getCOV()}
-
+        return `🚦 ${B("REPORTE DE")} ${B(tipoFinal)} ${B("EN VIA")} - ${B(getCorredor())}
+🙋‍♂️ ${B("COV:")} ${getCOV()}
 📆 ${B("FECHA:")} ${today()}
+🕒 ${B("HORA:")} ${nowTime()}
+
 📍 ${B("UBICACION:")} ${f.ubi}
 🔁 ${B("SENTIDO:")} ${f.sent}
-🕒 ${B("HORA:")} ${nowTime()}
+
 
 🚨 ${B("DETALLE DE LA INCIDENCIA:")}
 ▪️${B("Tipo:")} ${tipoFinal}
@@ -1359,38 +1365,40 @@ ${B("COV:")} ${getCOV()}
 ▪️${B("Presencia policial:")} ${f.pnp}${samuLine}${accionLine}
 ▪️${B("Estado de la vía:")} ${f.estado}
 
-📸 Se adjunta imágenes`;
+📷${B("SE ADJUNTA IMAGENES ")}📸`;
       }
     },
     {
-      id:"inc-cc3", icon:"🚧", name:"Incidencia CC.3 – Rápido",
+      id:"inc-cc3", icon:"🚧", name:"Incidencia – Rápido",
       desc:"Reporte simplificado para situaciones puntuales",
       required:["lugar","obs"],
       fields:[
         {id:"lugar", label:"Ubicación", type:"text", autofill:"ubi"},
-        {id:"sent",  label:"Sentido", type:"sel", opts:["N/S","S/N","Ambos"]},
+        {id:"sent",  label:"Sentido", type:"sel", opts:["Ambos","N/S","S/N","E/O","O/E"]},
         {id:"obs",   label:"Observación", type:"ta"},
       ],
       gen: f =>
-`🚦${B("REPORTE DE INCIDENCIAS EN VIA CC.3 -TGA")}
-${B("COV:")} ${getCOV()}
-📍 ${B("UBICACION:")} ${f.lugar}
+`🚦${B("REPORTE DE INCIDENCIAS EN VIA -TGA")}
+🙋‍♂️${B("COV:")} ${getCOV()}
+📆 ${B("FECHA:")} ${today()}
 🧭${B("HORA:")} ${nowTime()}
+
+📍 ${B("UBICACION:")} ${f.lugar}
 🔃${B("SENTIDO:")} ${f.sent}
 
 🚨${B("OBSERVACION:")}🚨
 ${f.obs}
 
-- SE ADJUNTA IMAGENES.`
+📷${B("SE ADJUNTA IMAGENES ")}📸`
     },
     {
-      id:"accidente-bus", icon:"🚌", name:"Accidente Bus / Caída de Usuario",
+      id:"accidente-bus", icon:"🚌", name:"Accidente en Bus / Caída de Usuario",
       desc:"Reporte con usuario afectado y datos completos",
       required:["ubi","placa","padron","conductor","usuario","dni","obs"],
       fields:[
-        {id:"turno",     label:"Turno", type:"sel", opts:["MAÑANA","TARDE","NOCHE","MADRUGADA"], autofill:"turno"},
+        {id:"turno",     label:"Turno", type:"sel", opts:["MAÑANA","TARDE"], autofill:"turno"},
         {id:"ubi",       label:"Ubicación", type:"text", autofill:"ubi"},
-        {id:"sent",      label:"Sentido", type:"sel", opts:["N/S","S/N"]},
+        {id:"sent",      label:"Sentido", type:"sel", opts:["N/S","S/N","E/O","O/E"]},
         {id:"placa",     label:"Placa del bus", type:"text"},
         {id:"ruta",      label:"Ruta", type:"text"},
         {id:"padron",    label:"Padrón", type:"text"},
@@ -1403,12 +1411,15 @@ ${f.obs}
         {id:"obs",       label:"Descripción del hecho", type:"ta"},
       ],
       gen: f =>
-`${B("REPORTE ACCIDENTE DE BUS - CAÍDA DE USUARIO - TGA T.")} ${f.turno}
-${B("COV:")} ${getCOV()}
-🚏 ${B("UBICACION:")} ${f.ubi}
+`${B("REPORTE ACCIDENTE DE BUS")} - ${B(getCorredor())} ${B("TURNO")} ${f.turno}
+🙋‍♂️ ${B("COV:")} ${getCOV()}
+📆 ${B("FECHA:")} ${today()}
+🧭${B("HORA:")} ${nowTime()}
+
+🚏  ${B("UBICACION:")} ${f.ubi}
 🔃 ${B("SENTIDO:")} ${f.sent}
 🚾 ${B("PLACA:")} ${f.placa}
-🚍 ${B("BUS:")} ${f.ruta}
+🚍 ${B("RUTA:")} ${f.ruta}
 🔢 ${B("PADRON:")} ${f.padron}
 👨🏻‍💼 ${B("CONDUCTOR:")} ${f.conductor}
 ${B("TRASBORDO:")} ${f.trasbordo}
@@ -1416,13 +1427,13 @@ ${B("TRASBORDO:")} ${f.trasbordo}
 ${B("DATOS DEL USUARIO AFECTADO:")}
 ${B("Nombre:")} ${f.usuario}
 ${B("DNI:")} ${f.dni}
-🕰 ${B("HORA:")} ${nowTime()}
-🌞 ${B("DÍA:")} ${today()}
 ${B("CLÍNICA:")} ${f.clinica}
 ${B("COMISARÍA:")} ${f.comisaria}
 
 🔍 ${B("OBSERVACION:")}
-${f.obs}`
+${f.obs}
+
+📷${B("SE ADJUNTA IMAGENES ")}📸`
     },
   ],
   demanda:[
@@ -1431,8 +1442,8 @@ ${f.obs}`
       desc:"Reporte de demanda con código y observación",
       required:["paradero","padron","obs"],
       fields:[
-        {id:"paradero", label:"Paradero", type:"text"},
-        {id:"sent",     label:"Sentido", type:"sel", opts:["S/N","N/S"]},
+        {id:"paradero", label:"Paradero / Ubicación", type:"text", autofill:"ubi"},
+        {id:"sent",     label:"Sentido", type:"sel", opts:["N/S","S/N","E/O","O/E"]},
         {id:"ruta",     label:"Ruta", type:"sel", get opts(){ return getRutas(); }},
         {id:"padron",   label:"Padrón", type:"text"},
         {id:"freq",     label:"Frecuencia (ej: 10:30 AM)", type:"text", opt:true},
@@ -1443,12 +1454,13 @@ ${f.obs}`
         const turno = getProfile().turno||'TARDE';
         const freqLine = f.freq ? `\n🕐 ${B("FRECUENCIA:")} ${f.freq}` : "";
         const obsLine  = f.obs  ? `\n\n✍🏻 ${B("OBSERVACION:")} ${f.obs.toUpperCase()}` : "";
-        return `🛑 ${B("CORREDOR")} ${B(getCorredor())}🚍 
-🔷${B("TURNO")} ${turno} 🔷 🔶${B(getCorredor())}🔶 
+        return `🛑 ${B("CORREDOR")} ${B(getCorredor())} ${B("TURNO")} ${turno}
 👮${B("COV:")} ${getCOV().toUpperCase()}
+🔢${B("FECHA:")} ${today()}
+🧭${B("HORA:")} ${nowTime()}
+
 🚏 ${B("PARADERO:")} ${f.paradero.toUpperCase()}
 ♻️ ${B("SENTIDO:")} ${f.sent}
-🔢 ${B("FECHA:")} ${today()}
 🚍 ${B("RUTA:")} ${f.ruta}
 🔢 ${B("PADRON:")} ${f.padron}${freqLine}
 🔢 ${B("CODIGO:")} ${f.codigo}${obsLine}`;
@@ -1764,7 +1776,7 @@ function updateProgHomeBtn() {
     var qap = d.items.filter(function(x){return x.qap_estado==='qap';}).length;
     sub.textContent = act + ' activos' + (qap ? ' · ' + qap + ' en QAP' : '');
   } else {
-    sub.textContent = 'Carga la distribución semanal';
+    sub.textContent = 'Cargar  distribución';
   }
 }
 
