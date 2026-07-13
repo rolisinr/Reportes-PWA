@@ -1846,10 +1846,11 @@ function renderProgContent() {
   });
   fHTML += '</div>';
 
+  var desc2 = data.items.filter(function(x){return x.categoria==='descanso';});
   var statsHTML = '<div class="prog-stats">'
-    + '<span class="pstat a">✓ ' + activos.length + ' activos</span>'
+    + '<span class="pstat a">✓ ' + activos.length + ' en punto</span>'
     + (enQap.length ? '<span class="pstat q">☕ ' + enQap.length + ' en QAP</span>' : '')
-    + (otros.length ? '<span class="pstat o">· ' + otros.length + ' otros</span>' : '')
+    + (desc2.length ? '<span class="pstat o">💤 ' + desc2.length + ' descanso</span>' : '')
     + '</div>';
 
   var grpBtn = '<button class="grp-btn" onclick="abrirQAPGrupal()">☕ QAP Grupal</button>';
@@ -1866,7 +1867,8 @@ function renderProgContent() {
       ? '<span style="font-size:10px;color:var(--mut);margin-left:4px">(' + item.categoria + ')</span>'
       : '';
     var btn = '';
-    var sinQAP = ['descanso','vacaciones','compensatorio'].indexOf(item.categoria) >= 0;
+    var sinQAP = ['descanso','vacaciones','compensatorio','supervisor'].indexOf(item.categoria) >= 0
+      || (item.funcion||'').toLowerCase().indexOf('ruteo') >= 0;
     if(!sinQAP) {
       if(isQap) {
         btn = '<button class="qfin-btn" data-idx="' + realIdx + '" onclick="finQAP(+this.dataset.idx)">✓ Fin</button>';
@@ -1926,10 +1928,10 @@ function parsePipeFormat(text) {
     var cat = (parts[5]||'activo').trim().toLowerCase();
     // Normalizar categoría
     if(cat.indexOf('descanso') >= 0) cat = 'descanso';
+    else if(cat.indexOf('supervisor') >= 0) cat = 'supervisor';
     else if(cat.indexOf('apoyo') >= 0) cat = 'apoyo_zona';
     else if(cat.indexOf('compensat') >= 0) cat = 'compensatorio';
     else if(cat.indexOf('vacacion') >= 0) cat = 'vacaciones';
-    else if(cat.indexOf('supervisor') >= 0) cat = 'supervisor';
     else cat = 'activo';
     items.push({
       orden: orden,
@@ -2075,7 +2077,12 @@ function finQAP(idx) {
 function abrirQAPGrupal() {
   var data = getProgHoy();
   if(!data||!data.items) return;
-  var activos = data.items.filter(function(x){return ['descanso','vacaciones','compensatorio'].indexOf(x.categoria)<0 && x.qap_estado!=='qap';});
+  var sinQAPCats = ['descanso','vacaciones','compensatorio','supervisor'];
+  var activos = data.items.filter(function(x){
+    return sinQAPCats.indexOf(x.categoria) < 0
+      && (x.funcion||'').toLowerCase().indexOf('ruteo') < 0
+      && x.qap_estado !== 'qap';
+  });
   var el = document.getElementById('qap-sel-list');
   el.innerHTML = activos.map(function(item, i){
     return '<div class="pi" id="qsel-' + i + '">'
@@ -2114,7 +2121,12 @@ function progSelAll() {
 function confirmarQAPGrupal() {
   var data = getProgHoy();
   if(!data||!data.items) return;
-  var activos = data.items.filter(function(x){return ['descanso','vacaciones','compensatorio'].indexOf(x.categoria)<0 && x.qap_estado!=='qap';});
+  var sinQAPCats = ['descanso','vacaciones','compensatorio','supervisor'];
+  var activos = data.items.filter(function(x){
+    return sinQAPCats.indexOf(x.categoria) < 0
+      && (x.funcion||'').toLowerCase().indexOf('ruteo') < 0
+      && x.qap_estado !== 'qap';
+  });
   var enQap = data.items.filter(function(x){return x.qap_estado==='qap';}).length;
   var selected = [];
   document.querySelectorAll('#qap-sel-list .pi-cb.on').forEach(function(cb){
