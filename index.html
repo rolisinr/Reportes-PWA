@@ -1002,6 +1002,8 @@ if(screen.orientation && screen.orientation.lock) screen.orientation.lock("portr
 // NAVIGATION STACK
 // ═══════════════════════════════════════════
 const navStack = [];
+var _navId = 0; // Contador único para entradas del historial
+
 function showScreen(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
@@ -1009,7 +1011,7 @@ function showScreen(id){
 }
 function go(id){
   navStack.push(id);
-  history.pushState(null,"");
+  history.pushState({nid:++_navId},""); // estado único — el navegador los distingue
   showScreen(id);
 }
 function goBack(){
@@ -1021,10 +1023,10 @@ function goBack(){
 }
 
 // Sentinela: intercepta el botón físico de retroceso en Android
-history.pushState(null,"");
+history.pushState({nid:0},"");
 window.addEventListener("popstate",function(){
   goBack();
-  history.pushState(null,""); // re-empuja para seguir interceptando
+  history.pushState({nid:++_navId},""); // re-empuja con ID único
 });
 
 // ═══════════════════════════════════════════
