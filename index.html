@@ -3693,8 +3693,12 @@ function renderCustomTplList(){
 
 function updateMisTplBtn(){
   var tpls=getCustomTpls();
+  var btn=document.getElementById('mis-tpl-main-btn');
   var lbl=document.getElementById('mis-tpl-count-lbl');
-  if(lbl) lbl.textContent=tpls.length ? tpls.length+' plantilla'+(tpls.length!==1?'s':'') : 'Crea tus propias plantillas';
+  if(btn) btn.style.display='flex';
+  if(lbl) lbl.textContent=tpls.length
+    ?tpls.length+' plantilla'+(tpls.length!==1?'s':'')
+    :'Crea tu primera plantilla';
 }
 
 function deleteCustomTpl(idx){
