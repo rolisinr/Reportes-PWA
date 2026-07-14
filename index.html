@@ -3135,11 +3135,13 @@ async function sheetGet(action, params) {
 async function sheetPost(data) {
   var url = getSheetURL();
   if(!url) return null;
+  // text/plain evita el preflight CORS de Apps Script
   var r = await fetch(url, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'text/plain'},
     body: JSON.stringify(data)
   });
+  if(!r.ok) throw new Error('HTTP ' + r.status);
   return await r.json();
 }
 
