@@ -2477,13 +2477,18 @@ async function sincronizarProg() {
     var data = getProgHoy();
     if(!data || !data.items) { showToast('⚠️ Sin programación cargada'); return; }
 
-    // 1. Descargar del Sheet
-    var res = await sheetGet('prog_estado', {
-      did: getDeviceId(),
-      corredor: data.corredor||getCorredor(),
-      turno: data.turno||'',
-      fecha: data.fecha||today()
-    });
+    // 1. Descargar del Sheet (no crítico si falla)
+    var res = null;
+    try {
+      res = await sheetGet('prog_estado', {
+        did: getDeviceId(),
+        corredor: data.corredor||getCorredor(),
+        turno: data.turno||'',
+        fecha: data.fecha||today()
+      });
+    } catch(fetchErr) {
+      console.warn('GET prog_estado falló:', fetchErr.message);
+    }
 
     if(res && res.items && res.items.length) {
       // Fusionar: actualizar QAP de otros COVs sin pisar el estado local más reciente
@@ -2529,7 +2534,12 @@ async function sincronizarProg() {
     renderProgContent();
     showToast('✓ Sincronizado');
   } catch(e) {
-    showToast('⚠️ ' + (e.message||'Error de red'));
+    var msg = e.message || 'Error de red';
+    if(msg.indexOf('fetch') >= 0) {
+      msg = 'Sin conexión o Apps Script no actualizado. Verifica en ⚙️ la conexión con el Sheet.';
+    }
+    showToast('⚠️ ' + msg);
+    console.error('sincronizarProg:', e);
   } finally {
     if(btn) { btn.classList.remove('loading'); btn.textContent = '🔄 Sincronizar'; }
   }
