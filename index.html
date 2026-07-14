@@ -662,7 +662,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   </button>
 
   <!-- Mis Plantillas -->
-  <button class="ia-main-btn" id="mis-tpl-main-btn" onclick="openMisPlantillas()" style="display:none;background:#F7F3FF;border-color:#DDD6FE">
+  <button class="ia-main-btn" id="mis-tpl-main-btn" onclick="openMisPlantillas()" style="display:flex;background:#F7F3FF;border-color:#DDD6FE">
     <div class="ia-mb-icon">⭐</div>
     <div class="ia-mb-txt">
       <div class="ia-mb-name">Mis Plantillas</div>
@@ -2445,9 +2445,11 @@ function renderProgContent() {
   var destacados = [], enQap = [], activos = [], otros = [];
   items.forEach(function(item, idx) {
     var realIdx = idx;
+    var _isApoyo = (item.categoria||'').indexOf('apoyo') >= 0;
+    var _hasPunto = !!(item.punto && item.punto.trim());
     if(claves_dest.indexOf(item.nombre_clave||'') >= 0) destacados.push({item:item,idx:realIdx});
     else if(item.qap_estado === 'qap') enQap.push({item:item,idx:realIdx});
-    else if(!isSinQAP(item)) activos.push({item:item,idx:realIdx});
+    else if(!isSinQAP(item) && !(_isApoyo && !_hasPunto)) activos.push({item:item,idx:realIdx});
     else otros.push({item:item,idx:realIdx});
   });
 
@@ -2504,8 +2506,11 @@ function renderProgContent() {
       var catNote = catLbl ? '<span style="font-size:10px;color:var(--mut);margin-left:4px">('+catLbl+')</span>' : '';
 
       var btns = '';
+      var _apoyo = (item.categoria||'').indexOf('apoyo') >= 0;
+      var _pto = !!(item.punto && item.punto.trim());
       var hardNo = HARD_NO_QAP.indexOf(item.categoria) >= 0
-        || (item.funcion||'').toLowerCase().indexOf('ruteo') >= 0;
+        || (item.funcion||'').toLowerCase().indexOf('ruteo') >= 0
+        || (_apoyo && !_pto); // apoyo sin punto: sin QAP ni SSHH
 
       if(!hardNo) {
         if(isRetorno) {
@@ -2730,7 +2735,8 @@ function esParadero(rawLine) {
 }
 
 function esSeccionEspecial(line) {
-  return line.match(/^(APOYO|DESCANSO|COMPENSAT|VACACION|TARDANZA|FALTOS|EFECTIVOS|DISPONIBLE|REMOTO|SUPERVISOR ZONAL)/i);
+  // Incluye typos comunes: COMPESATORIO, COMPENSATORIO, SUR-NORTE (divisor)
+  return line.match(/^(APOYO|DESCANSO|COMPESA|COMPENSAT|VACACION|TARDANZA|FALTOS|EFECTIVOS|DISPONIBLE|REMOTO|SUPERVISOR ZONAL|SUR\s*[\-–]\s*NORTE|NORTE\s*[\-–]\s*SUR)/i);
 }
 
 function mapCat(seccion) {
@@ -2809,7 +2815,7 @@ function preProcessarDist(texto) {
     // Línea con COV:
     if(line.match(/\bCOV\s*:/i)) {
       flushPending();
-      var nombre = line.replace(/^\d+\.\s*/,'').replace(/\bCOV\s*:/i,'').trim();
+      var nombre = line.replace(/^\d+\.\s*/,'').replace(/\bCOV\s*:/i,'').replace(/^\.+\s*/,'').trim();
       // Puede tener función en la misma línea: "Amau Herrera (Tranquera)"
       var parenMatch = nombre.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
       if(parenMatch && parenMatch[2].match(/tranquera|ruteo|apoyo|supervisor/i)) {
