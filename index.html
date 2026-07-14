@@ -2830,9 +2830,9 @@ function preProcessarDist(texto) {
     }
 
     // Apoyo/Descanso: nombre sin prefijo COV
-    if(seccion && line.match(/^[A-Z\u00C0-\u00FF][a-z\u00C0-\u00FF]/) && !line.match(/:/)) {
+    if(seccion && !line.match(/:/)) {
       var nom2 = line.replace(/^\d+\.\s*-?\s*/,'').trim();
-      if(nom2 && nom2.length > 3) {
+      if(nom2 && nom2.length > 3 && /^[A-Za-z]/.test(nom2)) {
         flushPending();
         items.push({
           nombre: quitaTildes(nom2),
