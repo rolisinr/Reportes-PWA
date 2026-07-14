@@ -1963,10 +1963,14 @@ function parsePipeFormat(text) {
 async function callGeminiText(prompt) {
   var cfg = getSettings2();
   var key = (cfg.gemKey||'').trim();
-  if(!key) throw new Error('Sin clave API. Verifica la conexión con el Sheet.');
+  if(!key) throw new Error('Sin clave API. Verifica la conexion con el Sheet.');
+  // Modelos definidos localmente para evitar problemas de scope
+  var gModels = (typeof GEMINI_MODELS !== 'undefined' && GEMINI_MODELS && GEMINI_MODELS.length)
+    ? GEMINI_MODELS
+    : ['gemini-2.5-flash','gemini-1.5-flash','gemini-1.5-flash-8b'];
   var lastErr = null;
-  for(var mi=0; mi<GEMINI_MODELS.length; mi++) {
-    var model = GEMINI_MODELS[mi];
+  for(var mi=0; mi<gModels.length; mi++) {
+    var model = gModels[mi];
     try {
       var r = await fetch(
         'https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+key,
@@ -1983,7 +1987,7 @@ async function callGeminiText(prompt) {
       return {text:text,model:model};
     } catch(e){
       lastErr=e;
-      if(mi===GEMINI_MODELS.length-1) throw lastErr;
+      if(mi===gModels.length-1) throw lastErr;
     }
   }
   throw lastErr;
@@ -2593,7 +2597,7 @@ async function callGemini(audioB64, mimeType, prompt) {
       return {text:text, model:model};
     } catch(e) {
       lastErr=e;
-      if(mi===GEMINI_MODELS.length-1) throw lastErr;
+      if(mi===gModels.length-1) throw lastErr;
     }
   }
   throw lastErr;
