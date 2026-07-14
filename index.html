@@ -2304,11 +2304,17 @@ async function procesarProg() {
       + '- NO pongas encabezados ni texto extra, SOLO las lineas de datos\n\n'
       + 'Distribucion:\n' + texto;
 
-    var res = await callGeminiText(prompt);
-    var data = parsePipeFormat(res.text);
-
-    // Guardar respuesta raw para diagnóstico
-    window._lastGeminiRaw = res.text;
+    // 1. Pre-procesar el texto directamente (sin IA para parsear)
+    var preItems = preProcessarDist(texto);
+    var data;
+    if(preItems.length >= 3) {
+      data = {zona: 'CENTRO', items: preItems};
+    } else {
+      // Pocos resultados — usar IA como respaldo
+      var res = await callGeminiText(prompt);
+      window._lastGeminiRaw = res.text;
+      data = parsePipeFormat(res.text);
+    }
     if(data && data.items && data.items.length) {
       // Match con base de COVs
       data.items = matchNombres(data.items, _pcCorr);
@@ -2316,7 +2322,8 @@ async function procesarProg() {
       data.turno    = _pcTurno;
       data.fecha    = _pcFecha;
       saveProgHoy(data);
-      showToast('✓ ' + data.items.length + ' COVs · ' + res.model);
+      var source = (preItems && preItems.length >= 3) ? 'directo' : (res && res.model ? res.model : 'IA');
+      showToast('✓ ' + data.items.length + ' COVs · ' + source);
       updateProgHomeBtn();
       updateProgMeta();
       go('s-prog');
@@ -2545,6 +2552,148 @@ async function limpiarCache() {
     var el = document.getElementById('sw-version-txt');
     if(el) el.textContent = 'Caché limpiada — recarga';
   } catch(e) { showToast('⚠️ ' + e.message); }
+}
+
+
+// ════════════════════════════════════════════════
+// PRE-PROCESADOR: lee el formato WhatsApp directo
+// sin depender de Gemini para parsear
+// ════════════════════════════════════════════════
+
+function limpiarLinea(line) {
+  // Quitar emojis, asteriscos, caracteres especiales
+  return line.replace(/[\u{1F000}-\u{1FFFF}|\u{2600}-\u{27FF}|\u{2700}-\u{27BF}]/gu, '')
+             .replace(/[\uD800-\uDFFF]/g, '')  // surrogates
+             .replace(/\*/g, '')
+             .replace(/🚫/g, '')
+             .replace(/👮[^\s]*/g, '')
+             .replace(/👨[^\s]*/g, '')
+             .replace(/👩[^\s]*/g, '')
+             .replace(/\u200d/g, '')  // zero-width joiner
+             .replace(/[\u{FE00}-\u{FE0F}]/gu, '')  // variation selectors
+             .trim();
+}
+
+function esParadero(rawLine) {
+  return rawLine.indexOf('\u{1F68F}') >= 0  // 🚏
+    || rawLine.replace(/\*/g,'').trim().match(/^(P\.|NAZARENAS|EMANCIPACION|CUADRA|CDRA DEL MEDIO|GARCILASO|SUPERUNDA|ICA |ILO |QUILCA|URUGUAY|ESPAÑA|BOLIVIA|HUANCAVELICA|MOQUEGUA|PIEROLA|TARMA|HUANCAYO|VILLAR)/i);
+}
+
+function esSeccionEspecial(line) {
+  return line.match(/^(APOYO|DESCANSO|COMPENSAT|VACACION|TARDANZA|FALTOS|EFECTIVOS|DISPONIBLE|REMOTO|SUPERVISOR ZONAL)/i);
+}
+
+function mapCat(seccion) {
+  if(!seccion) return 'activo';
+  var s = seccion.toLowerCase();
+  if(s.indexOf('apoyo') >= 0) return 'apoyo_zona';
+  if(s.indexOf('descanso') >= 0) return 'descanso';
+  if(s.indexOf('compensat') >= 0) return 'compensatorio';
+  if(s.indexOf('vacacion') >= 0) return 'vacaciones';
+  if(s.indexOf('supervisor') >= 0) return 'supervisor';
+  return 'activo';
+}
+
+function preProcessarDist(texto) {
+  var lines = texto.split('\n');
+  var items = [];
+  var currentPunto = '';
+  var currentSentido = '';
+  var pendingNombre = null;
+  var pendingCat = 'activo';
+  var seccion = '';
+
+  function flushPending(funcion) {
+    if(!pendingNombre) return;
+    var fn = (funcion||'Tranquera').replace(/[()]/g,'').replace(/\d\s*[°o]\s*/g,'').trim();
+    var cat = pendingCat;
+    if(fn.match(/ruteo/i))      { fn = 'Ruteo'; }
+    else if(fn.match(/supervisor/i)) { fn = 'Supervisor'; cat = 'supervisor'; }
+    else if(fn.match(/apoyo/i)) { fn = 'Apoyo'; cat = 'apoyo_zona'; }
+    else { fn = fn.replace(/1[°o]?\s*/,'1').replace(/2[°o]?\s*/,'2').replace(/tranquera/i,'Tranquera'); }
+    items.push({
+      nombre: quitaTildes(pendingNombre.replace(/^\d+\.\s*/,'')).trim(),
+      nombre_clave: makeNameKey(quitaTildes(pendingNombre.replace(/^\d+\.\s*/,'')).trim()),
+      punto: currentPunto,
+      sentido: currentSentido,
+      funcion: fn || 'Tranquera',
+      categoria: cat,
+      qap_estado: null, qap_hora_ini: null, qap_hora_fin: null, qap_orden: null
+    });
+    pendingNombre = null;
+  }
+
+  for(var i=0; i<lines.length; i++) {
+    var rawLine = lines[i];
+    var line = limpiarLinea(rawLine).trim();
+    if(!line) continue;
+
+    // Estadísticas al final — parar
+    if(line.match(/^(FALTOS|TARDANZA|EFECTIVOS|DISPONIBLE)\s*:/i)) { flushPending(); break; }
+
+    // Sección especial
+    if(esSeccionEspecial(line)) {
+      flushPending();
+      seccion = line.replace(/[*:]/g,'').trim().toUpperCase();
+      currentPunto = '';
+      continue;
+    }
+
+    // Paradero
+    if(esParadero(rawLine) || (line.match(/N\/S|S\/N/) && !line.match(/COV/i) && line.length < 80)) {
+      flushPending();
+      var puntoClean = line.replace(/\d+\s*$/,'').trim();
+      currentSentido = '';
+      if(puntoClean.match(/\bN\/S\b/)) currentSentido = 'N/S';
+      else if(puntoClean.match(/\bS\/N\b/)) currentSentido = 'S/N';
+      else if(puntoClean.match(/\bSN\b/i)) currentSentido = 'S/N';
+      currentPunto = quitaTildes(puntoClean.replace(/N\/S|S\/N|SN\b/gi,'').trim()).toUpperCase();
+      seccion = '';
+      continue;
+    }
+
+    // Línea con COV:
+    if(line.match(/\bCOV\s*:/i)) {
+      flushPending();
+      var nombre = line.replace(/^\d+\.\s*/,'').replace(/\bCOV\s*:/i,'').trim();
+      // Puede tener función en la misma línea: "Amau Herrera (Tranquera)"
+      var parenMatch = nombre.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+      if(parenMatch && parenMatch[2].match(/tranquera|ruteo|apoyo|supervisor/i)) {
+        pendingNombre = parenMatch[1].trim();
+        pendingCat = mapCat(seccion);
+        flushPending(parenMatch[2]);
+      } else if(nombre && !nombre.match(/^\s*$/)) {
+        pendingNombre = nombre;
+        pendingCat = mapCat(seccion);
+      }
+      continue;
+    }
+
+    // Línea de función: "(Tranquera)", "(1° Tranquera)", etc.
+    if(line.match(/^\(?\s*\d?\s*[°o]?\s*(tranquera|ruteo|apoyo|supervisor)/i)) {
+      flushPending(line);
+      continue;
+    }
+
+    // Apoyo/Descanso: nombre sin prefijo COV
+    if(seccion && line.match(/^[A-Z\u00C0-\u00FF][a-z\u00C0-\u00FF]/) && !line.match(/:/)) {
+      var nom2 = line.replace(/^\d+\.\s*-?\s*/,'').trim();
+      if(nom2 && nom2.length > 3) {
+        flushPending();
+        items.push({
+          nombre: quitaTildes(nom2),
+          nombre_clave: makeNameKey(quitaTildes(nom2)),
+          punto: '',
+          sentido: '',
+          funcion: seccion.indexOf('APOYO') >= 0 ? 'Apoyo' : 'Descanso',
+          categoria: mapCat(seccion),
+          qap_estado: null, qap_hora_ini: null, qap_hora_fin: null, qap_orden: null
+        });
+      }
+    }
+  }
+  flushPending();
+  return items;
 }
 
 function init(){
