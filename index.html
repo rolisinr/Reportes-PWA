@@ -1965,9 +1965,13 @@ async function callGeminiText(prompt) {
   var key = (cfg.gemKey||'').trim();
   if(!key) throw new Error('Sin clave API. Verifica la conexion con el Sheet.');
   // Modelos definidos localmente para evitar problemas de scope
-  var gModels = (typeof GEMINI_MODELS !== 'undefined' && GEMINI_MODELS && GEMINI_MODELS.length)
+  // Usar GEMINI_MODELS si está en scope, sino los mismos modelos hardcodeados
+  var gModels = (typeof GEMINI_MODELS !== 'undefined' && Array.isArray(GEMINI_MODELS) && GEMINI_MODELS.length)
     ? GEMINI_MODELS
-    : ['gemini-2.5-flash','gemini-1.5-flash','gemini-1.5-flash-8b'];
+    : ['gemini-2.5-flash',
+  'gemini-3.5-flash',
+  'gemini-3.1-flash-lite',
+  'gemini-2.5-flash-lite'];
   var lastErr = null;
   for(var mi=0; mi<gModels.length; mi++) {
     var model = gModels[mi];
