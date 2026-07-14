@@ -2162,6 +2162,42 @@ function confirmarQAPGrupal() {
 // ═══════════════════════════════════════════════
 
 // ── Utilidades ──
+
+// ── Matching difuso de nombres ──
+function levenshtein(a, b) {
+  var m=a.length, n=b.length, dp=[], i, j;
+  for(i=0;i<=m;i++){
+    dp[i]=[i];
+    for(j=1;j<=n;j++) dp[i][j]=0;
+  }
+  for(j=0;j<=n;j++) dp[0][j]=j;
+  for(i=1;i<=m;i++) for(j=1;j<=n;j++){
+    dp[i][j]=a[i-1]===b[j-1]
+      ? dp[i-1][j-1]
+      : 1+Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  }
+  return dp[m][n];
+}
+
+function fuzzyMatch(nombre, base) {
+  var normName = quitaTildes(nombre||'').toUpperCase().trim();
+  var primerApell = normName.split(' ')[0];
+  if(!primerApell) return null;
+
+  var candidates = base.filter(function(b){
+    return quitaTildes(b.nombre_completo||'').toUpperCase().split(' ')[0] === primerApell;
+  });
+  if(!candidates.length) return null;
+
+  var best=null, bestDist=999;
+  candidates.forEach(function(c){
+    var d = levenshtein(normName, quitaTildes(c.nombre_completo||'').toUpperCase());
+    if(d < bestDist){ bestDist=d; best=c; }
+  });
+  // Aceptar si la diferencia es ≤ 4 caracteres (error de tipeo)
+  return bestDist <= 4 ? best : null;
+}
+
 function makeNameKey(nombre) {
   var parts = quitaTildes(nombre||'').trim().toUpperCase().split(/\s+/).filter(Boolean);
   if(parts.length === 0) return '';
@@ -2188,27 +2224,38 @@ function matchNombres(items, corredor) {
   var baseMap = {};
   base.forEach(function(b){ baseMap[b.nombre_clave] = b; });
   var hoy = today();
-  var sinQAPCats = ['descanso','vacaciones','compensatorio','supervisor'];
 
   items.forEach(function(item) {
     var key = makeNameKey(item.nombre);
     item.nombre_clave = key;
+
+    // 1. Coincidencia exacta por clave
     if(baseMap[key]) {
-      item.nombre = baseMap[key].nombre_completo; // usar nombre canónico
+      item.nombre = baseMap[key].nombre_completo;
       baseMap[key].ultima_aparicion = hoy;
       baseMap[key].activo = true;
-    } else if(item.nombre) {
-      // Nuevo COV — agregar a la base
-      var nuevo = {
-        nombre_completo: item.nombre,
-        nombre_clave: key,
-        corredor: corredor||getCorredor(),
-        activo: true,
-        ultima_aparicion: hoy,
-        obs: ''
-      };
-      base.push(nuevo);
-      baseMap[key] = nuevo;
+    } else {
+      // 2. Matching difuso (mismo apellido, nombre similar)
+      var fuzzy = fuzzyMatch(item.nombre, base);
+      if(fuzzy) {
+        // Corregir nombre con el canónico de la base
+        item.nombre = fuzzy.nombre_completo;
+        item.nombre_clave = fuzzy.nombre_clave;
+        fuzzy.ultima_aparicion = hoy;
+        fuzzy.activo = true;
+      } else if(item.nombre) {
+        // Nuevo COV — agregar a la base
+        var nuevo = {
+          nombre_completo: item.nombre,
+          nombre_clave: key,
+          corredor: corredor||getCorredor(),
+          activo: true,
+          ultima_aparicion: hoy,
+          obs: ''
+        };
+        base.push(nuevo);
+        baseMap[key] = nuevo;
+      }
     }
   });
 
@@ -2539,6 +2586,26 @@ async function sincronizarProg() {
   try {
     var data = getProgHoy();
     if(!data || !data.items) { showToast('⚠️ Sin programación cargada'); return; }
+
+    // 0. Actualizar COVs_Base desde el Sheet (correcciones manuales tienen prioridad)
+    try {
+      var baseRes = await sheetGet('covs_base', {corredor: data.corredor||getCorredor()});
+      if(baseRes && baseRes.covs && baseRes.covs.length) {
+        var localBase = getCOVsBase(data.corredor||getCorredor());
+        var localMap = {};
+        localBase.forEach(function(b){ localMap[b.nombre_clave]=b; });
+        baseRes.covs.forEach(function(sc){
+          if(localMap[sc.nombre_clave]) {
+            // Sheet tiene prioridad para el nombre corregido
+            localMap[sc.nombre_clave].nombre_completo = sc.nombre_completo;
+            if(sc.obs) localMap[sc.nombre_clave].obs = sc.obs;
+          } else {
+            localBase.push(sc);
+          }
+        });
+        saveCOVsBase(localBase, data.corredor||getCorredor());
+      }
+    } catch(e){ /* no crítico */ }
 
     // 1. Descargar del Sheet (no crítico si falla)
     var res = null;
