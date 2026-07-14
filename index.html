@@ -1918,7 +1918,9 @@ function parsePipeFormat(text) {
     // Ignorar líneas que no tienen pipes
     if(line.indexOf('|') < 0) return;
     // Ignorar línea de encabezado
-    if(line.toUpperCase().indexOf('ORDEN') === 0) return;
+    // Saltar encabezados comunes
+    var upper = line.toUpperCase();
+    if(upper.indexOf('ORDEN') === 0 || upper.indexOf('NOMBRE') === 0 || upper === 'NOMBRE|PUNTO|SENTIDO|FUNCION|CATEGORIA') return;
     var parts = line.split('|');
     if(parts.length < 2) return;
     var nombre = quitaTildes((parts[0]||'').trim());
@@ -2282,24 +2284,31 @@ async function procesarProg() {
   btn.disabled = true; btn.textContent = '⏳ Procesando…';
   msg.textContent = '';
   try {
-    var prompt = 'Analiza esta distribucion semanal de COVs del Corredor ' + _pcCorr + ', turno ' + _pcTurno + '.\n'
-      + 'Extrae cada persona mencionada.\n\n'
-      + 'FORMATO DE RESPUESTA — una linea por persona, exactamente:\n'
+    var prompt = 'Eres asistente del Corredor ' + _pcCorr + '. Extrae los datos de cada COV de esta distribucion semanal.\n\n'
+      + 'RESPONDE SOLO con lineas en este formato (sin encabezado, sin explicacion):\n'
       + 'NOMBRE|PUNTO|SENTIDO|FUNCION|CATEGORIA\n\n'
-      + 'Reglas:\n'
-      + '- NOMBRE: nombre completo SIN tildes, SIN numeros de orden al inicio (ignora "02.", "03.", etc.)\n'
-      + '- PUNTO: paradero o ubicacion asignada, sin emojis\n'
-      + '- SENTIDO: N/S o S/N (lo que aparezca en el nombre del paradero o punto)\n'
-      + '- FUNCION: Tranquera, 1Tranquera, 2Tranquera, Ruteo, Supervisor, Apoyo, etc.\n'
-      + '- CATEGORIA: activo | descanso | apoyo_zona | compensatorio | vacaciones | supervisor\n\n'
-      + 'Incluye TODOS: activos, descanso, apoyo, compensatorio, supervisor.\n'
-      + 'Ignora solo posiciones sin nombre de COV.\n'
-      + 'NO incluyas encabezados ni texto adicional.\n\n'
+      + 'EJEMPLOS de como transformar el texto:\n'
+      + 'Texto: "02.COV:Amau Herrera Maria (Tranquera)" bajo "*CONDE SUPERUNDA CDRA 1 N/S*"\n'
+      + 'Resultado: Amau Herrera Maria|CONDE SUPERUNDA CDRA 1|N/S|Tranquera|activo\n\n'
+      + 'Texto: "Picharde Mendoza Rosa" bajo "SUPERVISOR ZONAL"\n'
+      + 'Resultado: Picharde Mendoza Rosa|SUPERVISOR ZONAL||Supervisor|supervisor\n\n'
+      + 'Texto: "28.Hoyos Levano Alberto" bajo "APOYO A CONOS"\n'
+      + 'Resultado: Hoyos Levano Alberto||N/S|Apoyo|apoyo_zona\n\n'
+      + 'REGLAS:\n'
+      + '- NOMBRE: SIN tildes (a,e,i,o,u,n), SIN numeros de orden (ignora 02., 03.), SIN emojis\n'
+      + '- PUNTO: nombre del paradero sin asteriscos ni emojis. Si no tiene punto, deja vacio\n'
+      + '- SENTIDO: N/S o S/N segun aparezca en el paradero, o vacio\n'
+      + '- FUNCION: Tranquera, 1Tranquera, 2Tranquera, Ruteo, Apoyo, Supervisor\n'
+      + '- CATEGORIA: activo | supervisor | apoyo_zona | descanso | compensatorio | vacaciones\n'
+      + '- Ignora posiciones con solo 🚫 sin nombre\n'
+      + '- NO pongas encabezados ni texto extra, SOLO las lineas de datos\n\n'
       + 'Distribucion:\n' + texto;
 
     var res = await callGeminiText(prompt);
     var data = parsePipeFormat(res.text);
 
+    // Guardar respuesta raw para diagnóstico
+    window._lastGeminiRaw = res.text;
     if(data && data.items && data.items.length) {
       // Match con base de COVs
       data.items = matchNombres(data.items, _pcCorr);
@@ -2313,7 +2322,8 @@ async function procesarProg() {
       go('s-prog');
       renderProgContent();
     } else {
-      msg.textContent = '⚠️ No se detectaron COVs.';
+      var raw = (window._lastGeminiRaw||'').slice(0,300);
+      msg.innerHTML = '⚠️ No se detectaron COVs.<br><small style="font-family:monospace;word-break:break-all;color:var(--mut)">' + raw + '</small>';
     }
   } catch(e) {
     // Mostrar error completo con línea para diagnóstico
