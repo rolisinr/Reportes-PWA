@@ -473,6 +473,25 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   cursor:pointer;padding:8px 0;font-family:inherit;text-align:left;
   -webkit-tap-highlight-color:transparent}
 .otros-section{overflow:hidden;transition:max-height .3s}
+
+.sshh-btn{background:#6366F1;color:#fff;border:none;border-radius:var(--rs);
+  padding:5px 8px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;
+  -webkit-tap-highlight-color:transparent}
+.retorno-badge{font-size:10px;font-weight:700;color:var(--gr);padding:3px 7px;
+  background:#F0FBF4;border:1px solid var(--gr);border-radius:8px;white-space:nowrap}
+.sshh-badge{font-size:10px;font-weight:700;color:#6366F1;padding:3px 7px;
+  background:#EEF2FF;border:1px solid #6366F1;border-radius:8px;white-space:nowrap}
+.asignar-btn{background:none;border:1px dashed var(--brd);border-radius:var(--rs);
+  padding:4px 8px;font-size:11px;color:var(--mut);cursor:pointer;font-family:inherit;
+  -webkit-tap-highlight-color:transparent}
+.asignar-form{background:var(--bg);border-radius:var(--rs);padding:8px;
+  margin-top:6px;display:none}
+.asignar-form.open{display:block}
+.sent-opts{display:flex;gap:5px;margin-top:5px}
+.sent-opt{flex:1;background:#fff;border:1.5px solid var(--brd);border-radius:var(--rs);
+  padding:5px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;
+  -webkit-tap-highlight-color:transparent}
+.sent-opt.sel{background:var(--acc);border-color:var(--acc);color:#fff}
 </style>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -2020,7 +2039,8 @@ function iniQAP(idx) {
   saveProgHoy(data);
   renderProgContent();
   updateProgHomeBtn();
-  var msg = '☕ ' + B('INICIO DE QAP') + '\n' + B('COV:') + ' ' + item.nombre + '\n' + B('Punto:') + ' ' + item.punto + '\n' + B('Hora:') + ' ' + item.qap_hora_ini;
+  var apell = item.nombre.split(' ')[0];
+  var msg = '☕ QAP: ' + B(apell) + (item.punto ? ' · ' + item.punto : '');
   quickMsg = msg;
   document.getElementById('qs-title').textContent = 'Inicio QAP';
   document.getElementById('qs-prev').textContent = msg;
@@ -2039,7 +2059,8 @@ function finQAP(idx) {
   saveProgHoy(data);
   renderProgContent();
   updateProgHomeBtn();
-  var msg = '⏰ ' + B('FIN DE QAP') + '\n' + B('COV:') + ' ' + item.nombre + '\n' + B('Punto:') + ' ' + item.punto + '\n' + B('Hora regreso:') + ' ' + item.qap_hora_fin;
+  var apell = item.nombre.split(' ')[0];
+  var msg = '⏰ Retorno QAP: ' + B(apell) + (item.punto ? ' · ' + item.punto : '');
   quickMsg = msg;
   document.getElementById('qs-title').textContent = 'Fin QAP';
   document.getElementById('qs-prev').textContent = msg;
@@ -2119,7 +2140,7 @@ function confirmarQAPGrupal() {
       data.items[realIdx].qap_ts_ini = Date.now();
       data.items[realIdx].qap_orden = orden;
     }
-    msgLines.push(orden + '° ' + item.nombre + ' - ' + item.punto);
+    msgLines.push(orden + '° ' + B(item.nombre.split(' ')[0]) + (item.punto ? ' · ' + item.punto : ''));
   });
   saveProgHoy(data);
   var msg = msgLines.join('\n');
@@ -2404,30 +2425,72 @@ function renderProgContent() {
     });
   }
 
-  function renderGroup(list, isDestacado) {
+  var CAT_LABELS = {
+    'apoyo_conos':'apoyo conos','apoyo_rejas':'apoyo rejas',
+    'apoyo_zona_sur':'apoyo sur','apoyo_zona_norte':'apoyo norte',
+    'apoyo_zona':'apoyo','descanso':'descanso',
+    'compensatorio':'comp.','vacaciones':'vacaciones','supervisor':'supervisor'
+  };
+  var HARD_NO_QAP = ['descanso','vacaciones','compensatorio','supervisor'];
+
+  function renderGroup(list, isDestacado, isOtros) {
     return applyFilter(list).map(function(x){
       var item = x.item, idx = x.idx;
       var isQap = item.qap_estado === 'qap';
-      var cls = 'pi' + (isDestacado ? ' destacado' : '') + (isQap ? ' inqap' : '');
-      var badge = isQap ? '<div class="pi-badge">☕ '+item.qap_orden+'° · '+item.qap_hora_ini+'</div>' : '';
-      var catNote = item.categoria !== 'activo' && item.categoria
-        ? '<span style="font-size:10px;color:var(--mut);margin-left:4px">('+item.categoria+')</span>' : '';
-      var qapBtn = '';
-      if(!isSinQAP(item)) {
-        qapBtn = isQap
-          ? '<button class="qfin-btn" data-idx="'+idx+'" onclick="finQAP(+this.dataset.idx)">✓ Fin</button>'
-          : '<button class="qini-btn" data-idx="'+idx+'" onclick="iniQAP(+this.dataset.idx)">☕</button>';
+      var isRetorno = item.qap_estado === 'retorno';
+      var isSshh = item.sshh_estado === 'sshh';
+      var isSshhFin = item.sshh_estado === 'retorno';
+      var cls = 'pi' + (isDestacado?' destacado':'') + (isQap?' inqap':'');
+      var qapBadge = isQap ? '<div class="pi-badge">☕ '+item.qap_orden+'° · '+item.qap_hora_ini+'</div>' : '';
+      var sshhBadge = isSshh ? '<div class="sshh-badge" style="margin-top:2px">🚽 '+item.sshh_hora+'</div>' : '';
+      var catLbl = CAT_LABELS[item.categoria];
+      var catNote = catLbl ? '<span style="font-size:10px;color:var(--mut);margin-left:4px">('+catLbl+')</span>' : '';
+
+      var btns = '';
+      var hardNo = HARD_NO_QAP.indexOf(item.categoria) >= 0
+        || (item.funcion||'').toLowerCase().indexOf('ruteo') >= 0;
+
+      if(!hardNo) {
+        if(isRetorno) {
+          btns += '<span class="retorno-badge">☕✓</span>';
+        } else if(isQap) {
+          btns += '<button class="qfin-btn" data-idx="'+idx+'" onclick="finQAP(+this.dataset.idx)">✓ Fin</button>';
+        } else {
+          btns += '<button class="qini-btn" data-idx="'+idx+'" onclick="iniQAP(+this.dataset.idx)">☕</button>';
+        }
+        // SS.HH.
+        if(isSshhFin) {
+          btns += '<span class="sshh-badge">🚽✓</span>';
+        } else if(isSshh) {
+          btns += '<button class="sshh-btn" data-idx="'+idx+'" onclick="finSSHH(+this.dataset.idx)">✓🚽</button>';
+        } else if(!isQap) {
+          btns += '<button class="sshh-btn" data-idx="'+idx+'" onclick="iniSSHH(+this.dataset.idx)">🚽</button>';
+        }
+        btns += '<button class="dest-btn'+(isDestacado?' on':'')+'" data-idx="'+idx+'" onclick="toggleDestacado(+this.dataset.idx)">⭐</button>';
       }
-      var destBtn = !isSinQAP(item)
-        ? '<button class="dest-btn'+(isDestacado?' on':'')+'" data-idx="'+idx+'" onclick="toggleDestacado(+this.dataset.idx)" title="Destacar">⭐</button>'
-        : '';
+
+      var asignarForm = '';
+      if(isOtros && !hardNo && !(item.punto&&item.punto.trim())) {
+        asignarForm = '<button class="asignar-btn" onclick="toggleAsignar('+idx+')">📍 Asignar punto</button>'
+          + '<div class="asignar-form" id="asf-'+idx+'">'
+          + '<input class="fi" id="asp-'+idx+'" type="text" placeholder="Paradero / Tranquera" style="font-size:12px;padding:6px 8px">'
+          + '<div class="sent-opts">'
+          + '<button class="sent-opt" data-v="N/S" onclick="selSentOpt('+idx+',\'N/S\')">N/S</button>'
+          + '<button class="sent-opt" data-v="S/N" onclick="selSentOpt('+idx+',\'S/N\')">S/N</button>'
+          + '<button class="sent-opt" data-v="" onclick="selSentOpt('+idx+',\'\')">—</button>'
+          + '</div>'
+          + '<button onclick="guardarAsignacion('+idx+')" style="width:100%;margin-top:6px;background:var(--acc);color:#fff;border:none;border-radius:var(--rs);padding:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Guardar</button>'
+          + '</div>';
+      }
+
       return '<div class="'+cls+'">'
         + '<div class="pi-info">'
         + '<div class="pi-name">'+(item.nombre||'')+catNote+'</div>'
         + '<div class="pi-sub">'+(item.punto||'')+(item.sentido?' · '+item.sentido:'')+(item.funcion?' · '+item.funcion:'')+'</div>'
-        + badge
+        + qapBadge + sshhBadge
+        + asignarForm
         + '</div>'
-        + '<div class="pi-btns">'+qapBtn+destBtn+'</div>'
+        + '<div class="pi-btns">'+btns+'</div>'
         + '</div>';
     }).join('');
   }
@@ -2595,12 +2658,16 @@ function esSeccionEspecial(line) {
 
 function mapCat(seccion) {
   if(!seccion) return 'activo';
-  var s = seccion.toLowerCase();
-  if(s.indexOf('apoyo') >= 0) return 'apoyo_zona';
-  if(s.indexOf('descanso') >= 0) return 'descanso';
-  if(s.indexOf('compensat') >= 0) return 'compensatorio';
-  if(s.indexOf('vacacion') >= 0) return 'vacaciones';
-  if(s.indexOf('supervisor') >= 0) return 'supervisor';
+  var s = seccion.toUpperCase();
+  if(s.indexOf('CONOS') >= 0)  return 'apoyo_conos';
+  if(s.indexOf('REJAS') >= 0)  return 'apoyo_rejas';
+  if(s.indexOf('SUR') >= 0)    return 'apoyo_zona_sur';
+  if(s.indexOf('NORTE') >= 0)  return 'apoyo_zona_norte';
+  if(s.indexOf('APOYO') >= 0)  return 'apoyo_zona';
+  if(s.indexOf('DESCANSO') >= 0)    return 'descanso';
+  if(s.indexOf('COMPENSAT') >= 0)   return 'compensatorio';
+  if(s.indexOf('VACACION') >= 0)    return 'vacaciones';
+  if(s.indexOf('SUPERVISOR') >= 0)  return 'supervisor';
   return 'activo';
 }
 
@@ -2704,6 +2771,71 @@ function preProcessarDist(texto) {
   }
   flushPending();
   return items;
+}
+
+
+function iniSSHH(idx) {
+  var data = getProgHoy();
+  if(!data||!data.items||idx>=data.items.length) return;
+  var item = data.items[idx];
+  item.sshh_estado = 'sshh';
+  item.sshh_hora = nowTime();
+  saveProgHoy(data);
+  renderProgContent();
+  var apell = item.nombre.split(' ')[0];
+  var msg = '🚽 SS.HH.: ' + B(apell) + (item.punto ? ' · ' + item.punto : '');
+  document.getElementById('qs-title').textContent = 'SS.HH.';
+  document.getElementById('qs-prev').textContent = msg;
+  quickMsg = msg; window._baseQuickMsg = msg;
+  var rr = document.getElementById('qs-relevo-row');
+  if(rr) rr.style.display = 'none';
+  document.getElementById('quick-overlay').classList.add('open');
+}
+
+function finSSHH(idx) {
+  var data = getProgHoy();
+  if(!data||!data.items||idx>=data.items.length) return;
+  var item = data.items[idx];
+  item.sshh_estado = 'retorno';
+  item.sshh_hora_fin = nowTime();
+  saveProgHoy(data);
+  renderProgContent();
+  var apell = item.nombre.split(' ')[0];
+  var msg = '✓ SS.HH.: ' + B(apell) + (item.punto ? ' · ' + item.punto : '');
+  document.getElementById('qs-title').textContent = 'SS.HH.';
+  document.getElementById('qs-prev').textContent = msg;
+  quickMsg = msg; window._baseQuickMsg = msg;
+  var rr = document.getElementById('qs-relevo-row');
+  if(rr) rr.style.display = 'none';
+  document.getElementById('quick-overlay').classList.add('open');
+}
+
+// Asignar punto y sentido a personal en "otros"
+function toggleAsignar(idx) {
+  var el = document.getElementById('asf-' + idx);
+  if(el) el.classList.toggle('open');
+}
+function selSentOpt(idx, val) {
+  document.querySelectorAll('#asf-'+idx+' .sent-opt').forEach(function(b){b.classList.remove('sel');});
+  var btn = document.querySelector('#asf-'+idx+' .sent-opt[data-v="'+val+'"]');
+  if(btn) btn.classList.add('sel');
+}
+function guardarAsignacion(idx) {
+  var data = getProgHoy();
+  if(!data||!data.items||idx>=data.items.length) return;
+  var inp = document.getElementById('asp-'+idx);
+  var sentSel = document.querySelector('#asf-'+idx+' .sent-opt.sel');
+  if(inp && inp.value.trim()) data.items[idx].punto = inp.value.trim().toUpperCase();
+  if(sentSel) data.items[idx].sentido = sentSel.dataset.v;
+  // Auto-detect sentido from punto
+  var pt = data.items[idx].punto||'';
+  if(!data.items[idx].sentido) {
+    if(pt.indexOf('N/S')>=0) data.items[idx].sentido='N/S';
+    else if(pt.indexOf('S/N')>=0) data.items[idx].sentido='S/N';
+  }
+  saveProgHoy(data);
+  renderProgContent();
+  showToast('✓ Punto asignado');
 }
 
 function init(){
