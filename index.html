@@ -2050,7 +2050,7 @@ function iniQAP(idx) {
   renderProgContent();
   updateProgHomeBtn();
   var apell = item.nombre.split(' ')[0];
-  var msg = '☕ QAP: ' + B(apell) + (item.punto ? ' · ' + item.punto : '');
+  var msg = '☕ Salida QAP: ' + B(apell);
   quickMsg = msg;
   document.getElementById('qs-title').textContent = 'Inicio QAP';
   document.getElementById('qs-prev').textContent = msg;
@@ -2070,7 +2070,7 @@ function finQAP(idx) {
   renderProgContent();
   updateProgHomeBtn();
   var apell = item.nombre.split(' ')[0];
-  var msg = '⏰ Retorno QAP: ' + B(apell) + (item.punto ? ' · ' + item.punto : '');
+  var msg = '⏰ Retorno QAP: ' + B(apell);
   quickMsg = msg;
   document.getElementById('qs-title').textContent = 'Fin QAP';
   document.getElementById('qs-prev').textContent = msg;
@@ -2150,7 +2150,7 @@ function confirmarQAPGrupal() {
       data.items[realIdx].qap_ts_ini = Date.now();
       data.items[realIdx].qap_orden = orden;
     }
-    msgLines.push(orden + '° ' + B(item.nombre.split(' ')[0]) + (item.punto ? ' · ' + item.punto : ''));
+    msgLines.push(orden + '° ' + B(item.nombre.split(' ')[0]));
   });
   saveProgHoy(data);
   var msg = msgLines.join('\n');
@@ -2866,7 +2866,7 @@ function iniSSHH(idx) {
   saveProgHoy(data);
   renderProgContent();
   var apell = item.nombre.split(' ')[0];
-  var msg = '🚽 SS.HH.: ' + B(apell) + (item.punto ? ' · ' + item.punto : '');
+  var msg = '🚽 Salida SS.HH.: ' + B(apell);
   document.getElementById('qs-title').textContent = 'SS.HH.';
   document.getElementById('qs-prev').textContent = msg;
   quickMsg = msg; window._baseQuickMsg = msg;
@@ -2884,7 +2884,7 @@ function finSSHH(idx) {
   saveProgHoy(data);
   renderProgContent();
   var apell = item.nombre.split(' ')[0];
-  var msg = '✓ SS.HH.: ' + B(apell) + (item.punto ? ' · ' + item.punto : '');
+  var msg = '✓ Retorno SS.HH.: ' + B(apell);
   document.getElementById('qs-title').textContent = 'SS.HH.';
   document.getElementById('qs-prev').textContent = msg;
   quickMsg = msg; window._baseQuickMsg = msg;
