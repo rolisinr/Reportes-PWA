@@ -941,6 +941,10 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     <div style="font-size:11px;color:var(--mut);margin-bottom:8px">Clave IA y configuración global vienen del Sheet automáticamente.</div>
     <button onclick="testSheetConn()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">🔗 Verificar conexión</button>
     <div id="sheet-test-result" style="font-size:11px;margin-top:6px;display:none"></div>
+    <div id="sw-version-bar" style="margin-top:10px;padding:8px 10px;background:var(--bg);border-radius:var(--rs);display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <span id="sw-version-txt" style="font-size:11px;color:var(--mut);font-family:monospace">SW: comprobando…</span>
+      <button onclick="limpiarCache()" style="background:none;border:1px solid var(--brd);border-radius:12px;padding:3px 9px;font-size:11px;color:var(--mut);cursor:pointer;font-family:inherit;white-space:nowrap">🗑️ Limpiar caché</button>
+    </div>
   </div>
   <button class="dw-save" onclick="saveSettings()">Guardar configuración</button>
 </div>
@@ -1741,6 +1745,11 @@ function doTelegram(){
 function openSettings(){
   updatePermStates();
   var cfg=getSettings2();
+  // Mostrar versión SW
+  getSWVersion().then(function(v){
+    var el=document.getElementById('sw-version-txt');
+    if(el) el.textContent='SW activo: '+v;
+  });
   document.querySelectorAll('#corr-sel .turno-opt').forEach(function(b){b.classList.toggle('sel',b.dataset.v===cfg.corredor||(!cfg.corredor&&b.dataset.v==='TGA'));});
   renderRutasChips(cfg.rutas||['301','303','305','336','372']);
   updateCorredorBadge();
@@ -2507,6 +2516,25 @@ async function sincronizarProg() {
   } finally {
     if(btn) { btn.classList.remove('loading'); btn.textContent = '🔄 Sincronizar'; }
   }
+}
+
+
+async function getSWVersion() {
+  try {
+    var keys = await caches.keys();
+    var app = keys.find(function(k){ return k.indexOf('cov-reportes') >= 0 || k.indexOf('reportes-tga') >= 0; });
+    return app || (keys.length ? keys.join(', ') : 'sin caché');
+  } catch(e) { return 'no disponible'; }
+}
+
+async function limpiarCache() {
+  try {
+    var keys = await caches.keys();
+    await Promise.all(keys.map(function(k){ return caches.delete(k); }));
+    showToast('✓ Caché limpiada — recarga la app');
+    var el = document.getElementById('sw-version-txt');
+    if(el) el.textContent = 'Caché limpiada — recarga';
+  } catch(e) { showToast('⚠️ ' + e.message); }
 }
 
 function init(){
