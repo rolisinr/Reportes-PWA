@@ -1885,75 +1885,6 @@ function updateProgHomeBtn() {
   }
 }
 
-function renderProgContent() {
-  var el = document.getElementById('prog-content');
-  var data = getProgHoy();
-  if(!data || !data.items || !data.items.length) {
-    el.innerHTML = '<div class="prog-empty">📅 Sin programación cargada<br><small>Toca "Cargar" para pegar la distribución semanal</small></div>';
-    return;
-  }
-  var items = data.items;
-  var activos = items.filter(function(x){return x.categoria==='activo';});
-  var enQap   = items.filter(function(x){return x.qap_estado==='qap';});
-  var otros   = items.filter(function(x){return x.categoria!=='activo';});
-
-  var filtered = items;
-  if(progFiltro==='activo') filtered = items.filter(function(x){return x.categoria==='activo'&&x.qap_estado!=='qap';});
-  else if(progFiltro==='qap') filtered = items.filter(function(x){return x.qap_estado==='qap';});
-  else if(progFiltro==='ns')  filtered = items.filter(function(x){return x.sentido==='N/S';});
-  else if(progFiltro==='sn')  filtered = items.filter(function(x){return x.sentido==='S/N';});
-
-  var fnames = {todos:'Todos',activo:'Activos',ns:'N/S',sn:'S/N',qap:'En QAP'};
-  var fkeys  = ['todos','activo','ns','sn','qap'];
-  var fHTML = '<div class="prog-filters">';
-  fkeys.forEach(function(f){
-    fHTML += '<button class="pfchip' + (progFiltro===f?' on':'') + '" data-f="' + f + '" onclick="setProgF(this.dataset.f)">' + fnames[f] + '</button>';
-  });
-  fHTML += '</div>';
-
-  var desc2 = data.items.filter(function(x){return x.categoria==='descanso';});
-  var statsHTML = '<div class="prog-stats">'
-    + '<span class="pstat a">✓ ' + activos.length + ' en punto</span>'
-    + (enQap.length ? '<span class="pstat q">☕ ' + enQap.length + ' en QAP</span>' : '')
-    + (desc2.length ? '<span class="pstat o">💤 ' + desc2.length + ' descanso</span>' : '')
-    + '</div>';
-
-  var grpBtn = '<button class="grp-btn" onclick="abrirQAPGrupal()">☕ QAP Grupal</button>';
-
-  var listHTML = '<div class="prog-list">';
-  filtered.forEach(function(item, fi) {
-    var realIdx = data.items.indexOf(item);
-    var isQap = item.qap_estado === 'qap';
-    var cls = 'pi' + (isQap ? ' inqap' : '');
-    var badge = isQap
-      ? '<div class="pi-badge">☕ ' + item.qap_orden + '° · ' + item.qap_hora_ini + '</div>'
-      : '';
-    var catNote = item.categoria !== 'activo'
-      ? '<span style="font-size:10px;color:var(--mut);margin-left:4px">(' + item.categoria + ')</span>'
-      : '';
-    var btn = '';
-    var sinQAP = ['descanso','vacaciones','compensatorio','supervisor'].indexOf(item.categoria) >= 0
-      || (item.funcion||'').toLowerCase().indexOf('ruteo') >= 0;
-    if(!sinQAP) {
-      if(isQap) {
-        btn = '<button class="qfin-btn" data-idx="' + realIdx + '" onclick="finQAP(+this.dataset.idx)">✓ Fin</button>';
-      } else {
-        btn = '<button class="qini-btn" data-idx="' + realIdx + '" onclick="iniQAP(+this.dataset.idx)">☕ QAP</button>';
-      }
-    }
-    listHTML += '<div class="' + cls + '">'
-      + '<div class="pi-info">'
-      + '<div class="pi-name">' + (item.orden ? item.orden + '. ' : '') + item.nombre + catNote + '</div>'
-      + '<div class="pi-sub">' + (item.punto||'') + (item.sentido ? ' · ' + item.sentido : '') + (item.funcion ? ' · ' + item.funcion : '') + '</div>'
-      + badge
-      + '</div>'
-      + '<div class="pi-btns">' + btn + '</div>'
-      + '</div>';
-  });
-  listHTML += '</div>';
-
-  el.innerHTML = statsHTML + fHTML + grpBtn + listHTML;
-}
 
 function setProgF(f) {
   progFiltro = f;
@@ -2026,50 +1957,6 @@ function parsePipeFormat(text) {
   return {zona: 'CENTRO', items: items};
 }
 
-async function procesarProg() {
-  var texto = (document.getElementById('prog-texto').value||'').trim();
-  var msg = document.getElementById('prog-proc-msg');
-  if(texto.length < 50) { msg.textContent = '⚠️ Pega el texto completo de la programación'; return; }
-  var btn = document.getElementById('prog-proc-btn');
-  btn.disabled = true; btn.textContent = '⏳ Procesando…';
-  msg.textContent = '';
-  try {
-    var prompt = 'Analiza esta distribucion semanal de COVs del Corredor ' + getCorredor() + '.\n'
-      + 'Extrae CADA persona que aparece con su informacion.\n\n'
-      + 'RESPONDE UNICAMENTE con lineas en este formato exacto (sin encabezado, sin explicacion):\n'
-      + 'ORDEN|NOMBRE|PUNTO|SENTIDO|FUNCION|CATEGORIA\n\n'
-      + 'Donde:\n'
-      + '- ORDEN: numero de orden si aparece, si no pon 0\n'
-      + '- NOMBRE: nombre completo SIN tildes (reemplaza a->a, e->e, o->o, u->u, n->n)\n'
-      + '- PUNTO: nombre del paradero o punto asignado\n'
-      + '- SENTIDO: N/S o S/N o AMBOS o vacio\n'
-      + '- FUNCION: Tranquera, 1Tranquera, 2Tranquera, Ruteo, Apoyo, etc.\n'
-      + '- CATEGORIA: activo, descanso, apoyo_zona, compensatorio, vacaciones, supervisor\n\n'
-      + 'Ejemplo de respuesta:\n'
-      + '2|Canta De La Cruz Jose|P. ICA CDRA 2|N/S|Ruteo|activo\n'
-      + '3|Silvestre Rojas Roli|P. NAZARENAS CDRA 4|N/S|Tranquera|activo\n'
-      + '0|Barbaran Zevallos Raquel||||||descanso\n\n'
-      + 'Incluye TODOS: activos, descanso, apoyo, compensatorio, etc.\n'
-      + 'Ignora solo las posiciones vacias (sin nombre de COV).\n\n'
-      + 'Distribucion:\n' + texto;
-
-    var res = await callGeminiText(prompt);
-    var data = parsePipeFormat(res.text);
-    if(data && data.items && data.items.length) {
-      saveProgHoy(data);
-      showToast('✓ ' + data.items.length + ' COVs cargados · ' + res.model);
-      updateProgHomeBtn();
-      goBack();
-      renderProgContent();
-    } else {
-      msg.textContent = '⚠️ No se detectaron COVs. Verifica que el texto sea la distribución semanal.';
-    }
-  } catch(e) {
-    msg.textContent = '⚠️ ' + e.message;
-  } finally {
-    btn.disabled = false; btn.textContent = '🤖 Procesar con IA';
-  }
-}
 
 async function callGeminiText(prompt) {
   var cfg = getSettings2();
