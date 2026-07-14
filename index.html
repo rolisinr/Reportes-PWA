@@ -443,6 +443,36 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 .grp-btn{width:100%;background:var(--or);color:#fff;border:none;border-radius:var(--r);
   padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
   margin-bottom:9px;-webkit-tap-highlight-color:transparent}
+
+/* ── PROG NUEVA UI ── */
+.pc-sect{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;
+  letter-spacing:.5px;margin:14px 0 6px}
+.prog-corr-sel{display:flex;gap:8px;margin-bottom:4px}
+.pc-opt{flex:1;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--r);
+  padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
+  color:var(--mut);-webkit-tap-highlight-color:transparent;transition:all .15s}
+.pc-opt.sel{background:var(--acc);border-color:var(--acc);color:#fff}
+.prog-continue-btn{width:100%;background:var(--acc);color:#fff;border:none;
+  border-radius:var(--r);padding:13px;font-size:15px;font-weight:700;cursor:pointer;
+  font-family:inherit;margin-top:16px;-webkit-tap-highlight-color:transparent}
+.prog-header-row{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;gap:8px}
+.prog-meta{font-size:11px;color:var(--mut);font-weight:600}
+.sync-btn{background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;
+  padding:6px 12px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;
+  font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.sync-btn.loading{opacity:.6;cursor:default}
+.prog-section-lbl{font-size:10px;font-weight:700;color:var(--mut);
+  text-transform:uppercase;letter-spacing:.5px;margin:10px 0 5px;
+  padding-left:2px}
+.dest-btn{background:none;border:none;font-size:16px;cursor:pointer;padding:4px;
+  -webkit-tap-highlight-color:transparent;line-height:1;opacity:.4}
+.dest-btn.on{opacity:1}
+.pi.destacado{border-color:var(--or);background:linear-gradient(135deg,#FFFBF0 0%,#fff 100%)}
+.otros-toggle{width:100%;background:none;border:none;color:var(--mut);font-size:12px;
+  cursor:pointer;padding:8px 0;font-family:inherit;text-align:left;
+  -webkit-tap-highlight-color:transparent}
+.otros-section{overflow:hidden;transition:max-height .3s}
 </style>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -755,11 +785,46 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 <!-- PROGRAMACIÓN PANTALLA PRINCIPAL -->
 <div class="screen" id="s-prog">
   <div class="back-row" onclick="goBack()"><span class="back-icon">‹</span><span class="back-lbl">Inicio</span></div>
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-    <div style="font-size:15px;font-weight:700">📅 Programación</div>
-    <button onclick="go('s-prog-paste')" style="background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">📋 Cargar</button>
+  <div class="prog-header-row">
+    <div>
+      <div style="font-size:15px;font-weight:700">📅 Programación</div>
+      <div class="prog-meta" id="prog-meta"></div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="sync-btn" id="sync-btn" onclick="sincronizarProg()">🔄 Sincronizar</button>
+      <button onclick="abrirProgConfig()" style="background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">📋 Cargar</button>
+    </div>
   </div>
   <div id="prog-content"><div class="prog-empty">📅 Sin programación cargada<br><small>Toca "Cargar"</small></div></div>
+</div>
+
+<!-- CONFIG PROGRAMACIÓN -->
+<div class="screen" id="s-prog-config">
+  <div class="back-row" onclick="goBack()">
+    <span class="back-icon">‹</span><span class="back-lbl">Programación</span>
+  </div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:4px">📋 Cargar programación</div>
+  <div style="font-size:12px;color:var(--mut);margin-bottom:14px">
+    Confirma el corredor y turno antes de pegar el texto.</div>
+
+  <div class="pc-sect">Corredor</div>
+  <div class="prog-corr-sel" id="pc-corr">
+    <button class="pc-opt" data-v="TGA" onclick="pcSel('corr',this)">TGA</button>
+    <button class="pc-opt" data-v="SJL" onclick="pcSel('corr',this)">SJL</button>
+    <button class="pc-opt" data-v="PAB" onclick="pcSel('corr',this)">PAB</button>
+  </div>
+
+  <div class="pc-sect">Turno</div>
+  <div class="prog-corr-sel" id="pc-turno">
+    <button class="pc-opt" data-v="MAÑANA" onclick="pcSel('turno',this)">Mañana</button>
+    <button class="pc-opt" data-v="TARDE"  onclick="pcSel('turno',this)">Tarde</button>
+    <button class="pc-opt" data-v="NOCHE"  onclick="pcSel('turno',this)">Noche</button>
+  </div>
+
+  <div class="pc-sect">Fecha</div>
+  <input class="fi" type="date" id="pc-fecha" style="font-size:14px">
+
+  <button class="prog-continue-btn" onclick="irAPaste()">Continuar →</button>
 </div>
 
 <!-- PEGAR PROGRAMACIÓN -->
@@ -1914,18 +1979,18 @@ function parsePipeFormat(text) {
     if(line.toUpperCase().indexOf('ORDEN') === 0) return;
     var parts = line.split('|');
     if(parts.length < 2) return;
-    var nombre = quitaTildes((parts[1]||'').trim());
-    if(!nombre) return;
-    var orden = parseInt(parts[0]) || null;
-    var punto = quitaTildes((parts[2]||'').trim());
-    var sentido = (parts[3]||'').trim() || null;
+    var nombre = quitaTildes((parts[0]||'').trim());
+    if(!nombre || nombre.match(/^\d+$/)) return; // ignorar lineas que son solo números
+    var punto = quitaTildes((parts[1]||'').trim());
+    var orden = null; // el orden lo determina la base, no la distribución
+    var sentido = (parts[2]||'').trim() || null;
     // Auto-corregir sentido desde el nombre del punto (más confiable)
     if(punto) {
       if(punto.indexOf('N/S') >= 0) sentido = 'N/S';
       else if(punto.indexOf('S/N') >= 0) sentido = 'S/N';
     }
-    var funcion = (parts[4]||'').trim() || 'Tranquera';
-    var cat = (parts[5]||'activo').trim().toLowerCase();
+    var funcion = (parts[3]||'').trim() || 'Tranquera';
+    var cat = (parts[4]||'activo').trim().toLowerCase();
     // Normalizar categoría
     if(cat.indexOf('descanso') >= 0) cat = 'descanso';
     else if(cat.indexOf('supervisor') >= 0) cat = 'supervisor';
@@ -1936,6 +2001,7 @@ function parsePipeFormat(text) {
     items.push({
       orden: orden,
       nombre: nombre,
+      nombre_clave: makeNameKey(nombre),
       punto: punto,
       sentido: sentido,
       funcion: funcion,
@@ -2159,6 +2225,388 @@ function confirmarQAPGrupal() {
   renderProgContent();
   updateProgHomeBtn();
   showToast('✓ QAP iniciado para ' + selected.length + ' COVs');
+}
+
+
+// ═══════════════════════════════════════════════
+// PROGRAMACIÓN V2 — Base de COVs + Destacados
+// ═══════════════════════════════════════════════
+
+// ── Utilidades ──
+function makeNameKey(nombre) {
+  var parts = quitaTildes(nombre||'').trim().toUpperCase().split(/\s+/).filter(Boolean);
+  if(parts.length === 0) return '';
+  if(parts.length === 1) return parts[0];
+  return parts[0] + ' ' + parts[parts.length - 1];
+}
+
+function isSinQAP(item) {
+  var sinCats = ['descanso','vacaciones','compensatorio','supervisor'];
+  return sinCats.indexOf(item.categoria) >= 0
+    || (item.funcion||'').toLowerCase().indexOf('ruteo') >= 0;
+}
+
+// ── Base de COVs (localStorage por corredor) ──
+function getCOVsBase(corredor) {
+  return S.get('covs_base_' + (corredor||getCorredor())) || [];
+}
+function saveCOVsBase(arr, corredor) {
+  S.set('covs_base_' + (corredor||getCorredor()), arr);
+}
+
+function matchNombres(items, corredor) {
+  var base = getCOVsBase(corredor);
+  var baseMap = {};
+  base.forEach(function(b){ baseMap[b.nombre_clave] = b; });
+  var hoy = today();
+  var sinQAPCats = ['descanso','vacaciones','compensatorio','supervisor'];
+
+  items.forEach(function(item) {
+    var key = makeNameKey(item.nombre);
+    item.nombre_clave = key;
+    if(baseMap[key]) {
+      item.nombre = baseMap[key].nombre_completo; // usar nombre canónico
+      baseMap[key].ultima_aparicion = hoy;
+      baseMap[key].activo = true;
+    } else if(item.nombre) {
+      // Nuevo COV — agregar a la base
+      var nuevo = {
+        nombre_completo: item.nombre,
+        nombre_clave: key,
+        corredor: corredor||getCorredor(),
+        activo: true,
+        ultima_aparicion: hoy,
+        obs: ''
+      };
+      base.push(nuevo);
+      baseMap[key] = nuevo;
+    }
+  });
+
+  // Marcar inactivos (más de 45 días sin aparecer)
+  var hoyMs = new Date().getTime();
+  base.forEach(function(b) {
+    if(b.ultima_aparicion) {
+      var dias = (hoyMs - new Date(b.ultima_aparicion).getTime()) / 86400000;
+      if(dias > 45) b.activo = false;
+    }
+  });
+
+  // Ordenar A-Z por primer apellido (primera palabra)
+  base.sort(function(a,b){
+    var ka = (a.nombre_completo||'').split(' ')[0];
+    var kb = (b.nombre_completo||'').split(' ')[0];
+    return ka.localeCompare(kb);
+  });
+
+  saveCOVsBase(base, corredor);
+  return items;
+}
+
+// ── Destacados (local, por fecha) ──
+function getDestacados() {
+  var d = S.get('prog_destacados');
+  if(!d || d.fecha !== today()) return [];
+  return d.claves || [];
+}
+function saveDestacados(claves) {
+  S.set('prog_destacados', {fecha: today(), claves: claves});
+}
+function toggleDestacado(idx) {
+  var data = getProgHoy();
+  if(!data || !data.items || idx >= data.items.length) return;
+  var item = data.items[idx];
+  var claves = getDestacados();
+  var i = claves.indexOf(item.nombre_clave);
+  if(i >= 0) claves.splice(i,1);
+  else claves.push(item.nombre_clave);
+  saveDestacados(claves);
+  renderProgContent();
+}
+
+// ── Config previa al paste ──
+var _pcCorr = '', _pcTurno = '', _pcFecha = '';
+
+function abrirProgConfig() {
+  var cfg = getSettings2();
+  _pcCorr  = cfg.corredor || 'TGA';
+  _pcTurno = getProfile().turno || 'TARDE';
+  _pcFecha = today();
+  // Marcar selecciones
+  document.querySelectorAll('#pc-corr .pc-opt').forEach(function(b){
+    b.classList.toggle('sel', b.dataset.v === _pcCorr);
+  });
+  document.querySelectorAll('#pc-turno .pc-opt').forEach(function(b){
+    b.classList.toggle('sel', b.dataset.v === _pcTurno);
+  });
+  var fi = document.getElementById('pc-fecha');
+  if(fi) fi.value = _pcFecha;
+  go('s-prog-config');
+}
+
+function pcSel(tipo, btn) {
+  var group = tipo === 'corr' ? 'pc-corr' : 'pc-turno';
+  document.querySelectorAll('#' + group + ' .pc-opt').forEach(function(b){
+    b.classList.remove('sel');
+  });
+  btn.classList.add('sel');
+  if(tipo === 'corr') _pcCorr = btn.dataset.v;
+  else _pcTurno = btn.dataset.v;
+}
+
+function irAPaste() {
+  var corrSel = document.querySelector('#pc-corr .pc-opt.sel');
+  var turnSel = document.querySelector('#pc-turno .pc-opt.sel');
+  var fi = document.getElementById('pc-fecha');
+  if(!corrSel || !turnSel) { showToast('⚠️ Selecciona corredor y turno'); return; }
+  _pcCorr  = corrSel.dataset.v;
+  _pcTurno = turnSel.dataset.v;
+  _pcFecha = (fi && fi.value) || today();
+  document.getElementById('prog-texto').value = '';
+  document.getElementById('prog-proc-msg').textContent = '';
+  go('s-prog-paste');
+}
+
+// ── Procesar con IA (actualizado) ──
+async function procesarProg() {
+  var texto = (document.getElementById('prog-texto').value||'').trim();
+  var msg = document.getElementById('prog-proc-msg');
+  if(texto.length < 50) { msg.textContent = '⚠️ Pega el texto completo'; return; }
+  var btn = document.getElementById('prog-proc-btn');
+  btn.disabled = true; btn.textContent = '⏳ Procesando…';
+  msg.textContent = '';
+  try {
+    var prompt = 'Analiza esta distribucion semanal de COVs del Corredor ' + _pcCorr + ', turno ' + _pcTurno + '.\n'
+      + 'Extrae cada persona mencionada.\n\n'
+      + 'FORMATO DE RESPUESTA — una linea por persona, exactamente:\n'
+      + 'NOMBRE|PUNTO|SENTIDO|FUNCION|CATEGORIA\n\n'
+      + 'Reglas:\n'
+      + '- NOMBRE: nombre completo SIN tildes, SIN numeros de orden al inicio (ignora "02.", "03.", etc.)\n'
+      + '- PUNTO: paradero o ubicacion asignada, sin emojis\n'
+      + '- SENTIDO: N/S o S/N (lo que aparezca en el nombre del paradero o punto)\n'
+      + '- FUNCION: Tranquera, 1Tranquera, 2Tranquera, Ruteo, Supervisor, Apoyo, etc.\n'
+      + '- CATEGORIA: activo | descanso | apoyo_zona | compensatorio | vacaciones | supervisor\n\n'
+      + 'Incluye TODOS: activos, descanso, apoyo, compensatorio, supervisor.\n'
+      + 'Ignora solo posiciones sin nombre de COV.\n'
+      + 'NO incluyas encabezados ni texto adicional.\n\n'
+      + 'Distribucion:\n' + texto;
+
+    var res = await callGeminiText(prompt);
+    var data = parsePipeFormat(res.text);
+
+    if(data && data.items && data.items.length) {
+      // Match con base de COVs
+      data.items = matchNombres(data.items, _pcCorr);
+      data.corredor = _pcCorr;
+      data.turno    = _pcTurno;
+      data.fecha    = _pcFecha;
+      saveProgHoy(data);
+      showToast('✓ ' + data.items.length + ' COVs · ' + res.model);
+      updateProgHomeBtn();
+      updateProgMeta();
+      go('s-prog');
+      renderProgContent();
+    } else {
+      msg.textContent = '⚠️ No se detectaron COVs.';
+    }
+  } catch(e) {
+    msg.textContent = '⚠️ ' + e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = '🤖 Procesar con IA';
+  }
+}
+
+// ── Render tabla (versión nueva) ──
+function updateProgMeta() {
+  var data = getProgHoy();
+  var el = document.getElementById('prog-meta');
+  if(!el) return;
+  if(data && data.corredor) {
+    el.textContent = data.corredor + ' · ' + (data.turno||'') + ' · ' + (data.fecha||today());
+  }
+}
+
+function renderProgContent() {
+  var el = document.getElementById('prog-content');
+  var data = getProgHoy();
+  updateProgMeta();
+  if(!data || !data.items || !data.items.length) {
+    el.innerHTML = '<div class="prog-empty">📅 Sin programación cargada<br><small>Toca "Cargar" para pegar la distribución</small></div>';
+    return;
+  }
+  var items = data.items;
+  var claves_dest = getDestacados();
+
+  // Separar grupos
+  var destacados = [], enQap = [], activos = [], otros = [];
+  items.forEach(function(item, idx) {
+    var realIdx = idx;
+    if(claves_dest.indexOf(item.nombre_clave||'') >= 0) destacados.push({item:item,idx:realIdx});
+    else if(item.qap_estado === 'qap') enQap.push({item:item,idx:realIdx});
+    else if(!isSinQAP(item)) activos.push({item:item,idx:realIdx});
+    else otros.push({item:item,idx:realIdx});
+  });
+
+  // Ordenar activos A-Z por clave
+  activos.sort(function(a,b){ return (a.item.nombre_clave||'').localeCompare(b.item.nombre_clave||''); });
+  otros.sort(function(a,b){ return (a.item.nombre||'').localeCompare(b.item.nombre||''); });
+
+  // Estadísticas
+  var totalEnPunto = destacados.length + enQap.length + activos.length;
+  var stats = '<div class="prog-stats">'
+    + '<span class="pstat a">✓ ' + totalEnPunto + ' en punto</span>'
+    + (enQap.length ? '<span class="pstat q">☕ ' + enQap.length + ' QAP</span>' : '')
+    + (otros.length ? '<span class="pstat o">💤 ' + otros.length + '</span>' : '')
+    + '</div>';
+
+  // Filtros
+  var filters = '<div class="prog-filters">'
+    + ['todos','activo','ns','sn','qap'].map(function(f){
+        var fnames={todos:'Todos',activo:'Activos',ns:'N/S',sn:'S/N',qap:'En QAP'};
+        return '<button class="pfchip'+(progFiltro===f?' on':'')+'" data-f="'+f+'" onclick="setProgF(this.dataset.f)">'+fnames[f]+'</button>';
+      }).join('')
+    + '</div>';
+
+  // Aplicar filtro
+  function applyFilter(list) {
+    if(progFiltro === 'todos' || progFiltro === 'activo') return list;
+    return list.filter(function(x){
+      if(progFiltro === 'ns') return x.item.sentido === 'N/S';
+      if(progFiltro === 'sn') return x.item.sentido === 'S/N';
+      if(progFiltro === 'qap') return x.item.qap_estado === 'qap';
+      return true;
+    });
+  }
+
+  function renderGroup(list, isDestacado) {
+    return applyFilter(list).map(function(x){
+      var item = x.item, idx = x.idx;
+      var isQap = item.qap_estado === 'qap';
+      var cls = 'pi' + (isDestacado ? ' destacado' : '') + (isQap ? ' inqap' : '');
+      var badge = isQap ? '<div class="pi-badge">☕ '+item.qap_orden+'° · '+item.qap_hora_ini+'</div>' : '';
+      var catNote = item.categoria !== 'activo' && item.categoria
+        ? '<span style="font-size:10px;color:var(--mut);margin-left:4px">('+item.categoria+')</span>' : '';
+      var qapBtn = '';
+      if(!isSinQAP(item)) {
+        qapBtn = isQap
+          ? '<button class="qfin-btn" data-idx="'+idx+'" onclick="finQAP(+this.dataset.idx)">✓ Fin</button>'
+          : '<button class="qini-btn" data-idx="'+idx+'" onclick="iniQAP(+this.dataset.idx)">☕</button>';
+      }
+      var destBtn = !isSinQAP(item)
+        ? '<button class="dest-btn'+(isDestacado?' on':'')+'" data-idx="'+idx+'" onclick="toggleDestacado(+this.dataset.idx)" title="Destacar">⭐</button>'
+        : '';
+      return '<div class="'+cls+'">'
+        + '<div class="pi-info">'
+        + '<div class="pi-name">'+(item.nombre||'')+catNote+'</div>'
+        + '<div class="pi-sub">'+(item.punto||'')+(item.sentido?' · '+item.sentido:'')+(item.funcion?' · '+item.funcion:'')+'</div>'
+        + badge
+        + '</div>'
+        + '<div class="pi-btns">'+qapBtn+destBtn+'</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  var html2 = stats + filters;
+
+  // Sección DESTACADOS
+  if(applyFilter(destacados).length) {
+    html2 += '<div class="prog-section-lbl">⭐ Destacados</div>';
+    html2 += '<div class="prog-list">'+renderGroup(destacados, true)+'</div>';
+  }
+  // Sección EN QAP
+  if(applyFilter(enQap).length) {
+    html2 += '<div class="prog-section-lbl">☕ En QAP</div>';
+    html2 += '<div class="prog-list">'+renderGroup(enQap, false)+'</div>';
+  }
+  // Sección ACTIVOS
+  if(applyFilter(activos).length) {
+    html2 += '<div class="prog-section-lbl">✓ En punto</div>';
+    html2 += '<div class="prog-list">'+renderGroup(activos, false)+'</div>';
+  }
+  // Sección OTROS (colapsable)
+  if(otros.length) {
+    html2 += '<button class="otros-toggle" onclick="toggleOtros(this)">'
+      + '💤 Descanso / otros ('+otros.length+') ▸</button>';
+    html2 += '<div class="otros-section prog-list" id="otros-section" style="display:none">'
+      + renderGroup(otros, false)
+      + '</div>';
+  }
+
+  el.innerHTML = html2;
+}
+
+function toggleOtros(btn) {
+  var sec = document.getElementById('otros-section');
+  if(!sec) return;
+  var open = sec.style.display !== 'none';
+  sec.style.display = open ? 'none' : 'block';
+  btn.textContent = btn.textContent.replace(open?'▾':'▸', open?'▸':'▾');
+}
+
+// ── Sincronizar (único botón) ──
+async function sincronizarProg() {
+  var btn = document.getElementById('sync-btn');
+  if(btn) { btn.classList.add('loading'); btn.textContent = '⏳ Sincronizando…'; }
+  try {
+    var data = getProgHoy();
+    if(!data || !data.items) { showToast('⚠️ Sin programación cargada'); return; }
+
+    // 1. Descargar del Sheet
+    var res = await sheetGet('prog_estado', {
+      did: getDeviceId(),
+      corredor: data.corredor||getCorredor(),
+      turno: data.turno||'',
+      fecha: data.fecha||today()
+    });
+
+    if(res && res.items && res.items.length) {
+      // Fusionar: actualizar QAP de otros COVs sin pisar el estado local más reciente
+      var sheetMap = {};
+      res.items.forEach(function(si){ sheetMap[si.nombre_clave] = si; });
+      data.items.forEach(function(item) {
+        var sk = sheetMap[item.nombre_clave];
+        if(sk && !item.qap_ts_ini) {
+          // Solo actualizar si no tenemos estado local propio
+          item.qap_estado  = sk.qap_estado  || item.qap_estado;
+          item.qap_hora_ini= sk.qap_hora_ini|| item.qap_hora_ini;
+          item.qap_hora_fin= sk.qap_hora_fin|| item.qap_hora_fin;
+          item.qap_orden   = sk.qap_orden   || item.qap_orden;
+        }
+      });
+      saveProgHoy(data);
+    }
+
+    // 2. Subir al Sheet
+    var payload = data.items.map(function(item){
+      return {
+        nombre_clave:  item.nombre_clave||'',
+        nombre:        item.nombre||'',
+        punto:         item.punto||'',
+        sentido:       item.sentido||'',
+        funcion:       item.funcion||'',
+        categoria:     item.categoria||'',
+        qap_estado:    item.qap_estado||'',
+        qap_hora_ini:  item.qap_hora_ini||'',
+        qap_hora_fin:  item.qap_hora_fin||'',
+        qap_orden:     item.qap_orden||''
+      };
+    });
+    await sheetPost({
+      action: 'prog_estado',
+      did:      getDeviceId(),
+      corredor: data.corredor||getCorredor(),
+      turno:    data.turno||'',
+      fecha:    data.fecha||today(),
+      items:    payload
+    });
+
+    renderProgContent();
+    showToast('✓ Sincronizado');
+  } catch(e) {
+    showToast('⚠️ ' + (e.message||'Error de red'));
+  } finally {
+    if(btn) { btn.classList.remove('loading'); btn.textContent = '🔄 Sincronizar'; }
+  }
 }
 
 function init(){
