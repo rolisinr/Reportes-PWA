@@ -1302,6 +1302,7 @@ function quickService(type){
   if(rr) rr.style.display=type==='termino'?'block':'none';
   var ri=document.getElementById('qs-relevo-inp');
   if(ri) ri.value='';
+  window._baseQuickMsg = quickMsg; // guardar base para updateRelevoMsg
   document.getElementById("quick-overlay").classList.add("open");
 }
 function closeQuick(e){
@@ -1844,10 +1845,11 @@ function updateRelevoMsg(){
   var inp = document.getElementById('qs-relevo-inp');
   var prev = document.getElementById('qs-prev');
   if(!inp||!prev) return;
-  var base = quickMsg || '';
-  prev.textContent = inp.value.trim()
-    ? base + '\n' + B('Relevo:') + ' ' + inp.value.trim()
-    : base;
+  var base = window._baseQuickMsg || quickMsg || '';
+  var relevo = inp.value.trim();
+  var fullMsg = relevo ? base + '\n' + B('Relevo:') + ' ' + relevo : base;
+  prev.textContent = fullMsg;
+  quickMsg = fullMsg; // actualizar para que quickC() copie el mensaje completo
 }
 
 
@@ -2297,7 +2299,10 @@ async function procesarProg() {
       msg.textContent = '⚠️ No se detectaron COVs.';
     }
   } catch(e) {
-    msg.textContent = '⚠️ ' + e.message;
+    // Mostrar error completo con línea para diagnóstico
+    var stack = (e.stack||'').split('\n').slice(0,3).join(' | ');
+    msg.textContent = '⚠️ ' + e.message + (stack ? ' → ' + stack : '');
+    console.error('procesarProg error:', e);
   } finally {
     btn.disabled = false; btn.textContent = '🤖 Procesar con IA';
   }
