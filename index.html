@@ -652,7 +652,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </button>
   </div>
 
-  <button class="prog-btn" onclick="openProg()">
+  <button class="prog-btn" id="prog-btn" onclick="openProg()">
     <div style="font-size:22px">📅</div>
     <div style="flex:1;text-align:left">
       <div style="font-size:13px;font-weight:700;color:var(--txt)">Programación</div>
@@ -2921,6 +2921,19 @@ function guardarAsignacion(idx) {
   showToast('✓ Punto asignado');
 }
 
+
+function applyUserPerms() {
+  // Admin btn
+  var ab = document.getElementById('admin-btn');
+  if(ab) ab.style.display = isAdmin ? 'inline-flex' : 'none';
+  // Programación
+  var pb = document.getElementById('prog-btn');
+  if(pb) pb.style.display = (userPerms.prog || isAdmin) ? '' : 'none';
+  // Sincronizar
+  var sb = document.getElementById('sync-btn');
+  if(sb) sb.style.display = (userPerms.sync || isAdmin) ? '' : 'none';
+}
+
 function init(){
   // Apply saved font size
   const cfg=getSettings2();
@@ -3317,6 +3330,7 @@ async function msToggleRec() {
 // =============================================
 
 var isAdmin = false;
+var userPerms = {prog: true, sync: true}; // default: acceso total hasta que el Sheet diga NO
 var sheetConnected = false;
 var pendingAvisos = [];
 
@@ -3325,7 +3339,7 @@ function getCorredor(){return (getSettings2().corredor)||'TGA';}
 function getCorrNombre(){var m={TGA:'Corredor Azul',SJL:'Corredor Morado',PAB:'Corredor Rojo'};return m[getCorredor()]||'Corredor';}
 function getRutas(){return (getSettings2().rutas)||['301','303','305','336','372'];}
 function getSheetURL() {
-  return 'https://script.google.com/macros/s/AKfycbw2TX-ydDNdxgCPh6dWOCjXjIF5-15x_vChkVmWcosrh03aC0XIGkRqVMAFl-znfEiOLg/exec';
+  return 'https://script.google.com/macros/s/AKfycbyf_6kTRFxUeU3xW-cxGXbdKE8qGlAdHUxkihil7ShP1-GXFrf59iuSxo5uiUlHkt-4oA/exec';
 }
 
 function autoSaveSheetUrl(el) {
@@ -3378,8 +3392,10 @@ async function initSheetConnection() {
     });
     if(reg) {
       isAdmin = reg.isAdmin === true;
-      var ab = document.getElementById('admin-btn');
-      if(ab) ab.style.display = isAdmin ? 'inline-flex' : 'none';
+      // Permisos: false solo si el Sheet dice explícitamente 'NO'
+      userPerms.prog = reg.perm_prog !== false;
+      userPerms.sync = reg.perm_sync !== false;
+      applyUserPerms();
     }
     var avRes = await sheetGet('avisos', {did: did});
     if(avRes && avRes.avisos && avRes.avisos.length > 0) {
