@@ -3007,13 +3007,17 @@ async function forzarRegistroFCM() {
 }
 
 function applyUserPerms() {
-  // Panel Admin — solo si es_admin
+  // Panel Admin — columna K del Sheet (es_admin también da acceso)
   var ab = document.getElementById('admin-btn');
-  if(ab) ab.style.display = isAdmin ? 'inline-flex' : 'none';
-  // Cargar distribución — condicional según perm_prog en Sheet
+  if(ab) ab.style.display = (isAdmin || userPerms.admin) ? 'inline-flex' : 'none';
+  // Cargar programación — columna I
   var pb = document.getElementById('prog-btn');
   if(pb) pb.style.display = (userPerms.prog || isAdmin) ? '' : 'none';
-  // Subir y Bajar — siempre visibles para todos
+  // Generar reporte con voz — columna L
+  var vb = document.getElementById('ia-main-btn-voice');
+  if(!vb) vb = document.querySelector('.ia-main-btn');
+  if(vb) vb.style.display = (userPerms.voz || isAdmin) ? '' : 'none';
+  // Subir y Bajar — siempre visibles (no tienen permiso específico aún)
 }
 
 function init(){
@@ -3047,6 +3051,8 @@ function init(){
   updateMisTplBtn();
   renderFavs();
   updateProgHomeBtn();
+  // Auto-registrar FCM si permiso ya concedido
+  if(typeof Notification !== 'undefined' && Notification.permission === 'granted') registerFCMToken();
 }
 
 if("serviceWorker" in navigator) {
@@ -3412,7 +3418,12 @@ async function msToggleRec() {
 // =============================================
 
 var isAdmin = false;
-var userPerms = {prog: true, sync: true}; // default: acceso total hasta que el Sheet diga NO
+var userPerms = {
+  prog:  true,  // Cargar programación (col I en Devices)
+  sync:  true,  // Subir/Bajar Sheet   (col J en Devices)
+  admin: true,  // Panel Admin         (col K en Devices)
+  voz:   true   // Generar con voz     (col L en Devices)
+};
 var sheetConnected = false;
 var pendingAvisos = [];
 
@@ -3654,17 +3665,30 @@ function initFirebase() {
 }
 
 async function registerFCMToken() {
+  if(!fbMessaging) initFirebase();
   if(!fbMessaging) return;
-  if(Notification.permission !== 'granted') return;
+  if(Notification.permission === 'default') {
+    var perm = await Notification.requestPermission();
+    if(perm !== 'granted') { showToast('⚠️ Permisos de notificación denegados'); return; }
+  }
+  if(Notification.permission !== 'granted') { showToast('⚠️ Notificaciones bloqueadas'); return; }
   try {
-    var token = await fbMessaging.getToken({vapidKey: VAPID_KEY});
+    var swReg = await navigator.serviceWorker.ready;
+    var token = await fbMessaging.getToken({
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: swReg
+    });
     if(token && token !== fcmToken) {
       fcmToken = token;
       localStorage.setItem('fcm_token', token);
       await saveFCMTokenToSheet(token);
+      showToast('✓ Notificaciones activadas');
+    } else if(token) {
+      showToast('✓ Notificaciones ya activas');
     }
   } catch(e) {
-    console.log('FCM token error:', e.message);
+    console.log('FCM error:', e.message);
+    showToast('⚠️ Error al activar notificaciones');
   }
 }
 
