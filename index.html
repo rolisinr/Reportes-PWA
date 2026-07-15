@@ -492,6 +492,70 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   padding:5px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;
   -webkit-tap-highlight-color:transparent}
 .sent-opt.sel{background:var(--acc);border-color:var(--acc);color:#fff}
+
+/* ── Modal de confirmación ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;
+  align-items:center;justify-content:center;z-index:600;opacity:0;
+  pointer-events:none;transition:opacity .2s}
+.modal-overlay.visible{opacity:1;pointer-events:auto}
+.modal-box{background:#fff;border-radius:18px;padding:24px 20px;
+  max-width:320px;width:calc(100% - 40px);box-shadow:0 8px 32px rgba(0,0,0,.18)}
+.modal-txt{font-size:15px;line-height:1.55;margin-bottom:20px;color:var(--txt)}
+.modal-btns{display:flex;gap:10px}
+.modal-btn{flex:1;padding:12px;border-radius:var(--r);border:none;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+  -webkit-tap-highlight-color:transparent}
+.modal-cancel{background:var(--bg);color:var(--mut);border:1.5px solid var(--brd)}
+.modal-ok{background:var(--acc);color:#fff}
+
+/* ── Barra de progreso sobre botón (POCOYO) ── */
+.barra-sobre-boton{margin-top:7px}
+.barra-fondo{background:var(--brd);border-radius:4px;height:6px;overflow:hidden}
+.barra-relleno{background:var(--acc);height:100%;width:0%;
+  transition:width .35s ease;border-radius:4px}
+.barra-texto{font-size:11px;color:var(--mut);text-align:center;margin-top:4px}
+
+/* ── Navegación inferior (tabs) ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;
+  border-top:1.5px solid var(--brd);display:flex;z-index:300;
+  padding-bottom:env(safe-area-inset-bottom,0)}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:2px;padding:8px 4px;background:none;border:none;cursor:pointer;
+  font-family:inherit;font-size:10px;color:var(--mut);
+  -webkit-tap-highlight-color:transparent;transition:color .15s}
+.nav-tab .nav-icon{font-size:22px;line-height:1;transition:transform .15s}
+.nav-tab.active{color:var(--acc);font-weight:700}
+.nav-tab.active .nav-icon{transform:scale(1.1)}
+/* Padding inferior para pantallas con bottom nav */
+.has-bottom-nav{padding-bottom:calc(62px + env(safe-area-inset-bottom,0)) !important}
+
+/* ── Tarjetas más redondeadas (estilo POCOYO) ── */
+.pi{border-radius:14px}
+.cat-btn{border-radius:14px !important}
+.ia-main-btn{border-radius:14px}
+.prog-btn{border-radius:14px}
+.quick-overlay .quick-card{border-radius:18px}
+
+/* ── Admin panel — gestión de usuarios ── */
+.adc{background:#fff;border:1.5px solid var(--brd);border-radius:14px;
+  padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.adc-name{font-size:13px;font-weight:700;margin-bottom:2px}
+.adc-meta{font-size:11px;color:var(--mut);margin-bottom:10px}
+.adc-perms{display:flex;flex-wrap:wrap;gap:6px}
+.perm-tog{padding:5px 10px;border-radius:20px;border:1.5px solid var(--brd);
+  background:var(--bg);font-size:11px;font-weight:700;color:var(--mut);
+  cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;
+  transition:all .15s}
+.perm-tog.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.perm-tog:disabled{opacity:.5;cursor:default}
+.admin-subtabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto}
+.ast{padding:7px 14px;border-radius:20px;border:1.5px solid var(--brd);
+  background:var(--bg);font-size:12px;font-weight:700;color:var(--mut);
+  cursor:pointer;font-family:inherit;white-space:nowrap;
+  -webkit-tap-highlight-color:transparent}
+.ast.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.admin-subtab-content{display:none}
+.admin-subtab-content.active{display:block}
 </style>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -759,7 +823,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 </div>
 
 <!-- ADMIN PANEL -->
-<div class="screen" id="s-admin">
+<div class="screen" id="s-admin" class="screen">
   <div class="back-row" onclick="goBack()">
     <span class="back-icon">‹</span><span class="back-lbl">Inicio</span>
   </div>
@@ -1108,10 +1172,18 @@ var _hashBusy = false;
 
 function showScreen(id){
   try {
-    document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
+    document.querySelectorAll(".screen").forEach(function(s){
+      s.classList.remove("active");
+      s.classList.remove("has-bottom-nav");
+    });
     var el = document.getElementById(id);
     if(el) el.classList.add("active");
     window.scrollTo({top:0,behavior:"instant"});
+    // Mostrar bottom nav solo en pantallas principales
+    var nav = document.getElementById('bottom-nav');
+    var isTop = ['s-cat','s-prog','s-history','s-admin'].indexOf(id) >= 0;
+    if(nav) nav.style.display = isTop ? 'flex' : 'none';
+    if(el && isTop) el.classList.add("has-bottom-nav");
   } catch(e){}
 }
 
@@ -3017,7 +3089,191 @@ function applyUserPerms() {
   var vb = document.getElementById('ia-main-btn-voice');
   if(!vb) vb = document.querySelector('.ia-main-btn');
   if(vb) vb.style.display = (userPerms.voz || isAdmin) ? '' : 'none';
-  // Subir y Bajar — siempre visibles (no tienen permiso específico aún)
+  // Admin tab en bottom nav
+  var atn = document.getElementById('admin-nav-tab');
+  if(atn) atn.style.display = (isAdmin || userPerms.admin) ? 'flex' : 'none';
+}
+
+
+// ═══════════════════════════════════════════════════
+// MODAL DE CONFIRMACIÓN GENÉRICO (POCOYO)
+// Uso: if(await mostrarConfirm('¿Seguro?')) { ...hacer... }
+// ═══════════════════════════════════════════════════
+var _resolveConfirm = null;
+function mostrarConfirm(mensaje, textoOk, textoCancelar) {
+  var el = document.getElementById('modal-confirm-txt');
+  if(el) el.textContent = mensaje;
+  var okBtn = document.querySelector('#modal-confirm .modal-ok');
+  if(okBtn) okBtn.textContent = textoOk || 'Confirmar';
+  var canBtn = document.querySelector('#modal-confirm .modal-cancel');
+  if(canBtn) canBtn.textContent = textoCancelar || 'Cancelar';
+  var overlay = document.getElementById('modal-confirm');
+  if(overlay) overlay.classList.add('visible');
+  return new Promise(function(resolve){ _resolveConfirm = resolve; });
+}
+function cerrarConfirm(valor) {
+  var overlay = document.getElementById('modal-confirm');
+  if(overlay) overlay.classList.remove('visible');
+  if(_resolveConfirm) { _resolveConfirm(valor); _resolveConfirm = null; }
+}
+
+// ═══════════════════════════════════════════════════
+// BARRA DE PROGRESO SOBRE BOTÓN (POCOYO)
+// ═══════════════════════════════════════════════════
+function iniciarBarraBoton(btn, msg) {
+  var cont = btn.nextElementSibling;
+  if(!cont || !cont.classList.contains('barra-sobre-boton')) {
+    cont = document.createElement('div');
+    cont.className = 'barra-sobre-boton';
+    cont.innerHTML = '<div class="barra-fondo"><div class="barra-relleno"></div></div><p class="barra-texto"></p>';
+    btn.parentNode.insertBefore(cont, btn.nextSibling);
+  }
+  btn._barraCont = cont;
+  var relleno = cont.querySelector('.barra-relleno');
+  var texto   = cont.querySelector('.barra-texto');
+  var pct = 0;
+  relleno.style.width = '0%';
+  texto.textContent = (msg||'Procesando') + ' 0%';
+  if(btn._barraInterval) clearInterval(btn._barraInterval);
+  btn._barraInterval = setInterval(function(){
+    pct += (88 - pct) * 0.1;
+    if(pct > 87) pct = 87;
+    relleno.style.width = Math.round(pct) + '%';
+    texto.textContent = (msg||'Procesando') + ' ' + Math.round(pct) + '%';
+  }, 200);
+}
+function finalizarBarraBoton(btn) {
+  if(!btn._barraCont) return;
+  if(btn._barraInterval){ clearInterval(btn._barraInterval); btn._barraInterval=null; }
+  var c = btn._barraCont;
+  c.querySelector('.barra-relleno').style.width = '100%';
+  c.querySelector('.barra-texto').textContent = 'Listo 100%';
+  setTimeout(function(){ if(c&&c.parentNode) c.parentNode.removeChild(c); btn._barraCont=null; }, 600);
+}
+
+// ═══════════════════════════════════════════════════
+// NAVEGACIÓN INFERIOR (TABS)
+// ═══════════════════════════════════════════════════
+var TAB_SCREENS = ['s-cat','s-prog','s-history','s-admin'];
+
+function switchTab(screenId, btn) {
+  // Actualizar tab activo
+  document.querySelectorAll('.nav-tab').forEach(function(b){ b.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+  // Navegar (sin push al historial del hash)
+  navStack.length = 0; navStack.push(screenId);
+  showScreen(screenId);
+  // Acciones por tab
+  if(screenId==='s-prog')    { renderProgContent(); updateProgMeta(); }
+  if(screenId==='s-history') renderHistory();
+  if(screenId==='s-admin')   { switchAdminTab('usuarios', null); loadAdminUsers(); }
+}
+
+// Admin sub-tabs
+function switchAdminTab(tabId, btn) {
+  document.querySelectorAll('.ast').forEach(function(b){ b.classList.remove('on'); });
+  if(btn) btn.classList.add('on');
+  else {
+    // Activar el correcto si no hay botón
+    var astBtn = document.querySelector('.ast[onclick*="'+tabId+'"]');
+    if(astBtn) astBtn.classList.add('on');
+  }
+  document.querySelectorAll('.admin-subtab-content').forEach(function(d){ d.classList.remove('active'); });
+  var target = document.getElementById('ast-'+tabId);
+  if(target) target.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+// PANEL ADMIN — GESTIÓN DE USUARIOS
+// ═══════════════════════════════════════════════════
+var _adminUsersCache = [];
+
+async function loadAdminUsers() {
+  var container = document.getElementById('admin-users-list');
+  if(!container) return;
+  container.innerHTML = '<div style="color:var(--mut);text-align:center;padding:16px;font-size:13px">Cargando...</div>';
+  try {
+    var res = await sheetGet('covs', {did: getDeviceId()});
+    if(res && res.covs) {
+      _adminUsersCache = res.covs;
+      renderAdminUsers(res.covs);
+    } else {
+      container.innerHTML = '<div style="color:var(--rd);font-size:12px">' + (res&&res.error||'Error al cargar') + '</div>';
+    }
+  } catch(e) {
+    container.innerHTML = '<div style="color:var(--rd);font-size:12px">⚠️ ' + e.message + '</div>';
+  }
+}
+
+function renderAdminUsers(covs) {
+  var container = document.getElementById('admin-users-list');
+  if(!container) return;
+  if(!covs.length) { container.innerHTML = '<div style="color:var(--mut);font-size:13px;text-align:center;padding:16px">Sin dispositivos registrados</div>'; return; }
+
+  var PERMS = [
+    {key:'perm_prog',  label:'📋 Cargar'},
+    {key:'perm_sync',  label:'🔄 Sync'},
+    {key:'perm_voz',   label:'🤖 Voz'},
+    {key:'perm_admin', label:'🛡️ Admin'},
+    {key:'es_admin',   label:'⚡ Es Admin'}
+  ];
+
+  container.innerHTML = covs.map(function(cov, ci) {
+    var ahora = new Date().getTime();
+    var ultimo = cov.ultimo ? new Date(cov.ultimo) : null;
+    var hace = ultimo ? Math.round((ahora - ultimo.getTime()) / 60000) : null;
+    var tiempoStr = hace !== null ? (hace < 60 ? hace+'min' : Math.round(hace/60)+'h') : '—';
+
+    var permsHTML = PERMS.map(function(p) {
+      var isOn = (p.key==='es_admin') ? cov.es_admin : cov[p.key];
+      return '<button class="perm-tog'+(isOn?' on':'')
+        +'" data-did="'+cov.did+'" data-perm="'+p.key+'" data-ci="'+ci
+        +'" onclick="togglePerm(this)">'+p.label+'</button>';
+    }).join('');
+
+    return '<div class="adc">'
+      + '<div class="adc-name">'+(cov.nombre||'Sin nombre')+(cov.es_admin?' 👑':'')+'</div>'
+      + '<div class="adc-meta">Último: '+tiempoStr+' · FCM: '+(cov.tieneToken?'✓':'✗')+'</div>'
+      + '<div class="adc-perms">'+permsHTML+'</div>'
+      + '</div>';
+  }).join('');
+}
+
+async function togglePerm(btn) {
+  var did  = btn.dataset.did;
+  var perm = btn.dataset.perm;
+  var ci   = parseInt(btn.dataset.ci);
+  var isOn = btn.classList.contains('on');
+  var newVal = isOn ? 'NO' : 'SI';
+
+  if(!await mostrarConfirm(
+    (isOn?'Quitar':'Dar')+' permiso "'+btn.textContent.trim()+'" a este COV?',
+    isOn ? 'Quitar' : 'Dar permiso',
+    'Cancelar'
+  )) return;
+
+  btn.disabled = true;
+  try {
+    var res = await sheetPost({
+      action: 'setDevicePerm',
+      did: getDeviceId(),
+      targetDid: did,
+      perm: perm,
+      value: newVal
+    });
+    if(res && res.ok) {
+      btn.classList.toggle('on');
+      // Actualizar caché local
+      if(_adminUsersCache[ci]) _adminUsersCache[ci][perm] = (newVal==='SI');
+      showToast('✓ Permiso actualizado');
+    } else {
+      showToast('⚠️ ' + (res&&res.error||'Error'));
+    }
+  } catch(e) {
+    showToast('⚠️ ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 function init(){
@@ -3051,6 +3307,9 @@ function init(){
   updateMisTplBtn();
   renderFavs();
   updateProgHomeBtn();
+  // Mostrar bottom nav
+  var bnav = document.getElementById('bottom-nav');
+  if(bnav) bnav.style.display = 'flex';
   // Auto-registrar FCM si permiso ya concedido
   if(typeof Notification !== 'undefined' && Notification.permission === 'granted') registerFCMToken();
 }
@@ -4079,5 +4338,33 @@ function toggleGemVis(){
   if(inp) inp.type=inp.type==='password'?'text':'password';
 }
 </script>
+
+<!-- Modal confirmación genérico -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal-box">
+    <div class="modal-txt" id="modal-confirm-txt">¿Estás seguro?</div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-cancel" onclick="cerrarConfirm(false)">Cancelar</button>
+      <button class="modal-btn modal-ok"     onclick="cerrarConfirm(true)">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Navegación inferior -->
+<nav class="bottom-nav" id="bottom-nav" style="display:none">
+  <button class="nav-tab active" onclick="switchTab('s-cat',this)">
+    <span class="nav-icon">📋</span><span>Reportes</span>
+  </button>
+  <button class="nav-tab" onclick="switchTab('s-prog',this)">
+    <span class="nav-icon">📅</span><span>Prog.</span>
+  </button>
+  <button class="nav-tab" onclick="switchTab('s-history',this)">
+    <span class="nav-icon">🕐</span><span>Historial</span>
+  </button>
+  <button class="nav-tab" id="admin-nav-tab" onclick="switchTab('s-admin',this)" style="display:none">
+    <span class="nav-icon">🛡️</span><span>Admin</span>
+  </button>
+</nav>
+
 </body>
 </html>
