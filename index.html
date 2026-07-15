@@ -2721,12 +2721,14 @@ async function subirProg() {
 
 // ── BAJAR del Sheet (Sheet → local) ──
 async function bajarProg() {
-  var data = getProgHoy();
-  if(!data) { showToast('⚠️ Carga primero la programación'); return; }
+  var data = getProgHoy(); // puede ser null si no hay datos locales
   var btn = document.getElementById('bajar-btn');
   if(btn) { btn.classList.add('loading'); btn.textContent = '⏳ Bajando…'; }
   try {
-    var corredor = data.corredor||getCorredor();
+    // Si no hay datos locales, usar perfil del usuario
+    var corredor = (data && data.corredor) || getCorredor();
+    var turno    = (data && data.turno)    || getProfile().turno || '';
+    var fecha    = (data && data.fecha)    || today();
 
     // 1. Bajar COVs_Base — el Sheet manda en los nombres
     try {
@@ -2762,10 +2764,18 @@ async function bajarProg() {
     var res = await sheetGet('prog_estado', {
       did: getDeviceId(),
       corredor: corredor,
-      turno: data.turno||'',
-      fecha: data.fecha||today()
+      turno: turno,
+      fecha: fecha
     });
     if(res && res.items && res.items.length) {
+      // Si no había datos locales, crear estructura desde el Sheet
+      if(!data) {
+        data = {corredor: corredor, turno: turno, fecha: fecha, items: res.items};
+        saveProgHoy(data);
+        renderProgContent();
+        showToast('✓ Programación bajada: ' + res.items.length + ' COVs');
+        return;
+      }
       var sheetMap = {};
       res.items.forEach(function(si){ sheetMap[si.nombre_clave] = si; });
       data.items.forEach(function(item) {
@@ -2787,10 +2797,11 @@ async function bajarProg() {
       renderProgContent();
       showToast('✓ Actualizado desde Sheet');
     } else {
-      // Aunque no haya prog_estado, guardar los nombres corregidos
-      saveProgHoy(data);
-      renderProgContent();
-      showToast('✓ Nombres actualizados desde Sheet');
+      if(data) {
+        saveProgHoy(data);
+        renderProgContent();
+      }
+      showToast('ℹ️ Sin datos en el Sheet para hoy (' + fecha + ')');
     }
   } catch(e) {
     showToast('⚠️ ' + (e.message||'Error de red'));
