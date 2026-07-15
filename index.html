@@ -3619,7 +3619,7 @@ async function registerFCMToken() {
   }
 }
 
-async async function saveFCMTokenToSheet(token) {
+async function saveFCMTokenToSheet(token) {
   try {
     await sheetPost({
       action: 'update',
