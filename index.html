@@ -1091,9 +1091,23 @@ const S = {
   del: k => localStorage.removeItem(k)
 };
 
+function getCookie(name) {
+  var m = document.cookie.match('(^|;)\s*' + name + '=([^;]+)');
+  return m ? decodeURIComponent(m[2]) : null;
+}
+function setCookie(name, val, days) {
+  var d = new Date();
+  d.setTime(d.getTime() + days*24*60*60*1000);
+  document.cookie = name+'='+encodeURIComponent(val)+';expires='+d.toUTCString()+';path=/;SameSite=Lax';
+}
 function getDeviceId() {
-  let id = localStorage.getItem("device_id");
-  if(!id){ id="dev_"+Date.now()+"_"+Math.random().toString(36).substr(2,9); localStorage.setItem("device_id",id); }
+  // Cookie es más persistente que localStorage y se comparte entre PWA y navegador
+  var id = localStorage.getItem('device_id') || getCookie('device_id');
+  if(!id) {
+    id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7);
+  }
+  localStorage.setItem('device_id', id);
+  setCookie('device_id', id, 365); // 1 año
   return id;
 }
 const getProfile = () => S.get("profile") || {nombre:"",turno:"TARDE",ubi:""};
@@ -3100,9 +3114,9 @@ function applyUserPerms() {
   var vb = document.getElementById('ia-main-btn-voice');
   if(!vb) vb = document.querySelector('.ia-main-btn');
   if(vb) vb.style.display = (userPerms.voz || isAdmin) ? '' : 'none';
-  // Admin tab en bottom nav
+  // Solo el tab Admin es condicional — los demás siempre visibles
   var atn = document.getElementById('admin-nav-tab');
-  if(atn) atn.style.display = (isAdmin || userPerms.admin) ? 'flex' : 'none';
+  if(atn) atn.style.display = isAdmin ? 'flex' : 'none';
 }
 
 
@@ -3741,18 +3755,21 @@ async function initSheetConnection() {
   var url = getSheetURL();
   if(!url) return;
   try {
-    var cfg = await sheetGet('config', {});
+    var p = getProfile();
+    var did = getDeviceId();
+    // Llamadas en paralelo para reducir tiempo de espera a la mitad
+    var results = await Promise.all([
+      sheetGet('config', {}),
+      sheetGet('register', {did:did, nombre:p.nombre||'', turno:p.turno||'', ubi:p.ubi||''})
+    ]);
+    var cfg = results[0];
+    var reg = results[1];
     if(cfg && cfg.config) {
       var local = getSettings2();
       if(cfg.config.gemKey) local.gemKey = cfg.config.gemKey;
       S.set('settings2', local);
       sheetConnected = true;
     }
-    var p = getProfile();
-    var did = getDeviceId();
-    var reg = await sheetGet('register', {
-      did: did, nombre: p.nombre||'', turno: p.turno||'', ubi: p.ubi||''
-    });
     if(reg) {
       isAdmin = reg.isAdmin === true;
       // Permisos: false solo si el Sheet dice explícitamente 'NO'
@@ -4362,7 +4379,7 @@ function toggleGemVis(){
 </div>
 
 <!-- Navegación inferior -->
-<nav class="bottom-nav" id="bottom-nav" style="display:none">
+<nav class="bottom-nav" id="bottom-nav" style="display:flex">
   <button class="nav-tab active" onclick="switchTab('s-cat',this)">
     <span class="nav-icon">📋</span><span>Reportes</span>
   </button>
