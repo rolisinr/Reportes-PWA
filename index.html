@@ -819,9 +819,10 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       <div style="font-size:15px;font-weight:700">📅 Programación</div>
       <div class="prog-meta" id="prog-meta"></div>
     </div>
-    <div style="display:flex;gap:6px">
-      <button class="sync-btn" id="sync-btn" onclick="sincronizarProg()">🔄 Sincronizar</button>
-      <button onclick="abrirProgConfig()" style="background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">📋 Cargar</button>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+      <button class="sync-btn" id="bajar-btn" onclick="bajarProg()" title="Descargar del Sheet">📥 Bajar</button>
+      <button class="sync-btn" id="subir-btn" onclick="subirProg()" title="Subir al Sheet">📤 Subir</button>
+      <button id="prog-btn" onclick="abrirProgConfig()" style="background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">📋 Cargar</button>
     </div>
   </div>
   <div id="prog-content"><div class="prog-empty">📅 Sin programación cargada<br><small>Toca "Cargar"</small></div></div>
@@ -970,6 +971,8 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     <div style="font-size:11px;color:var(--mut);margin-bottom:8px">Clave IA y configuración global vienen del Sheet automáticamente.</div>
     <button onclick="testSheetConn()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">🔗 Verificar conexión</button>
     <div id="sheet-test-result" style="font-size:11px;margin-top:6px;display:none"></div>
+    <button onclick="forzarRegistroFCM()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit;margin-top:6px">🔔 Registrar notificaciones push</button>
+    <div id="fcm-status" style="font-size:11px;margin-top:4px;color:var(--mut)"></div>
     <div id="sw-version-bar" style="margin-top:10px;padding:8px 10px;background:var(--bg);border-radius:var(--rs);display:flex;align-items:center;justify-content:space-between;gap:8px">
       <span id="sw-version-txt" style="font-size:11px;color:var(--mut);font-family:monospace">SW: comprobando…</span>
       <button onclick="limpiarCache()" style="background:none;border:1px solid var(--brd);border-radius:12px;padding:3px 9px;font-size:11px;color:var(--mut);cursor:pointer;font-family:inherit;white-space:nowrap">🗑️ Limpiar caché</button>
@@ -2594,101 +2597,87 @@ function toggleOtros(btn) {
   btn.textContent = btn.textContent.replace(open?'▾':'▸', open?'▸':'▾');
 }
 
-// ── Sincronizar (único botón) ──
-async function sincronizarProg() {
-  var btn = document.getElementById('sync-btn');
-  if(btn) { btn.classList.add('loading'); btn.textContent = '⏳ Sincronizando…'; }
+
+// ── SUBIR al Sheet (local → Sheet) ──
+async function subirProg() {
+  var data = getProgHoy();
+  if(!data || !data.items || !data.items.length) {
+    showToast('⚠️ Sin programación cargada');
+    return;
+  }
+  var btn = document.getElementById('subir-btn');
+  if(btn) { btn.classList.add('loading'); btn.textContent = '⏳ Subiendo…'; }
   try {
-    var data = getProgHoy();
-    if(!data || !data.items) { showToast('⚠️ Sin programación cargada'); return; }
+    var payload = data.items.map(function(item){
+      return {
+        nombre_clave: item.nombre_clave||'', nombre: item.nombre||'',
+        punto: item.punto||'', sentido: item.sentido||'',
+        funcion: item.funcion||'', categoria: item.categoria||'',
+        qap_estado: item.qap_estado||'', qap_hora_ini: item.qap_hora_ini||'',
+        qap_hora_fin: item.qap_hora_fin||'', qap_orden: item.qap_orden||''
+      };
+    });
+    var res = await sheetPost({
+      action: 'prog_estado',
+      did: getDeviceId(),
+      corredor: data.corredor||getCorredor(),
+      turno: data.turno||'',
+      fecha: data.fecha||today(),
+      items: payload
+    });
+    if(res && res.ok) showToast('✓ Subido: ' + (res.count||payload.length) + ' registros');
+    else showToast('⚠️ ' + (res&&res.error||'Error al subir'));
+  } catch(e) {
+    showToast('⚠️ ' + (e.message||'Error de red'));
+  } finally {
+    if(btn) { btn.classList.remove('loading'); btn.textContent = '📤 Subir'; }
+  }
+}
 
-    // 0. Actualizar COVs_Base desde el Sheet (correcciones manuales tienen prioridad)
-    try {
-      var baseRes = await sheetGet('covs_base', {corredor: data.corredor||getCorredor()});
-      if(baseRes && baseRes.covs && baseRes.covs.length) {
-        var localBase = getCOVsBase(data.corredor||getCorredor());
-        var localMap = {};
-        localBase.forEach(function(b){ localMap[b.nombre_clave]=b; });
-        baseRes.covs.forEach(function(sc){
-          if(localMap[sc.nombre_clave]) {
-            // Sheet tiene prioridad para el nombre corregido
-            localMap[sc.nombre_clave].nombre_completo = sc.nombre_completo;
-            if(sc.obs) localMap[sc.nombre_clave].obs = sc.obs;
-          } else {
-            localBase.push(sc);
-          }
-        });
-        saveCOVsBase(localBase, data.corredor||getCorredor());
-      }
-    } catch(e){ /* no crítico */ }
-
-    // 1. Descargar del Sheet (no crítico si falla)
-    var res = null;
-    try {
-      res = await sheetGet('prog_estado', {
-        did: getDeviceId(),
-        corredor: data.corredor||getCorredor(),
-        turno: data.turno||'',
-        fecha: data.fecha||today()
-      });
-    } catch(fetchErr) {
-      console.warn('GET prog_estado falló:', fetchErr.message);
-    }
-
+// ── BAJAR del Sheet (Sheet → local) ──
+async function bajarProg() {
+  var data = getProgHoy();
+  if(!data) { showToast('⚠️ Carga primero la programación'); return; }
+  var btn = document.getElementById('bajar-btn');
+  if(btn) { btn.classList.add('loading'); btn.textContent = '⏳ Bajando…'; }
+  try {
+    var res = await sheetGet('prog_estado', {
+      did: getDeviceId(),
+      corredor: data.corredor||getCorredor(),
+      turno: data.turno||'',
+      fecha: data.fecha||today()
+    });
     if(res && res.items && res.items.length) {
-      // Fusionar: actualizar QAP de otros COVs sin pisar el estado local más reciente
+      // Fusionar: solo actualizar estado QAP de lo que llegó del Sheet
       var sheetMap = {};
       res.items.forEach(function(si){ sheetMap[si.nombre_clave] = si; });
       data.items.forEach(function(item) {
         var sk = sheetMap[item.nombre_clave];
-        if(sk && !item.qap_ts_ini) {
-          // Solo actualizar si no tenemos estado local propio
-          item.qap_estado  = sk.qap_estado  || item.qap_estado;
-          item.qap_hora_ini= sk.qap_hora_ini|| item.qap_hora_ini;
-          item.qap_hora_fin= sk.qap_hora_fin|| item.qap_hora_fin;
-          item.qap_orden   = sk.qap_orden   || item.qap_orden;
+        if(sk) {
+          // Solo actualizar QAP si el Sheet tiene dato y local no tiene inicio propio
+          if(sk.qap_estado && !item.qap_ts_ini) {
+            item.qap_estado   = sk.qap_estado;
+            item.qap_hora_ini = sk.qap_hora_ini;
+            item.qap_hora_fin = sk.qap_hora_fin;
+            item.qap_orden    = sk.qap_orden;
+          }
+          // Actualizar punto si fue asignado en otro dispositivo
+          if(sk.punto && !item.punto) item.punto = sk.punto;
         }
       });
       saveProgHoy(data);
+      renderProgContent();
+      showToast('✓ Actualizado desde Sheet');
+    } else {
+      showToast('ℹ️ Sin datos en el Sheet para esta fecha');
     }
-
-    // 2. Subir al Sheet
-    var payload = data.items.map(function(item){
-      return {
-        nombre_clave:  item.nombre_clave||'',
-        nombre:        item.nombre||'',
-        punto:         item.punto||'',
-        sentido:       item.sentido||'',
-        funcion:       item.funcion||'',
-        categoria:     item.categoria||'',
-        qap_estado:    item.qap_estado||'',
-        qap_hora_ini:  item.qap_hora_ini||'',
-        qap_hora_fin:  item.qap_hora_fin||'',
-        qap_orden:     item.qap_orden||''
-      };
-    });
-    await sheetPost({
-      action: 'prog_estado',
-      did:      getDeviceId(),
-      corredor: data.corredor||getCorredor(),
-      turno:    data.turno||'',
-      fecha:    data.fecha||today(),
-      items:    payload
-    });
-
-    renderProgContent();
-    showToast('✓ Sincronizado');
   } catch(e) {
-    var msg = e.message || 'Error de red';
-    if(msg.indexOf('fetch') >= 0) {
-      msg = 'Sin conexión o Apps Script no actualizado. Verifica en ⚙️ la conexión con el Sheet.';
-    }
-    showToast('⚠️ ' + msg);
-    console.error('sincronizarProg:', e);
+    showToast('⚠️ ' + (e.message||'Error de red'));
   } finally {
-    if(btn) { btn.classList.remove('loading'); btn.textContent = '🔄 Sincronizar'; }
+    if(btn) { btn.classList.remove('loading'); btn.textContent = '📥 Bajar'; }
   }
 }
+
 
 
 async function getSWVersion() {
@@ -2703,7 +2692,12 @@ async function limpiarCache() {
   try {
     var keys = await caches.keys();
     await Promise.all(keys.map(function(k){ return caches.delete(k); }));
-    showToast('✓ Caché limpiada — recarga la app');
+    // Resetear permisos para que se recarguen del Sheet
+    userPerms = {prog: true, sync: true};
+    isAdmin = false;
+    localStorage.removeItem('fcm_token');
+    fcmToken = null;
+    showToast('✓ Caché y permisos reseteados — recarga la app');
     var el = document.getElementById('sw-version-txt');
     if(el) el.textContent = 'Caché limpiada — recarga';
   } catch(e) { showToast('⚠️ ' + e.message); }
@@ -2922,16 +2916,55 @@ function guardarAsignacion(idx) {
 }
 
 
+
+async function forzarRegistroFCM() {
+  var el = document.getElementById('fcm-status');
+  if(el) el.textContent = 'Solicitando permiso…';
+  try {
+    // Pedir permiso si no está dado
+    if(Notification.permission !== 'granted') {
+      var p = await Notification.requestPermission();
+      if(p !== 'granted') {
+        if(el) el.textContent = '⚠️ Permiso denegado';
+        return;
+      }
+    }
+    if(el) el.textContent = 'Obteniendo token…';
+    // Inicializar Firebase si no está
+    if(!fbMessaging) initFirebase();
+    await new Promise(function(r){ setTimeout(r, 500); });
+    if(!fbMessaging) {
+      if(el) el.textContent = '⚠️ Firebase no disponible — verifica conexión';
+      return;
+    }
+    var token = await fbMessaging.getToken({vapidKey: VAPID_KEY});
+    if(token) {
+      fcmToken = token;
+      localStorage.setItem('fcm_token', token);
+      // Guardar en Sheet
+      var res = await sheetPost({action:'update', did:getDeviceId(), fcmToken:token});
+      if(res && res.ok) {
+        if(el) el.textContent = '✓ Notificaciones registradas correctamente';
+        showToast('✓ Push notifications activas');
+      } else {
+        if(el) el.textContent = '⚠️ Token obtenido pero error al guardar: ' + (res&&res.error||'');
+      }
+    } else {
+      if(el) el.textContent = '⚠️ No se pudo obtener token FCM';
+    }
+  } catch(e) {
+    if(el) el.textContent = '⚠️ ' + e.message;
+  }
+}
+
 function applyUserPerms() {
-  // Admin btn
+  // Panel Admin — solo si es_admin
   var ab = document.getElementById('admin-btn');
   if(ab) ab.style.display = isAdmin ? 'inline-flex' : 'none';
-  // Programación
+  // Cargar distribución — condicional según perm_prog en Sheet
   var pb = document.getElementById('prog-btn');
   if(pb) pb.style.display = (userPerms.prog || isAdmin) ? '' : 'none';
-  // Sincronizar
-  var sb = document.getElementById('sync-btn');
-  if(sb) sb.style.display = (userPerms.sync || isAdmin) ? '' : 'none';
+  // Subir y Bajar — siempre visibles para todos
 }
 
 function init(){
@@ -3586,7 +3619,7 @@ async function registerFCMToken() {
   }
 }
 
-async function saveFCMTokenToSheet(token) {
+async async function saveFCMTokenToSheet(token) {
   try {
     await sheetPost({
       action: 'update',
