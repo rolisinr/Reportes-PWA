@@ -736,7 +736,7 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   </button>
 
   <!-- IA -->
-  <button class="ia-main-btn" onclick="go('s-ia')">
+  <button class="ia-main-btn" id="ia-main-btn-voice" onclick="go('s-ia')">
     <div class="ia-mb-icon">🤖</div>
     <div class="ia-mb-txt">
       <div class="ia-mb-name">Generar reporte con Voz</div>
@@ -827,18 +827,35 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
   <div class="back-row" onclick="goBack()">
     <span class="back-icon">‹</span><span class="back-lbl">Inicio</span>
   </div>
-  <div style="font-size:15px;font-weight:700;margin-bottom:4px">🛡️ Panel Admin</div>
-  <div id="sheet-conn-badge" class="sheet-badge" style="margin-bottom:12px"><span class="sheet-status off" id="sheet-dot"></span><span id="sheet-conn-txt">Sin conexión</span></div>
+  <div style="font-size:15px;font-weight:700;margin-bottom:8px">🛡️ Panel Admin</div>
 
-  <div class="aviso-form">
-    <div class="sec-lbl">Enviar aviso a los COVs</div>
-    <textarea class="fta" id="admin-aviso-txt" rows="3" placeholder="Escribe el aviso para todos los COVs..."></textarea>
-    <div style="display:flex;gap:7px;margin-top:8px">
-      <select class="fs" id="admin-aviso-para" style="flex:1">
-        <option value="todos">Todos los COVs</option>
-      </select>
-      <button class="admin-send-btn" id="send-aviso-btn" onclick="sendAdminAviso()" style="flex:none;width:auto;padding:11px 14px">📢 Aviso</button>
-      <button class="admin-send-btn" id="send-push-btn" onclick="sendAdminPush()" style="flex:none;width:auto;padding:11px 14px;background:var(--rd)">🔔 Push</button>
+  <!-- Sub-tabs -->
+  <div class="admin-subtabs">
+    <button class="ast on" onclick="switchAdminTab('usuarios',this)">👥 Usuarios</button>
+    <button class="ast" onclick="switchAdminTab('avisos',this)">📢 Avisos</button>
+  </div>
+
+  <!-- TAB: Usuarios con permisos -->
+  <div class="admin-subtab-content active" id="ast-usuarios">
+    <button onclick="loadAdminUsers()" style="width:100%;background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--r);padding:10px;font-size:13px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px">↻ Actualizar lista de usuarios</button>
+    <div id="admin-users-list">
+      <div style="color:var(--mut);font-size:13px;text-align:center;padding:20px">Toca "Actualizar lista" para cargar</div>
+    </div>
+  </div>
+
+  <!-- TAB: Avisos -->
+  <div class="admin-subtab-content" id="ast-avisos">
+    <div id="sheet-conn-badge" class="sheet-badge" style="margin-bottom:10px"><span class="sheet-status off" id="sheet-dot"></span><span id="sheet-conn-txt">Sin conexión</span></div>
+    <div class="aviso-form">
+      <div class="sec-lbl">Enviar aviso a los COVs</div>
+      <textarea class="fta" id="admin-aviso-txt" rows="3" placeholder="Escribe el aviso para todos los COVs..."></textarea>
+      <div style="display:flex;gap:7px;margin-top:8px">
+        <select class="fs" id="admin-aviso-para" style="flex:1">
+          <option value="todos">Todos los COVs</option>
+        </select>
+        <button class="admin-send-btn" id="send-aviso-btn" onclick="sendAdminAviso()" style="flex:none;width:auto;padding:11px 14px">📢 Aviso</button>
+        <button class="admin-send-btn" id="send-push-btn" onclick="sendAdminPush()" style="flex:none;width:auto;padding:11px 14px;background:var(--rd)">🔔 Push</button>
+      </div>
     </div>
   </div>
 
@@ -3110,9 +3127,8 @@ function applyUserPerms() {
   // Cargar programación — columna I
   var pb = document.getElementById('prog-btn');
   if(pb) pb.style.display = (userPerms.prog || isAdmin) ? '' : 'none';
-  // Generar reporte con voz — columna L
+  // Generar reporte con voz — columna L del Sheet (perm_voz)
   var vb = document.getElementById('ia-main-btn-voice');
-  if(!vb) vb = document.querySelector('.ia-main-btn');
   if(vb) vb.style.display = (userPerms.voz || isAdmin) ? '' : 'none';
   // Solo el tab Admin es condicional — los demás siempre visibles
   var atn = document.getElementById('admin-nav-tab');
