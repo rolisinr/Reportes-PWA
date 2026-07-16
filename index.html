@@ -2018,8 +2018,8 @@ var progFiltro = 'todos';
 
 function getProgHoy() {
   var d = S.get('prog_hoy');
-  if(d && d.fecha === today()) return d;
-  return null;
+  // Devolver siempre mientras exista — la prog es semanal, no caduca por fecha
+  return (d && d.items && d.items.length) ? d : null;
 }
 function saveProgHoy(data) {
   data.fecha = today();
@@ -2545,7 +2545,10 @@ function updateProgMeta() {
   var el = document.getElementById('prog-meta');
   if(!el) return;
   if(data && data.corredor) {
-    el.textContent = data.corredor + ' · ' + (data.turno||'') + ' · ' + (data.fecha||today());
+    var fechaLabel = data.fecha && data.fecha !== today()
+      ? data.fecha + ' (vigente)'
+      : (data.fecha || today());
+    el.textContent = data.corredor + ' · ' + (data.turno||'') + ' · ' + fechaLabel;
   }
 }
 
@@ -2840,12 +2843,13 @@ async function bajarProg() {
       saveProgHoy(data);
       renderProgContent();
       showToast('✓ Actualizado desde Sheet');
+    } else if(data && data.items && data.items.length) {
+      // No hay datos nuevos en Sheet para hoy, pero tenemos locales — mantener
+      saveProgHoy(data);
+      renderProgContent();
+      showToast('ℹ️ Sin datos nuevos en Sheet · mostrando prog del ' + (data.fecha||'último cargado'));
     } else {
-      if(data) {
-        saveProgHoy(data);
-        renderProgContent();
-      }
-      showToast('ℹ️ Sin datos en el Sheet para hoy (' + fecha + ')');
+      showToast('ℹ️ Sin programación disponible. Usa "Cargar" para pegar la distribución.');
     }
   } catch(e) {
     showToast('⚠️ ' + (e.message||'Error de red'));
