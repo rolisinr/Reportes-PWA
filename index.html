@@ -4069,7 +4069,7 @@ async function refreshFCMToken() {
     var _m = fbMessaging;
     if(!_m) return;
     var swReg = await navigator.serviceWorker.ready;
-    var token = await _m.getToken({vapidKey:VAPID_KEY, serviceWorkerRegistration:swReg});
+    var token = await _m.getToken({vapidKey:'BI5F6tQLAO_FeTItDV7xlVkCTWZ1Ea07ZHkH8rpavqkVWxTE4w2lvA8Djlg3NKyeREk-HUW6SedammdhfDu5CCo', serviceWorkerRegistration:swReg});
     if(token && token !== fcmToken) {
       fcmToken = token;
       localStorage.setItem('fcm_token', token);
@@ -4107,16 +4107,15 @@ async function registerFCMToken() {
   }
   try {
     showToast('⏳ Registrando...');
-    // Capturar referencia local para evitar race condition con refreshFCMToken
     var _msg = fbMessaging;
-    if(!_msg) throw new Error('fbMessaging fue anulado antes de obtener token');
-    if(!VAPID_KEY) throw new Error('VAPID_KEY no definido');
+    if(!_msg) throw new Error('fbMessaging no disponible');
+    // VAPID hardcodeado para evitar problemas de scope
+    var _vapid = 'BI5F6tQLAO_FeTItDV7xlVkCTWZ1Ea07ZHkH8rpavqkVWxTE4w2lvA8Djlg3NKyeREk-HUW6SedammdhfDu5CCo';
     var swReg = await navigator.serviceWorker.ready;
-    // Re-verificar después del await
     _msg = fbMessaging || _msg;
-    if(!_msg) throw new Error('fbMessaging null después de await SW');
+    if(!_msg) throw new Error('fbMessaging null');
     var token = await _msg.getToken({
-      vapidKey: VAPID_KEY,
+      vapidKey: _vapid,
       serviceWorkerRegistration: swReg
     });
     if(token) {
