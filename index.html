@@ -556,6 +556,10 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 .ast.on{background:var(--acc);border-color:var(--acc);color:#fff}
 .admin-subtab-content{display:none}
 .admin-subtab-content.active{display:block}
+
+.dest-item{display:flex;align-items:center;gap:8px;font-size:13px;
+  cursor:pointer;padding:3px 0}
+.dest-item input{width:16px;height:16px;cursor:pointer;accent-color:var(--acc)}
 </style>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -845,17 +849,36 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
 
   <!-- TAB: Avisos -->
   <div class="admin-subtab-content" id="ast-avisos">
-    <div id="sheet-conn-badge" class="sheet-badge" style="margin-bottom:10px"><span class="sheet-status off" id="sheet-dot"></span><span id="sheet-conn-txt">Sin conexión</span></div>
-    <div class="aviso-form">
-      <div class="sec-lbl">Enviar aviso a los COVs</div>
-      <textarea class="fta" id="admin-aviso-txt" rows="3" placeholder="Escribe el aviso para todos los COVs..."></textarea>
-      <div style="display:flex;gap:7px;margin-top:8px">
-        <select class="fs" id="admin-aviso-para" style="flex:1">
-          <option value="todos">Todos los COVs</option>
-        </select>
-        <button class="admin-send-btn" id="send-aviso-btn" onclick="sendAdminAviso()" style="flex:none;width:auto;padding:11px 14px">📢 Aviso</button>
-        <button class="admin-send-btn" id="send-push-btn" onclick="sendAdminPush()" style="flex:none;width:auto;padding:11px 14px;background:var(--rd)">🔔 Push</button>
+    <div id="sheet-conn-badge" class="sheet-badge" style="margin-bottom:10px">
+      <span class="sheet-status off" id="sheet-dot"></span>
+      <span id="sheet-conn-txt">Sin conexión</span>
+    </div>
+
+    <!-- Mensaje -->
+    <div class="sec-lbl">Mensaje</div>
+    <textarea class="fta" id="admin-aviso-txt" rows="3" placeholder="Escribe el aviso..."></textarea>
+
+    <!-- Destinatarios multi-select -->
+    <div class="sec-lbl" style="margin-top:10px">Destinatarios</div>
+    <div style="background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--r);padding:10px;max-height:160px;overflow-y:auto">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;padding-bottom:8px;border-bottom:1px solid var(--brd);margin-bottom:6px;cursor:pointer">
+        <input type="checkbox" id="dest-todos" checked onchange="toggleDestTodos(this)" style="width:16px;height:16px">
+        Todos
+      </label>
+      <div id="dest-covs-list" style="display:flex;flex-direction:column;gap:5px;opacity:.4;pointer-events:none">
+        <div style="color:var(--mut);font-size:12px">Carga usuarios primero →</div>
       </div>
+    </div>
+
+    <!-- Fecha programada (opcional) -->
+    <div class="sec-lbl" style="margin-top:10px">Programar para (opcional)</div>
+    <input type="date" id="aviso-fecha" class="fi" style="font-size:14px">
+    <div style="font-size:11px;color:var(--mut);margin-top:4px">Si eliges una fecha, el aviso aparece ese día al abrir la app</div>
+
+    <!-- Botones -->
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="admin-send-btn" id="send-aviso-btn" onclick="sendAdminAviso()" style="flex:1">📢 Aviso en app</button>
+      <button class="admin-send-btn" id="send-push-btn" onclick="sendAdminPush()" style="flex:1;background:var(--rd)">🔔 Push</button>
     </div>
   </div>
 
@@ -3238,6 +3261,7 @@ async function loadAdminUsers() {
     if(res && res.covs) {
       _adminUsersCache = res.covs;
       renderAdminUsers(res.covs);
+      populateAvisoDests(res.covs); // También popular los destinatarios de avisos
     } else {
       container.innerHTML = '<div style="color:var(--rd);font-size:12px">' + (res&&res.error||'Error al cargar') + '</div>';
     }
@@ -3889,26 +3913,81 @@ async function sendAdminPush() {
     btn.textContent = '🔔 Push'; btn.disabled = false;
   }
 }
-async function sendAdminAviso() {
-  var msg = document.getElementById('admin-aviso-txt').value.trim();
-  var para = document.getElementById('admin-aviso-para').value;
-  if(!msg) { showToast('Escribe el mensaje del aviso'); return; }
-  var btn = document.getElementById('send-aviso-btn');
-  btn.textContent = 'Enviando…'; btn.disabled = true;
-  try {
-    var res = await sheetPost({action:'aviso', did:getDeviceId(), mensaje:msg, para:para});
-    if(res && res.ok) {
-      showToast('✓ Aviso enviado a todos los COVs');
-      document.getElementById('admin-aviso-txt').value = '';
-    } else {
-      showToast('⚠️ ' + (res&&res.error||'Error desconocido'));
+
+// ── Gestión de destinatarios de avisos ──
+function toggleDestTodos(cb) {
+  var list = document.getElementById('dest-covs-list');
+  if(list) {
+    list.style.opacity = cb.checked ? '.4' : '1';
+    list.style.pointerEvents = cb.checked ? 'none' : 'auto';
+    // Desmarcar individuales si se selecciona "Todos"
+    if(cb.checked) {
+      list.querySelectorAll('input[type=checkbox]').forEach(function(c){ c.checked=false; });
     }
-  } catch(e) {
-    showToast('⚠️ ' + e.message);
-  } finally {
-    btn.textContent = '✉️ Enviar'; btn.disabled = false;
   }
 }
+
+function populateAvisoDests(covs) {
+  var list = document.getElementById('dest-covs-list');
+  if(!list) return;
+  list.innerHTML = covs.map(function(cov){
+    var nombre = (cov.nombre||'').split(' ')[0] || cov.did.slice(-4);
+    return '<label class="dest-item">'
+      + '<input type="checkbox" class="dest-cov-cb" data-did="'+cov.did+'">'
+      + nombre
+      + '</label>';
+  }).join('');
+  list.querySelectorAll('.dest-cov-cb').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      // Si hay alguno marcado individualmente, desmarcar "Todos"
+      var any = list.querySelectorAll('.dest-cov-cb:checked').length > 0;
+      var todosCb = document.getElementById('dest-todos');
+      if(todosCb && any) {
+        todosCb.checked = false;
+        list.style.opacity = '1';
+        list.style.pointerEvents = 'auto';
+      }
+    });
+  });
+}
+
+async function sendAdminAviso() {
+  var msg = (document.getElementById('admin-aviso-txt').value||'').trim();
+  if(!msg) { showToast('⚠️ Escribe el mensaje'); return; }
+
+  // Determinar destinatarios
+  var todosCb = document.getElementById('dest-todos');
+  var para = 'todos';
+  if(!todosCb || !todosCb.checked) {
+    var sels = Array.from(document.querySelectorAll('.dest-cov-cb:checked'))
+      .map(function(cb){ return cb.dataset.did; });
+    if(!sels.length) { showToast('⚠️ Selecciona al menos un destinatario'); return; }
+    para = sels.join(',');
+  }
+
+  // Fecha programada
+  var fechaEl = document.getElementById('aviso-fecha');
+  var fechaProg = (fechaEl && fechaEl.value) ? fechaEl.value : '';
+
+  var btn = document.getElementById('send-aviso-btn');
+  if(btn) { btn.disabled=true; btn.textContent='⏳'; }
+  try {
+    var res = await sheetPost({
+      action:'aviso', did:getDeviceId(),
+      mensaje:msg, para:para, fecha_prog:fechaProg
+    });
+    if(res && res.ok) {
+      showToast(fechaProg ? '✓ Aviso programado para '+fechaProg : '✓ Aviso enviado');
+      document.getElementById('admin-aviso-txt').value='';
+      if(fechaEl) fechaEl.value='';
+      if(todosCb) { todosCb.checked=true; toggleDestTodos(todosCb); }
+    } else {
+      showToast('⚠️ '+(res&&res.error||'Error'));
+    }
+  } catch(e){ showToast('⚠️ '+e.message); }
+  finally { if(btn){ btn.disabled=false; btn.textContent='📢 Aviso en app'; } }
+}
+
 
 async function testSheetConn() {
   var url = getSheetURL();
