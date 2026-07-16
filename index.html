@@ -3365,8 +3365,8 @@ function init(){
   // Mostrar bottom nav
   var bnav = document.getElementById('bottom-nav');
   if(bnav) bnav.style.display = 'flex';
-  // Auto-registrar FCM si permiso ya concedido
-  if(typeof Notification !== 'undefined' && Notification.permission === 'granted') registerFCMToken();
+  // Auto-refrescar token FCM silenciosamente (detecta si venció y lo renueva)
+  if(typeof Notification !== 'undefined') setTimeout(refreshFCMToken, 3000);
 }
 
 if("serviceWorker" in navigator) {
@@ -4048,31 +4048,45 @@ function initFirebase() {
   }
 }
 
-async function registerFCMToken() {
+// Refresco automático y silencioso del token (se llama al abrir la app)
+async function refreshFCMToken() {
   if(!fbMessaging) initFirebase();
   if(!fbMessaging) return;
+  if(Notification.permission !== 'granted') return;
+  try {
+    var swReg = await navigator.serviceWorker.ready;
+    var token = await fbMessaging.getToken({vapidKey:VAPID_KEY, serviceWorkerRegistration:swReg});
+    if(token && token !== fcmToken) {
+      fcmToken = token;
+      localStorage.setItem('fcm_token', token);
+      await saveFCMTokenToSheet(token); // actualiza silenciosamente en Sheet
+      console.log('FCM token actualizado automáticamente');
+    }
+  } catch(e){ console.log('FCM refresh:', e.message); }
+}
+
+// Registro manual (primera vez, desde ⚙️ o cuando el usuario lo pide)
+async function registerFCMToken() {
+  if(!fbMessaging) initFirebase();
+  if(!fbMessaging) { showToast('⚠️ Firebase no disponible'); return; }
+  // Si no tiene permiso, pedirlo
   if(Notification.permission === 'default') {
     var perm = await Notification.requestPermission();
     if(perm !== 'granted') { showToast('⚠️ Permisos de notificación denegados'); return; }
   }
-  if(Notification.permission !== 'granted') { showToast('⚠️ Notificaciones bloqueadas'); return; }
+  if(Notification.permission !== 'granted') { showToast('⚠️ Notificaciones bloqueadas en este dispositivo'); return; }
   try {
     var swReg = await navigator.serviceWorker.ready;
-    var token = await fbMessaging.getToken({
-      vapidKey: VAPID_KEY,
-      serviceWorkerRegistration: swReg
-    });
-    if(token && token !== fcmToken) {
+    var token = await fbMessaging.getToken({vapidKey:VAPID_KEY, serviceWorkerRegistration:swReg});
+    if(token) {
       fcmToken = token;
       localStorage.setItem('fcm_token', token);
       await saveFCMTokenToSheet(token);
       showToast('✓ Notificaciones activadas');
-    } else if(token) {
-      showToast('✓ Notificaciones ya activas');
     }
-  } catch(e) {
+  } catch(e){
     console.log('FCM error:', e.message);
-    showToast('⚠️ Error al activar notificaciones');
+    showToast('⚠️ Error: ' + e.message);
   }
 }
 
