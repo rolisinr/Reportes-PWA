@@ -2812,11 +2812,12 @@ async function bajarProg() {
     } catch(e2){ /* no crítico */ }
 
     // 2. Bajar Prog_Estado — actualizar QAP desde Sheet
+    // Sin fecha → el Sheet devuelve la más reciente disponible
     var res = await sheetGet('prog_estado', {
       did: getDeviceId(),
       corredor: corredor,
-      turno: turno,
-      fecha: fecha
+      turno: turno
+      // fecha omitida intencionalmente
     });
     if(res && res.items && res.items.length) {
       // Si no había datos locales, crear estructura desde el Sheet
