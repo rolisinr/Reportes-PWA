@@ -3915,7 +3915,10 @@ async function sendAdminPush() {
     });
     if(res && res.ok) {
       var sent = res.sent||0, errors = res.errors||0, total = res.total||0;
-      showToast('✓ Push: '+sent+'/'+total+' entregados'+(errors?' · '+errors+' error(es)':''));
+      var msg = '✓ Push: '+sent+'/'+total+' entregados';
+      if(errors) msg += ' · '+errors+' error(es)';
+      if(res.lastError) msg += '\n'+res.lastError.slice(0,80);
+      showToast(msg);
     } else {
       showToast('⚠️ '+(res&&res.error||'Error al enviar push'));
     }
@@ -3991,7 +3994,7 @@ async function sendAdminAviso() {
       if(fechaEl) fechaEl.value='';
       if(todosCb) { todosCb.checked=true; toggleDestTodos(todosCb); }
     } else {
-      showToast('⚠️ '+(res&&res.error||'Error'));
+      showToast('⚠️ Aviso: '+(res&&res.error||'Error desconocido'));
     }
   } catch(e){ showToast('⚠️ '+e.message); }
   finally { if(btn){ btn.disabled=false; btn.textContent='📢 Aviso en app'; } }
