@@ -4029,22 +4029,34 @@ var fcmToken = null;
 function initFirebase() {
   try {
     if(typeof firebase === 'undefined') return;
-    if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
-    fbMessaging = firebase.messaging();
-    fbMessaging.onMessage(function(payload) {
-      var n = payload.notification || {};
-      showToast((n.title||'Aviso') + (n.body ? ': ' + n.body : ''));
-      var banner = document.getElementById('aviso-banner');
-      var txt = document.getElementById('aviso-msg-txt');
-      if(banner && txt) {
-        txt.textContent = (n.title ? n.title + ': ' : '') + (n.body||'');
-        banner.dataset.id = 'fcm_' + Date.now();
-        banner.classList.add('show');
-      }
-    });
+    if(!firebase.apps || !firebase.apps.length) {
+      // Config hardcodeado aquí para evitar problemas de scope/timing
+      firebase.initializeApp({
+        apiKey: 'AIzaSyBIj8aYFt-vkVc55atTgfYVtZI2iWVvTI4',
+        authDomain: 'covapp-3fe9d.firebaseapp.com',
+        projectId: 'covapp-3fe9d',
+        messagingSenderId: '1056777477300',
+        appId: '1:1056777477300:web:d4b64af6fb85f8a7e54be1'
+      });
+    }
+    if(!fbMessaging) {
+      fbMessaging = firebase.messaging();
+      fbMessaging.onMessage(function(payload) {
+        var n = payload.notification || {};
+        showToast((n.title||'Aviso') + (n.body ? ': ' + n.body : ''));
+        var banner = document.getElementById('aviso-banner');
+        var txt = document.getElementById('aviso-msg-txt');
+        if(banner && txt) {
+          txt.textContent = (n.title ? n.title + ': ' : '') + (n.body||'');
+          banner.dataset.id = 'fcm_' + Date.now();
+          banner.classList.add('show');
+        }
+      });
+    }
     console.log('Firebase OK');
   } catch(e) {
     console.log('Firebase init error:', e.message);
+    fbMessaging = null;
   }
 }
 
@@ -4067,24 +4079,20 @@ async function refreshFCMToken() {
 
 // Registro manual (primera vez, desde ⚙️)
 async function registerFCMToken() {
-  // Esperar a que Firebase cargue (max 5 seg)
+  // Esperar a que Firebase SDK cargue (max 5 seg)
   for(var i=0; i<10; i++) {
     if(typeof firebase !== 'undefined') break;
     await new Promise(function(r){ setTimeout(r, 500); });
   }
   if(typeof firebase === 'undefined') {
-    showToast('⚠️ Firebase no cargó. Verifica tu conexión a internet.');
+    showToast('⚠️ Firebase no cargó. Verifica tu conexión.');
     return;
   }
-  // Inicializar messaging si no está listo
+  // Inicializar si no está listo
+  if(!fbMessaging) initFirebase();
   if(!fbMessaging) {
-    try {
-      if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
-      fbMessaging = firebase.messaging();
-    } catch(e) {
-      showToast('⚠️ Error Firebase: ' + e.message);
-      return;
-    }
+    showToast('⚠️ No se pudo iniciar Firebase. Recarga la app.');
+    return;
   }
   // Pedir permiso si no está concedido
   if(Notification.permission === 'default') {
