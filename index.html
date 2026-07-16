@@ -4066,8 +4066,10 @@ async function refreshFCMToken() {
   if(!fbMessaging) return;
   if(Notification.permission !== 'granted') return;
   try {
+    var _m = fbMessaging;
+    if(!_m) return;
     var swReg = await navigator.serviceWorker.ready;
-    var token = await fbMessaging.getToken({vapidKey:VAPID_KEY, serviceWorkerRegistration:swReg});
+    var token = await _m.getToken({vapidKey:VAPID_KEY, serviceWorkerRegistration:swReg});
     if(token && token !== fcmToken) {
       fcmToken = token;
       localStorage.setItem('fcm_token', token);
@@ -4105,8 +4107,15 @@ async function registerFCMToken() {
   }
   try {
     showToast('⏳ Registrando...');
+    // Capturar referencia local para evitar race condition con refreshFCMToken
+    var _msg = fbMessaging;
+    if(!_msg) throw new Error('fbMessaging fue anulado antes de obtener token');
+    if(!VAPID_KEY) throw new Error('VAPID_KEY no definido');
     var swReg = await navigator.serviceWorker.ready;
-    var token = await fbMessaging.getToken({
+    // Re-verificar después del await
+    _msg = fbMessaging || _msg;
+    if(!_msg) throw new Error('fbMessaging null después de await SW');
+    var token = await _msg.getToken({
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: swReg
     });
