@@ -3148,6 +3148,9 @@ function applyUserPerms() {
   // Cargar programación — columna I
   var pb = document.getElementById('prog-btn');
   if(pb) pb.style.display = (userPerms.prog || isAdmin) ? '' : 'none';
+  // Cargar distribución — columna I del Sheet (perm_prog)
+  var pcb = document.getElementById('prog-cargar-btn');
+  if(pcb) pcb.style.display = (userPerms.prog || isAdmin) ? '' : 'none';
   // Generar reporte con voz — columna L del Sheet (perm_voz)
   var vb = document.getElementById('ia-main-btn-voice');
   if(vb) vb.style.display = (userPerms.voz || isAdmin) ? '' : 'none';
