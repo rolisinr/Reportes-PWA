@@ -3410,6 +3410,7 @@ async function callGemini(audioB64, mimeType, prompt) {
   var cfg2 = getSettings2();
   var key = (cfg2.gemKey||'').trim();
   if(!key) throw new Error('Configura tu clave API en ⚙️');
+  var gModels = (typeof GEMINI_MODELS !== 'undefined' && Array.isArray(GEMINI_MODELS) && GEMINI_MODELS.length) ? GEMINI_MODELS : ['gemini-2.5-flash','gemini-3.5-flash','gemini-3.1-flash-lite','gemini-2.5-flash-lite'];
   var lastErr = null;
   for(var mi=0; mi<GEMINI_MODELS.length; mi++) {
     var model = GEMINI_MODELS[mi];
@@ -4118,7 +4119,6 @@ async function registerFCMToken() {
     return;
   }
   try {
-    showToast('⏳ Registrando...');
     var _msg = fbMessaging;
     if(!_msg) throw new Error('fbMessaging no disponible');
     // VAPID hardcodeado para evitar problemas de scope
