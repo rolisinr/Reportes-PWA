@@ -4065,28 +4065,54 @@ async function refreshFCMToken() {
   } catch(e){ console.log('FCM refresh:', e.message); }
 }
 
-// Registro manual (primera vez, desde ⚙️ o cuando el usuario lo pide)
+// Registro manual (primera vez, desde ⚙️)
 async function registerFCMToken() {
-  if(!fbMessaging) initFirebase();
-  if(!fbMessaging) { showToast('⚠️ Firebase no disponible'); return; }
-  // Si no tiene permiso, pedirlo
+  // Esperar a que Firebase cargue (max 5 seg)
+  for(var i=0; i<10; i++) {
+    if(typeof firebase !== 'undefined') break;
+    await new Promise(function(r){ setTimeout(r, 500); });
+  }
+  if(typeof firebase === 'undefined') {
+    showToast('⚠️ Firebase no cargó. Verifica tu conexión a internet.');
+    return;
+  }
+  // Inicializar messaging si no está listo
+  if(!fbMessaging) {
+    try {
+      if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+      fbMessaging = firebase.messaging();
+    } catch(e) {
+      showToast('⚠️ Error Firebase: ' + e.message);
+      return;
+    }
+  }
+  // Pedir permiso si no está concedido
   if(Notification.permission === 'default') {
     var perm = await Notification.requestPermission();
-    if(perm !== 'granted') { showToast('⚠️ Permisos de notificación denegados'); return; }
+    if(perm !== 'granted') { showToast('⚠️ Permiso de notificaciones denegado'); return; }
   }
-  if(Notification.permission !== 'granted') { showToast('⚠️ Notificaciones bloqueadas en este dispositivo'); return; }
+  if(Notification.permission !== 'granted') {
+    showToast('⚠️ Notificaciones bloqueadas. Actívalas en Ajustes del navegador.');
+    return;
+  }
   try {
+    showToast('⏳ Registrando...');
     var swReg = await navigator.serviceWorker.ready;
-    var token = await fbMessaging.getToken({vapidKey:VAPID_KEY, serviceWorkerRegistration:swReg});
+    var token = await fbMessaging.getToken({
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: swReg
+    });
     if(token) {
       fcmToken = token;
       localStorage.setItem('fcm_token', token);
       await saveFCMTokenToSheet(token);
-      showToast('✓ Notificaciones activadas');
+      showToast('✓ Notificaciones activadas correctamente');
+    } else {
+      showToast('⚠️ No se pudo obtener token. Intenta de nuevo.');
     }
-  } catch(e){
+  } catch(e) {
     console.log('FCM error:', e.message);
-    showToast('⚠️ Error: ' + e.message);
+    showToast('⚠️ ' + e.message);
   }
 }
 
