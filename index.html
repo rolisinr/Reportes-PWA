@@ -4028,13 +4028,13 @@ async function testSheetConn() {
 // =============================================
 
 var FB_CONFIG = {
-  apiKey: 'AIzaSyBIj8aYFt-vkVc55atTgfYVtZI2iWVvTI4',
-  authDomain: 'covapp-3fe9d.firebaseapp.com',
-  projectId: 'covapp-3fe9d',
-  messagingSenderId: '1056777477300',
-  appId: '1:1056777477300:web:d4b64af6fb85f8a7e54be1'
+  apiKey: 'AIzaSyA65EkSVN41YsH40MHNgYOtFYGVX1aOeFY',
+  authDomain: 'appcov-7c5e4.firebaseapp.com',
+  projectId: 'appcov-7c5e4',
+  messagingSenderId: '277781643808',
+  appId: '1:277781643808:web:e392198ab6ceece314f245'
 };
-var VAPID_KEY = 'BI5F6tQLAO_FeTItDV7xlVkCTWZ1Ea07ZHkH8rpavqkVWxTE4w2lvA8Djlg3NKyeREk-HUW6SedammdhfDu5CCo';
+var VAPID_KEY = 'BJEqF3Gbb6WZFC1MDdJMk87-xZz-Ge5ja7XrzA_djMtP0IkjihcJxjBOCFLP2gMWY9xNpfjyXdejGlXkDYQMgIM';
 var fbMessaging = null;
 var fcmToken = null;
 
@@ -4044,11 +4044,11 @@ function initFirebase() {
     if(!firebase.apps || !firebase.apps.length) {
       // Config hardcodeado aquí para evitar problemas de scope/timing
       firebase.initializeApp({
-        apiKey: 'AIzaSyBIj8aYFt-vkVc55atTgfYVtZI2iWVvTI4',
-        authDomain: 'covapp-3fe9d.firebaseapp.com',
-        projectId: 'covapp-3fe9d',
-        messagingSenderId: '1056777477300',
-        appId: '1:1056777477300:web:d4b64af6fb85f8a7e54be1'
+        apiKey: 'AIzaSyA65EkSVN41YsH40MHNgYOtFYGVX1aOeFY',
+        authDomain: 'appcov-7c5e4.firebaseapp.com',
+        projectId: 'appcov-7c5e4',
+        messagingSenderId: '277781643808',
+        appId: '1:277781643808:web:e392198ab6ceece314f245'
       });
     }
     if(!fbMessaging) {
@@ -4081,7 +4081,7 @@ async function refreshFCMToken() {
     var _m = fbMessaging;
     if(!_m) return;
     var swReg = await navigator.serviceWorker.ready;
-    var token = await _m.getToken({vapidKey:'BI5F6tQLAO_FeTItDV7xlVkCTWZ1Ea07ZHkH8rpavqkVWxTE4w2lvA8Djlg3NKyeREk-HUW6SedammdhfDu5CCo', serviceWorkerRegistration:swReg});
+    var token = await _m.getToken({vapidKey:'BJEqF3Gbb6WZFC1MDdJMk87-xZz-Ge5ja7XrzA_djMtP0IkjihcJxjBOCFLP2gMWY9xNpfjyXdejGlXkDYQMgIM', serviceWorkerRegistration:swReg});
     if(token && token !== fcmToken) {
       fcmToken = token;
       localStorage.setItem('fcm_token', token);
@@ -4122,7 +4122,7 @@ async function registerFCMToken() {
     var _msg = fbMessaging;
     if(!_msg) throw new Error('fbMessaging no disponible');
     // VAPID hardcodeado para evitar problemas de scope
-    var _vapid = 'BI5F6tQLAO_FeTItDV7xlVkCTWZ1Ea07ZHkH8rpavqkVWxTE4w2lvA8Djlg3NKyeREk-HUW6SedammdhfDu5CCo';
+    var _vapid = 'BJEqF3Gbb6WZFC1MDdJMk87-xZz-Ge5ja7XrzA_djMtP0IkjihcJxjBOCFLP2gMWY9xNpfjyXdejGlXkDYQMgIM';
     var swReg = await navigator.serviceWorker.ready;
     _msg = fbMessaging || _msg;
     if(!_msg) throw new Error('fbMessaging null');
