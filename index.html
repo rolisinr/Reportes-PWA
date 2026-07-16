@@ -583,8 +583,6 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     <span class="hdr-date" id="hdrdate"></span>
   </div>
   <div class="hdr-r">
-    <button class="admin-btn" id="admin-btn" onclick="openAdmin()" style="display:none">🛡️</button>
-    <button class="icon-btn" onclick="openHistory()" style="color:var(--mut);font-size:19px" title="Historial">📋</button>
     <button class="icon-btn" onclick="openSettings()" style="color:#E67E22;font-size:21px">⚙️</button>
   </div>
 </header>
@@ -720,14 +718,6 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
     </button>
   </div>
 
-  <button class="prog-btn" id="prog-btn" onclick="openProg()">
-    <div style="font-size:22px">📅</div>
-    <div style="flex:1;text-align:left">
-      <div style="font-size:13px;font-weight:700;color:var(--txt)">Programación</div>
-      <div style="font-size:11px;color:var(--mut)" id="prog-home-sub">Cargar la distribución</div>
-    </div>
-    <span style="color:var(--mut);font-size:16px">›</span>
-  </button>
 
   <!-- Mis Plantillas -->
   <button class="ia-main-btn" id="mis-tpl-main-btn" onclick="openMisPlantillas()" style="display:flex;background:#F7F3FF;border-color:#DDD6FE">
@@ -923,13 +913,13 @@ main{flex:1;padding:10px;max-width:520px;margin:0 auto;width:100%}
       <div style="font-size:15px;font-weight:700">📅 Programación</div>
       <div class="prog-meta" id="prog-meta"></div>
     </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
-      <button class="sync-btn" id="bajar-btn" onclick="bajarProg()" title="Descargar del Sheet">📥 Bajar</button>
-      <button class="sync-btn" id="subir-btn" onclick="subirProg()" title="Subir al Sheet">📤 Subir</button>
-      <button id="prog-btn" onclick="abrirProgConfig()" style="background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">📋 Cargar</button>
+    <div style="display:flex;gap:6px">
+      <button id="bajar-btn" onclick="bajarProg()" style="background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;padding:6px 11px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">📥 Bajar</button>
+      <button id="subir-btn" onclick="subirProg()" style="background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;padding:6px 11px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;font-family:inherit">📤 Subir</button>
+      <button id="prog-cargar-btn" onclick="abrirProgConfig()" style="background:var(--acc);color:#fff;border:none;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">📋 Cargar</button>
     </div>
   </div>
-  <div id="prog-content"><div class="prog-empty">📅 Sin programación cargada<br><small>Toca "Cargar"</small></div></div>
+  <div id="prog-content"<div id="prog-content"><div class="prog-empty">📅 Sin programación cargada<br><small>Toca "Cargar"</small></div></div>
 </div>
 
 <!-- CONFIG PROGRAMACIÓN -->
@@ -3276,11 +3266,11 @@ function renderAdminUsers(covs) {
   if(!covs.length) { container.innerHTML = '<div style="color:var(--mut);font-size:13px;text-align:center;padding:16px">Sin dispositivos registrados</div>'; return; }
 
   var PERMS = [
-    {key:'perm_prog',  label:'📋 Cargar'},
-    {key:'perm_sync',  label:'🔄 Sync'},
-    {key:'perm_voz',   label:'🤖 Voz'},
-    {key:'perm_admin', label:'🛡️ Admin'},
-    {key:'es_admin',   label:'⚡ Es Admin'}
+    {key:'perm_prog',  label:'📋 Cargar prog'},
+    {key:'perm_sync',  label:'📤 Subir/Bajar'},
+    {key:'perm_voz',   label:'🤖 Reporte IA'},
+    {key:'perm_admin', label:'🛡️ Panel Admin'},
+    {key:'es_admin',   label:'⚡ Super Admin'}
   ];
 
   container.innerHTML = covs.map(function(cov, ci) {
@@ -3903,15 +3893,25 @@ function renderCOVList(covs) {
 
 
 async function sendAdminPush() {
-  var msg = document.getElementById('admin-aviso-txt').value.trim();
-  if(!msg) { showToast('Escribe el mensaje primero'); return; }
+  var msg = (document.getElementById('admin-aviso-txt').value||'').trim();
+  if(!msg) { showToast('⚠️ Escribe el mensaje'); return; }
   var btn = document.getElementById('send-push-btn');
   btn.textContent = 'Enviando…'; btn.disabled = true;
   try {
-    await sendPushToAll('🛡️ Aviso TGA', msg);
-  } finally {
-    btn.textContent = '🔔 Push'; btn.disabled = false;
-  }
+    var res = await sheetPost({
+      action: 'pushall',
+      did: getDeviceId(),
+      title: '📢 Aviso TGA',
+      body: msg
+    });
+    if(res && res.ok) {
+      var sent = res.sent||0, errors = res.errors||0, total = res.total||0;
+      showToast('✓ Push: '+sent+'/'+total+' entregados'+(errors?' · '+errors+' error(es)':''));
+    } else {
+      showToast('⚠️ '+(res&&res.error||'Error al enviar push'));
+    }
+  } catch(e){ showToast('⚠️ '+e.message); }
+  finally { btn.textContent='🔔 Push'; btn.disabled=false; }
 }
 
 // ── Gestión de destinatarios de avisos ──
@@ -4115,7 +4115,10 @@ async function sendPushToAll(title, body) {
       title: title,
       body: body
     });
-    if(res && res.ok) showToast('✓ Push enviado a ' + (res.count||'todos') + ' dispositivos');
+    if(res && res.ok) {
+      var sent = res.sent||0, errors = res.errors||0;
+      showToast('✓ Push: '+sent+' entregados'+(errors?' · '+errors+' fallidos':''));
+    }
     else showToast('⚠️ ' + (res&&res.error||'Error'));
   } catch(e) {
     showToast('⚠️ ' + e.message);
