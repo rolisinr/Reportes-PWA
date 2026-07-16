@@ -3246,16 +3246,25 @@ async function loadAdminUsers() {
   var container = document.getElementById('admin-users-list');
   if(!container) return;
   container.innerHTML = '<div style="color:var(--mut);text-align:center;padding:16px;font-size:13px">Cargando...</div>';
+  // Actualizar badge de conexión
+  var dot = document.getElementById('sheet-dot');
+  var txt = document.getElementById('sheet-conn-txt');
   try {
     var res = await sheetGet('covs', {did: getDeviceId()});
+    if(dot) { dot.className='sheet-status on'; }
+    if(txt) txt.textContent = 'Conectado';
     if(res && res.covs) {
       _adminUsersCache = res.covs;
       renderAdminUsers(res.covs);
       populateAvisoDests(res.covs); // También popular los destinatarios de avisos
     } else {
+      if(dot) dot.className='sheet-status off';
+      if(txt) txt.textContent = 'Error: '+(res&&res.error||'desconocido');
       container.innerHTML = '<div style="color:var(--rd);font-size:12px">' + (res&&res.error||'Error al cargar') + '</div>';
     }
   } catch(e) {
+    if(dot) dot.className='sheet-status off';
+    if(txt) txt.textContent = 'Sin conexión';
     container.innerHTML = '<div style="color:var(--rd);font-size:12px">⚠️ ' + e.message + '</div>';
   }
 }
