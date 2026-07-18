@@ -42,7 +42,7 @@
       
       return { init, toggle };
     })();
-\n
+
     // ═══════════════════════════════════════════
     // OFFLINE QUEUE & SYNC
     // ═══════════════════════════════════════════
@@ -127,7 +127,7 @@
 
       return { addRequest, updateBadge, processQueue };
     })();
-\n    // ═══════════════════════════════════════════
+    // ═══════════════════════════════════════════
     // UTILIDADES
     // ═══════════════════════════════════════════
     const today = () => new Date().toLocaleDateString("es-PE", { day: "2-digit", month: "2-digit", year: "numeric" });

@@ -39,7 +39,9 @@ const AppState = {
   curCat: null,
   quickMsg: null,
 
-  // Programación\n  progHoyCache: null,\n  covsBaseCache: {},
+  // Programación
+  progHoyCache: null,
+  covsBaseCache: {},
   progFiltro: 'todos',
   progSearch: '',
 
