@@ -6,7 +6,7 @@ importScripts('./js/db.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-const CACHE = 'cov-reportes-swr-v101';
+const CACHE = 'cov-reportes-swr-v102';
 const ASSETS = [
   './', './index.html', './styles.css', './manifest.json', './icon-192.png', './icon-512.png',
   './js/config.js', './js/state.js', './js/db.js', './js/utils.js', './js/navigation.js', './js/profile.js', './js/history.js',
