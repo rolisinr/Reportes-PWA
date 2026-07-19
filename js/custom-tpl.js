@@ -131,5 +131,4 @@
     function toggleGemVis() {
       var inp = document.getElementById('gem-key');
       if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
-    }
-  </script>
+    }
