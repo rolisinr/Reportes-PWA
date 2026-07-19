@@ -54,7 +54,10 @@ function quickService(type) {
     const getUbi = () => (getProfile().ubi) || "";
     const getTurno = () => (getProfile().turno) || "TARDE";
 
-    const TPLS = {
+    // =============================================
+    // LISTA DE PLANTILLAS
+    // =============================================
+    var TPLS = {
       vias: [
         {
           id: "informe-via", icon: "🛣️", name: "Informe de Vía",

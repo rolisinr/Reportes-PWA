@@ -2,7 +2,7 @@
     // ═══════════════════════════════════════════
     // THEME MANAGER
     // ═══════════════════════════════════════════
-    const ThemeManager = (function() {
+    var ThemeManager = (function() {
       let currentTheme = 'light';
       
       function init() {

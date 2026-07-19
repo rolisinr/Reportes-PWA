@@ -1,7 +1,7 @@
     // ═══════════════════════════════════════════
     // CAT META
     // ═══════════════════════════════════════════
-    const CAT = {
+    var CAT = {
       vias: { label: "Informe de Vía", cc: "#16A34A" },
       obras: { label: "Obras en Vía", cc: "#C07800" },
       incidencia: { label: "Incidencias", cc: "#DC2626" },
@@ -71,11 +71,11 @@
     </div>`;
       }).join("");
     }
-    function hiCopy(id) {
+    async function hiCopy(id) {
       const h = (await DB.get("history", "items") || []).find(x => x.id === id);
       if (h) copyText(h.msg);
     }
-    function hiTg(id) {
+    async function hiTg(id) {
       const h = (await DB.get("history", "items") || []).find(x => x.id === id);
       if (h) telegramShare(h.msg, h.catId);
     }
