@@ -125,8 +125,8 @@
       }
 
       // Apply saved font size
-      const cfg = getSettings2();
-      document.documentElement.style.setProperty("--fs", cfg.fs + "px");
+      const cfg2 = getSettings2();
+      document.documentElement.style.setProperty("--fs", cfg2.fs + "px");
 
       // Auto-select turno in welcome screen
       const detected = (() => { const h = new Date().getHours(); if (h >= 5 && h < 14) return "MAÑANA"; if (h >= 14 && h < 22) return "TARDE"; return "NOCHE"; })();
