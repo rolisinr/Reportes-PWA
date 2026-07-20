@@ -336,6 +336,63 @@
       return best;
     }
 
+    function fuzzyMatchPunto(rawPunto, sentido) {
+      if (!AppState.puntosBaseCache || !AppState.puntosBaseCache.length) return null;
+      var norm = quitaTildes(rawPunto || '').toUpperCase().trim();
+      if (!norm) return null;
+      
+      var m = norm.match(/\b(?:C|CUADRA\s*)?(\d+)\b/i);
+      var numCuadra = m ? m[1] : null;
+      var best = null;
+      var bestScore = -1;
+      var words = norm.replace(/\b(?:C|CUADRA|N\/S|S\/N|SN)\b/gi, '').split(/\s+/).filter(function(w) { return w.length > 2; });
+      
+      AppState.puntosBaseCache.forEach(function(pt) {
+        var ptAvenida = quitaTildes(pt.avenida || '').toUpperCase();
+        var ptCuadra = String(pt.cuadra || '');
+        var ptInter = quitaTildes(pt.interseccion || '').toUpperCase();
+        var ptSentido = (pt.sentido || '').replace(/\//g, '').toUpperCase();
+        var pSentidoNorm = (sentido || '').replace(/\//g, '').toUpperCase();
+        
+        var score = 0;
+        if (numCuadra && ptCuadra === numCuadra) score += 5;
+        else if (numCuadra && ptCuadra && ptCuadra !== numCuadra) return;
+        
+        if (pSentidoNorm && ptSentido && pSentidoNorm === ptSentido) score += 3;
+        
+        var targetWords = (ptAvenida + ' ' + ptInter).split(/\s+/).filter(Boolean);
+        var matchCount = 0;
+        words.forEach(function(w) {
+          for(var i=0; i<targetWords.length; i++) {
+            if(targetWords[i].length < 3) continue;
+            if(levenshtein(w, targetWords[i]) <= (w.length > 5 ? 2 : 1)) {
+              matchCount++;
+              targetWords[i] = '';
+              break;
+            }
+          }
+        });
+        
+        score += matchCount * 2;
+        if (matchCount > 0 && score > bestScore) {
+          bestScore = score;
+          best = pt;
+        }
+      });
+      
+      if (best && bestScore >= 2) {
+         var str = best.avenida.toUpperCase();
+         if (best.cuadra) str += ' C/' + best.cuadra;
+         if (best.interseccion) str += ' - ' + best.interseccion.toUpperCase();
+         if (best.sentido) {
+           var s = best.sentido.toUpperCase().replace(/\//g, '');
+           str += (s==='NS') ? ' (N/S)' : (s==='SN' ? ' (S/N)' : '');
+         }
+         return str;
+      }
+      return null;
+    }
+
     function makeNameKey(nombre) {
       var parts = quitaTildes(nombre || '').trim().toUpperCase().split(/\s+/).filter(Boolean);
       if (parts.length === 0) return '';
@@ -1029,7 +1086,9 @@
           if (puntoClean.match(/\bN\/S\b/)) currentSentido = 'N/S';
           else if (puntoClean.match(/\bS\/N\b/)) currentSentido = 'S/N';
           else if (puntoClean.match(/\bSN\b/i)) currentSentido = 'S/N';
-          currentPunto = quitaTildes(puntoClean.replace(/N\/S|S\/N|SN\b/gi, '').trim()).toUpperCase();
+          var rawPuntoText = quitaTildes(puntoClean.replace(/N\/S|S\/N|SN\b/gi, '').trim()).toUpperCase();
+          var matchedPunto = fuzzyMatchPunto(rawPuntoText, currentSentido);
+          currentPunto = matchedPunto ? matchedPunto : rawPuntoText;
           seccion = '';
           continue;
         }

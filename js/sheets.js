@@ -61,6 +61,10 @@
           if (cfg.config.gemKey) local.gemKey = cfg.config.gemKey;
           S.set('settings2', local);
           AppState.sheetConnected = true;
+          if (cfg.puntos && cfg.puntos.length > 0) {
+            AppState.puntosBaseCache = cfg.puntos;
+            localStorage.setItem('puntos_base_cache', JSON.stringify(cfg.puntos));
+          }
         }
         if (reg) {
           AppState.isAdmin = reg.es_admin === true;

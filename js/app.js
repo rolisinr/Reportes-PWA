@@ -142,7 +142,6 @@ if (AppState.wBtn) { AppState.wBtn.classList.add("sel"); AppState.wTurno = detec
         if (cfg.notif) scheduleNotifications(cfg);
         initSheetConnection();
         initFirebase();
-        if (Notification.permission === 'granted') registerFCMToken();
       } else {
         navStack.length = 0; navStack.push("s-welcome");
         showScreen("s-welcome");
