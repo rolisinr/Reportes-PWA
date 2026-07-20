@@ -292,28 +292,55 @@
 
     function fuzzyMatch(nombre, base) {
       var normName = quitaTildes(nombre || '').toUpperCase().trim();
-      var primerApell = normName.split(' ')[0];
-      if (!primerApell) return null;
-
-      var candidates = base.filter(function (b) {
-        return quitaTildes(b.nombre_completo || '').toUpperCase().split(' ')[0] === primerApell;
+      var parts = normName.split(/\s+/).filter(Boolean);
+      if (parts.length < 2) return null; // Exige al menos 2 palabras
+      
+      var firstLetter = parts[0].charAt(0);
+      var best = null;
+      var bestScore = -1;
+      
+      base.forEach(function(b) {
+        var bNorm = quitaTildes(b.nombre_completo || '').toUpperCase().trim();
+        var bParts = bNorm.split(/\s+/).filter(Boolean);
+        var origBPartsLen = bParts.length;
+        // Filtro rápido: deben empezar con la misma letra inicial del primer apellido
+        if (!origBPartsLen || bParts[0].charAt(0) !== firstLetter) return; 
+        
+        var matchCount = 0;
+        parts.forEach(function(p) {
+          if (p.length < 2) return;
+          for (var i = 0; i < bParts.length; i++) {
+            if (bParts[i].length < 2) continue;
+            // Tolerancia: 2 errores si la palabra es larga, 1 si es mediana, 0 si es muy corta
+            var maxDist = p.length >= 5 ? 2 : (p.length >= 3 ? 1 : 0);
+            if (levenshtein(p, bParts[i]) <= maxDist) {
+              matchCount++;
+              bParts[i] = ''; // vaciar para evitar doble coincidencia
+              break;
+            }
+          }
+        });
+        
+        var minWords = Math.min(parts.length, origBPartsLen);
+        // Exigir al menos 2 palabras coincidentes y que representen la mayoría del nombre
+        if (matchCount >= 2 && matchCount >= minWords - 1) { 
+          // Score prioriza más coincidencias y castiga diferencias de longitud (palabras extra)
+          var totalScore = matchCount - (Math.abs(parts.length - origBPartsLen) * 0.1);
+          if (totalScore > bestScore) {
+            bestScore = totalScore;
+            best = b;
+          }
+        }
       });
-      if (!candidates.length) return null;
-
-      var best = null, bestDist = 999;
-      candidates.forEach(function (c) {
-        var d = levenshtein(normName, quitaTildes(c.nombre_completo || '').toUpperCase());
-        if (d < bestDist) { bestDist = d; best = c; }
-      });
-      // Aceptar si la diferencia es ≤ 4 caracteres (error de tipeo)
-      return bestDist <= 4 ? best : null;
+      
+      return best;
     }
 
     function makeNameKey(nombre) {
       var parts = quitaTildes(nombre || '').trim().toUpperCase().split(/\s+/).filter(Boolean);
       if (parts.length === 0) return '';
-      if (parts.length === 1) return parts[0];
-      return parts[0] + ' ' + parts[parts.length - 1];
+      // Retorna el nombre completo normalizado, eliminando el viejo modelo de (Primero + Último) que causaba colisiones
+      return parts.join(' ');
     }
 
     function isSinQAP(item) {
