@@ -138,22 +138,53 @@ function registerDevice(p) {
   var sh = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Devices');
   var rows = sh.getDataRange().getValues();
   var now = new Date().toISOString(), did = p.did||'';
+  var targetRow = -1;
+
+  // 1. Check by did
   for(var i=1; i<rows.length; i++) {
     if(String(rows[i][0])===did) {
-      sh.getRange(i+1,7).setValue(now);
-      if(p.nombre) sh.getRange(i+1,2).setValue(p.nombre);
-      if(p.turno)  sh.getRange(i+1,3).setValue(p.turno);
-      if(p.ubi)    sh.getRange(i+1,4).setValue(p.ubi);
-      var adm = rows[i][4]===true||String(rows[i][4]).toUpperCase()==='TRUE';
-      var pp  = String(rows[i][8] ||'').toUpperCase(); // I perm_prog
-      var ps  = String(rows[i][9] ||'').toUpperCase(); // J perm_sync
-      var pa  = String(rows[i][10]||'').toUpperCase(); // K perm_admin
-      var pv  = String(rows[i][11]||'').toUpperCase(); // L perm_voz
-      return {isAdmin:adm, nombre:String(rows[i][1]||''), existente:true,
-        perm_prog: pp!=='NO', perm_sync: ps!=='NO',
-        perm_admin:pa!=='NO', perm_voz:  pv!=='NO'};
+      targetRow = i;
+      break;
     }
   }
+
+  // 2. If not found by did, check by nombre using fuzzy match
+  if (targetRow === -1 && p.nombre) {
+    var queryTokens = p.nombre.trim().toUpperCase().split(" ").filter(Boolean);
+    if (queryTokens.length > 0) {
+      for(var i=1; i<rows.length; i++) {
+        var rowName = String(rows[i][1]).trim().toUpperCase();
+        if(rowName) {
+          var score = 0;
+          for(var j=0; j<queryTokens.length; j++) {
+            if(rowName.indexOf(queryTokens[j]) >= 0) score++;
+          }
+          if (score >= Math.min(2, queryTokens.length)) {
+            targetRow = i;
+            sh.getRange(i+1, 1).setValue(did); // Update with new device ID
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  if (targetRow !== -1) {
+    var i = targetRow;
+    sh.getRange(i+1,7).setValue(now);
+    if(p.nombre) sh.getRange(i+1,2).setValue(p.nombre);
+    if(p.turno)  sh.getRange(i+1,3).setValue(p.turno);
+    if(p.ubi)    sh.getRange(i+1,4).setValue(p.ubi);
+    var adm = rows[i][4]===true||String(rows[i][4]).toUpperCase()==='TRUE';
+    var pp  = String(rows[i][8] ||'').toUpperCase(); // I perm_prog
+    var ps  = String(rows[i][9] ||'').toUpperCase(); // J perm_sync
+    var pa  = String(rows[i][10]||'').toUpperCase(); // K perm_admin
+    var pv  = String(rows[i][11]||'').toUpperCase(); // L perm_voz
+    return {isAdmin:adm, nombre:String(rows[i][1]||''), existente:true,
+      perm_prog: pp!=='NO', perm_sync: ps!=='NO',
+      perm_admin:pa!=='NO', perm_voz:  pv!=='NO'};
+  }
+
   // Nuevo dispositivo (10 columnas A-J + K + L)
   sh.appendRow([did,p.nombre||'',p.turno||'',p.ubi||'',false,now,now,'','','','','']);
   return {isAdmin:false,nombre:p.nombre||'',nuevo:true,
