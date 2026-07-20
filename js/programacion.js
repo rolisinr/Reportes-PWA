@@ -195,7 +195,7 @@
           + '<div class="pi-cb" id="qcb-' + i + '" data-i="' + i + '" onclick="toggleQapCb(+this.dataset.i)"></div>'
           + '<div class="pi-info">'
           + '<div class="pi-name">' + (item.orden ? item.orden + '. ' : '') + escapeHTML(item.nombre) + '</div>'
-          + '<div class="pi-sub">' + escapeHTML(item.punto || '') + (item.sentido ? ' · ' + escapeHTML(item.sentido) : '') + '</div>'
+          + '<div class="pi-sub">' + [item.punto, item.sentido, item.funcion].filter(Boolean).map(escapeHTML).join(' · ') + '</div>'
           + '</div></div>';
       }).join('');
       document.getElementById('qap-sel-n').textContent = '0';
@@ -384,11 +384,11 @@
          var str = best.avenida.toUpperCase();
          if (best.cuadra) str += ' C/' + best.cuadra;
          if (best.interseccion) str += ' - ' + best.interseccion.toUpperCase();
-         if (best.sentido) {
-           var s = best.sentido.toUpperCase().replace(/\//g, '');
-           str += (s==='NS') ? ' (N/S)' : (s==='SN' ? ' (S/N)' : '');
+         var bestSentido = best.sentido ? best.sentido.toUpperCase() : null;
+         if (bestSentido) {
+           bestSentido = (bestSentido.replace(/\//g, '') === 'NS') ? 'N/S' : (bestSentido.replace(/\//g, '') === 'SN' ? 'S/N' : bestSentido);
          }
-         return str;
+         return { punto: str, sentido: bestSentido };
       }
       return null;
     }
@@ -762,7 +762,7 @@
           return '<div class="' + cls + '">'
             + '<div class="pi-info">'
             + '<div class="pi-name">' + escapeHTML(item.nombre || '') + catNote + '</div>'
-            + '<div class="pi-sub">' + escapeHTML(item.punto || '') + (item.sentido ? ' · ' + escapeHTML(item.sentido) : '') + (item.funcion ? ' · ' + escapeHTML(item.funcion) : '') + '</div>'
+            + '<div class="pi-sub">' + [item.punto, item.sentido, item.funcion].filter(Boolean).map(escapeHTML).join(' · ') + '</div>'
             + qapBadge + sshhBadge
             + asignarForm
             + '</div>'
@@ -1087,8 +1087,13 @@
           else if (puntoClean.match(/\bS\/N\b/)) currentSentido = 'S/N';
           else if (puntoClean.match(/\bSN\b/i)) currentSentido = 'S/N';
           var rawPuntoText = quitaTildes(puntoClean.replace(/N\/S|S\/N|SN\b/gi, '').trim()).toUpperCase();
-          var matchedPunto = fuzzyMatchPunto(rawPuntoText, currentSentido);
-          currentPunto = matchedPunto ? matchedPunto : rawPuntoText;
+          var matched = fuzzyMatchPunto(rawPuntoText, currentSentido);
+          if (matched) {
+            currentPunto = matched.punto;
+            if (matched.sentido) currentSentido = matched.sentido;
+          } else {
+            currentPunto = rawPuntoText;
+          }
           seccion = '';
           continue;
         }
