@@ -338,6 +338,16 @@
       base.forEach(function (b) { baseMap[b.nombre_clave] = b; });
       var hoy = today();
 
+      // Issue #1 FIX: De-duplicar items por nombre_clave antes de procesar
+      // Si la prog ya tiene datos, solo actualizar los que cambiaron; no duplicar.
+      var seenKeys = {};
+      items = items.filter(function(item) {
+        var key = makeNameKey(item.nombre);
+        if (seenKeys[key]) return false;
+        seenKeys[key] = true;
+        return true;
+      });
+
       items.forEach(function (item) {
         var key = makeNameKey(item.nombre);
         item.nombre_clave = key;
@@ -357,17 +367,19 @@
             fuzzy.ultima_aparicion = hoy;
             fuzzy.activo = true;
           } else if (item.nombre) {
-            // Nuevo COV — agregar a la base
-            var nuevo = {
-              nombre_completo: item.nombre,
-              nombre_clave: key,
-              corredor: corredor || getCorredor(),
-              activo: true,
-              ultima_aparicion: hoy,
-              obs: ''
-            };
-            base.push(nuevo);
-            baseMap[key] = nuevo;
+            // Nuevo COV — agregar a la base (solo si no existe ya por ese key)
+            if (!baseMap[key]) {
+              var nuevo = {
+                nombre_completo: item.nombre,
+                nombre_clave: key,
+                corredor: corredor || getCorredor(),
+                activo: true,
+                ultima_aparicion: hoy,
+                obs: ''
+              };
+              base.push(nuevo);
+              baseMap[key] = nuevo;
+            }
           }
         }
       });
@@ -575,17 +587,25 @@
         + (otros.length ? '<span class="pstat o">💤 ' + otros.length + '</span>' : '')
         + '</div>';
 
-      // Filtros
+      // Filtros — Issue #4: agregar chip Descanso
       var filters = '<div class="prog-filters">'
-        + ['todos', 'activo', 'ns', 'sn', 'qap'].map(function (f) {
-          var fnames = { todos: 'Todos', activo: 'Activos', ns: 'N/S', sn: 'S/N', qap: 'En QAP' };
+        + ['todos', 'activo', 'ns', 'sn', 'qap', 'descanso'].map(function (f) {
+          var fnames = { todos: 'Todos', activo: 'Activos', ns: 'N/S', sn: 'S/N', qap: 'En QAP', descanso: '💤 Descanso' };
           return '<button class="pfchip' + (AppState.progFiltro === f ? ' on' : '') + '" data-f="' + f + '" onclick="setProgF(this.dataset.f)">' + fnames[f] + '</button>';
         }).join('')
         + '</div>';
 
-      // Aplicar filtro
+      // Aplicar filtro — Issue #4: filtro Descanso va sobre la sección "otros"
       function applyFilter(list) {
-        if (AppState.progFiltro === 'todos' || AppState.progFiltro === 'activo') return list;
+        if (AppState.progFiltro === 'todos') return list;
+        if (AppState.progFiltro === 'activo') return list;
+        if (AppState.progFiltro === 'descanso') {
+          // Muestra SOLO COVs de categoría descanso/comp/vacaciones (vienen en "otros")
+          return list.filter(function (x) {
+            var DESCANSO_CATS = ['descanso', 'compensatorio', 'vacaciones'];
+            return DESCANSO_CATS.indexOf(x.item.categoria) >= 0;
+          });
+        }
         return list.filter(function (x) {
           if (AppState.progFiltro === 'ns') return x.item.sentido === 'N/S';
           if (AppState.progFiltro === 'sn') return x.item.sentido === 'S/N';
@@ -684,13 +704,23 @@
         html2 += '<div class="prog-section-lbl">✓ En punto</div>';
         html2 += '<div class="prog-list">' + renderGroup(activos, false) + '</div>';
       }
-      // Sección OTROS (colapsable)
+      // Sección OTROS (colapsable, auto-abre con filtro descanso)
       if (otros.length) {
-        html2 += '<button class="otros-toggle" onclick="toggleOtros(this)">'
-          + '💤 Descanso / otros (' + otros.length + ') ▸</button>';
-        html2 += '<div class="otros-section prog-list" id="otros-section" style="display:none">'
-          + renderGroup(otros, false)
-          + '</div>';
+        var isDescansoFiltro = AppState.progFiltro === 'descanso';
+        var otrosFiltered = applyFilter(otros);
+        if (isDescansoFiltro) {
+          // Con filtro descanso: mostrar solo descansos, sin collapsible, con encabezado propio
+          if (otrosFiltered.length) {
+            html2 += '<div class="prog-section-lbl">💤 En Descanso / Compensatorio / Vacaciones (' + otrosFiltered.length + ')</div>';
+            html2 += '<div class="prog-list">' + renderGroup(otros, false, true) + '</div>';
+          }
+        } else {
+          html2 += '<button class="otros-toggle" onclick="toggleOtros(this)">'
+            + '💤 Descanso / otros (' + otros.length + ') ▸</button>';
+          html2 += '<div class="otros-section prog-list" id="otros-section" style="display:none">'
+            + renderGroup(otros, false, true)
+            + '</div>';
+        }
       }
 
       el.innerHTML = html2;
@@ -1003,7 +1033,15 @@
         // Apoyo/Descanso: nombre sin prefijo COV
         if (seccion && !line.match(/:/)) {
           var nom2 = line.replace(/^\d+\.\s*-?\s*/, '').trim();
-          if (nom2 && nom2.length > 3 && /^[A-Za-z]/.test(nom2)) {
+          // Issue #2 FIX: Rechazar palabras que no son nombres de personas
+          // - Mínimo 2 palabras (nombre y apellido)
+          // - Rechazar palabras clave tipo FALTO, FALTA, TARDANZA, etc.
+          var PALABRAS_INVALIDAS = /^(FALTO|FALTA|FALTOS|TARDANZA|TARDANZAS|EFECTIVOS|DISPONIBLE|DESCANSO|COMPENSAT|VACACION|APOYO|SUPERVISOR|REMOTO|SIN\s+PROG)$/i;
+          var tieneNombreValido = nom2.length > 4
+            && /^[A-Za-záéíóúñÁÉÍÓÚÑ]/.test(nom2)
+            && !PALABRAS_INVALIDAS.test(nom2.trim())
+            && nom2.trim().split(/\s+/).length >= 2; // al menos 2 palabras = nombre + apellido
+          if (tieneNombreValido) {
             flushPending();
             items.push({
               nombre: quitaTildes(nom2),
