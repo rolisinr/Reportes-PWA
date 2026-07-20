@@ -195,7 +195,7 @@
           + '<div class="pi-cb" id="qcb-' + i + '" data-i="' + i + '" onclick="toggleQapCb(+this.dataset.i)"></div>'
           + '<div class="pi-info">'
           + '<div class="pi-name">' + (item.orden ? item.orden + '. ' : '') + escapeHTML(item.nombre) + '</div>'
-          + '<div class="pi-sub">' + [item.punto, item.sentido, item.funcion].filter(Boolean).map(escapeHTML).join(' · ') + '</div>'
+          + '<div class="pi-sub">' + getTagsHtml(item) + '</div>'
           + '</div></div>';
       }).join('');
       document.getElementById('qap-sel-n').textContent = '0';
@@ -632,6 +632,24 @@
       }
     }
 
+    function getTagsHtml(item) {
+      var tags = [];
+      if (item.punto) {
+        var p = item.punto;
+        var cls = p.indexOf('TACNA') >= 0 ? 'tag-tacna' : (p.indexOf('GARCILASO') >= 0 ? 'tag-garcilaso' : 'tag');
+        tags.push('<span class="tag ' + cls + '">' + escapeHTML(p) + '</span>');
+      }
+      if (item.sentido) {
+        var s = item.sentido;
+        var cls = s === 'N/S' ? 'tag-ns' : (s === 'S/N' ? 'tag-sn' : 'tag');
+        tags.push('<span class="tag ' + cls + '">' + escapeHTML(s) + '</span>');
+      }
+      if (item.funcion && item.funcion.toLowerCase().indexOf('tranquera') < 0) {
+        tags.push('<span class="tag tag-funcion">' + escapeHTML(item.funcion) + '</span>');
+      }
+      return tags.join('');
+    }
+
     function renderProgContent() {
       var el = document.getElementById('prog-content');
       var data = getProgHoy();
@@ -762,7 +780,7 @@
           return '<div class="' + cls + '">'
             + '<div class="pi-info">'
             + '<div class="pi-name">' + escapeHTML(item.nombre || '') + catNote + '</div>'
-            + '<div class="pi-sub">' + [item.punto, item.sentido, item.funcion].filter(Boolean).map(escapeHTML).join(' · ') + '</div>'
+            + '<div class="pi-sub">' + getTagsHtml(item) + '</div>'
             + qapBadge + sshhBadge
             + asignarForm
             + '</div>'
@@ -1027,7 +1045,7 @@
       if (s.indexOf('NORTE') >= 0) return 'apoyo_zona_norte';
       if (s.indexOf('APOYO') >= 0) return 'apoyo_zona';
       if (s.indexOf('DESCANSO') >= 0) return 'descanso';
-      if (s.indexOf('COMPENSAT') >= 0) return 'compensatorio';
+      if (s.indexOf('COMPENSAT') >= 0 || s.indexOf('COMPESA') >= 0) return 'compensatorio';
       if (s.indexOf('VACACION') >= 0) return 'vacaciones';
       if (s.indexOf('SUPERVISOR') >= 0) return 'supervisor';
       return 'activo';

@@ -2529,8 +2529,28 @@
     .pi-sub {
       font-size: 11px;
       color: var(--mut);
-      margin-top: 1px
+      margin-top: 1px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
     }
+
+    .tag {
+      display: inline-block;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      background: var(--bg);
+      color: var(--mut);
+      white-space: nowrap;
+    }
+    .tag-tacna { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+    .tag-garcilaso { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+    .tag-ns { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .tag-sn { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .tag-funcion { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
+
 
     .pi-badge {
       font-size: 10px;
