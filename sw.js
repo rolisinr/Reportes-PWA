@@ -6,7 +6,7 @@ importScripts('./js/db.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-const CACHE = 'cov-reportes-swr-v104';
+const CACHE = 'cov-reportes-swr-v105';
 const ASSETS = [
   './', './index.html', './styles.css', './manifest.json', './icon-192.png', './icon-512.png',
   './js/config.js', './js/state.js', './js/db.js', './js/utils.js', './js/navigation.js', './js/profile.js', './js/history.js',
@@ -48,17 +48,27 @@ self.addEventListener('notificationclick', function (e) {
 
 // Cache
 self.addEventListener('install', function (e) {
-  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); }));
-  self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); })
+      .then(function() { return self.skipWaiting(); })
+  );
 });
 
 self.addEventListener('activate', function (e) {
   e.waitUntil(
     caches.keys().then(function (keys) {
       return Promise.all(keys.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
+    }).then(function() {
+      return self.clients.claim();
+    }).then(function() {
+      // Forzar recarga de todas las pestañas abiertas
+      return self.clients.matchAll({ type: 'window' }).then(function(clientList) {
+        clientList.forEach(function(client) {
+          client.navigate(client.url);
+        });
+      });
     })
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', function (e) {
