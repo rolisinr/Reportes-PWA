@@ -1,6 +1,6 @@
 {
-  "name": "Reportes TGA",
-  "short_name": "TGA",
+  "name": "COVAPP",
+  "short_name": "COVAPP",
   "description": "Generador de reportes para COVs del Corredor Azul TGA – Lima",
   "start_url": "./index.html",
   "display": "standalone",
