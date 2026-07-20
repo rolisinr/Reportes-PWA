@@ -68,7 +68,7 @@
           if (cfg.prog && cfg.prog.length > 0) {
             AppState.progCache = cfg.prog;
             localStorage.setItem('prog_cache', JSON.stringify(cfg.prog));
-            if (typeof renderWelcomeAutocomplete === 'function') renderWelcomeAutocomplete();
+            if (typeof autoFillProfile === 'function') autoFillProfile();
           }
         }
         if (reg) {

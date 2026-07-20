@@ -152,9 +152,7 @@ if (AppState.wBtn) { AppState.wBtn.classList.add("sel"); AppState.wTurno = detec
       updateMisTplBtn();
       renderFavs();
       updateProgHomeBtn();
-      // Mostrar bottom nav
-      var bnav = document.getElementById('bottom-nav');
-      if (bnav) bnav.style.display = 'flex';
+      // Mostrar bottom nav manejado por navigation.js
       // Auto-refrescar token FCM silenciosamente (detecta si venció y lo renueva)
       if (typeof Notification !== 'undefined') setTimeout(refreshFCMToken, 3000);
     }

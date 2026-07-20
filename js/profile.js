@@ -45,104 +45,85 @@
     }
 
 // Welcome
-async function startWelcomeDownload() {
-  const btn = document.getElementById("w-btn-start");
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = "Descargando...";
-  }
-  // Initialize connection (downloads config and prog_estado in background)
-  if (typeof initSheetConnection === 'function') {
-    await initSheetConnection();
-  }
-  
-  // Transition to step 2
-  document.getElementById("w-step1").style.display = "none";
-  document.getElementById("w-step2").style.display = "block";
-  document.getElementById("w-name").focus();
-}
-
-function renderWelcomeAutocomplete() {
-  const inp = document.getElementById("w-name");
-  const list = document.getElementById("w-autocomplete-list");
-  const manual = document.getElementById("w-manual-fields");
-  if (!inp || !list || !manual) return;
-
-  const val = inp.value.trim().toUpperCase();
-  if (!val) {
-    list.innerHTML = "";
-    manual.style.display = "none";
-    return;
-  }
-
-  const prog = AppState.progCache || [];
-  let matches = prog.filter(p => (p.nombre || "").toUpperCase().indexOf(val) >= 0);
-
-  if (matches.length === 0) {
-    list.innerHTML = `<div class="autocomplete-item" style="color:var(--mut);text-align:center;font-size:12px" onclick="document.getElementById('w-manual-fields').style.display='block';document.getElementById('w-autocomplete-list').innerHTML='';">No encontrado. Toca aquí para ingreso manual.</div>`;
-    return;
-  }
-
-  // Deduplicate by name
-  const seen = {};
-  matches = matches.filter(p => {
-    const name = (p.nombre || "").toUpperCase();
-    if (seen[name]) return false;
-    seen[name] = true;
-    return true;
-  });
-
-  list.innerHTML = matches.map(p => {
-    let subtit = [p.punto, p.sentido, p.turno].filter(Boolean).join(" · ");
-    if (!subtit) subtit = "Sin programación";
-    return `<div class="autocomplete-item" onclick="selectWelcomeCov('${escapeHTML(p.nombre).replace(/'/g, "\\'")}', '${escapeHTML(p.turno || "").replace(/'/g, "\\'")}', '${escapeHTML(p.punto || "").replace(/'/g, "\\'")}', '${escapeHTML(p.sentido || "").replace(/'/g, "\\'")}')">
-      <div>${escapeHTML(p.nombre)}</div>
-      <div class="autocomplete-sub">${escapeHTML(subtit)}</div>
-    </div>`;
-  }).join("");
-}
-
-function selectWelcomeCov(nombre, turno, punto, sentido) {
-  document.getElementById("w-name").value = nombre;
-  document.getElementById("w-autocomplete-list").innerHTML = "";
-
-  if (turno) {
-    let t = turno.toUpperCase();
-    if (t.indexOf("MAÑ") >= 0) t = "MAÑANA";
-    else if (t.indexOf("TAR") >= 0) t = "TARDE";
-    else t = "TARDE"; // default fallback
-    
-    document.querySelectorAll("#w-turno .turno-opt").forEach(b => {
-      if (b.dataset.v === t) {
-        selWTurno(b);
-      }
-    });
-  }
-
-  if (punto) {
-    let fullPunto = punto;
-    if (sentido) fullPunto += " · " + sentido;
-    document.getElementById("w-ubi").value = fullPunto;
-  }
-
-  document.getElementById("w-manual-fields").style.display = "block";
-}
-
-function selWTurno(btn) {
-  document.querySelectorAll("#w-turno .turno-opt").forEach(b => b.classList.remove("sel"));
-  btn.classList.add("sel");
-  AppState.wTurno = btn.dataset.v;
-}
-
 function completeWelcome() {
-  const nombre = document.getElementById("w-name").value.trim();
+  let nombre = document.getElementById("w-name").value.trim();
   if (!nombre) { showToast("⚠️ Ingresa tu nombre"); return; }
-  const ubi = document.getElementById("w-ubi").value.trim();
-  S.set("profile", { nombre, turno: AppState.wTurno, ubi });
+  
+  // Format Name: capitalize each word
+  nombre = nombre.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+
+  const h = new Date().getHours();
+  const turno = (h >= 5 && h < 14) ? "MAÑANA" : "TARDE";
+  
+  S.set("profile", { nombre: nombre, turno: turno, ubi: "" });
   getDeviceId(); // genera device ID
   navStack.length = 0; navStack.push("s-cat");
   showScreen("s-cat");
-      renderProfile();
-      checkNotifBanner();
+  renderProfile();
+  checkNotifBanner();
+
+  if (typeof initSheetConnection === 'function') {
+    initSheetConnection();
+  }
+}
+
+function autoFillProfile() {
+  const p = getProfile();
+  if (!p.nombre) return;
+  const prog = AppState.progCache || [];
+  if (prog.length === 0) return;
+
+  // We want to find the best match for p.nombre in prog
+  const targetTokens = p.nombre.toUpperCase().split(" ").filter(Boolean);
+  if (targetTokens.length === 0) return;
+
+  let bestMatch = null;
+  let maxScore = 0;
+
+  prog.forEach(item => {
+    if (!item.nombre) return;
+    const source = item.nombre.toUpperCase();
+    let score = 0;
+    targetTokens.forEach(t => {
+      if (source.indexOf(t) >= 0) score++;
+    });
+    if (score > maxScore) {
+      maxScore = score;
+      bestMatch = item;
     }
+  });
+
+  // If we found a good match (at least 2 words matched, or 1 if the user only typed 1)
+  const threshold = Math.min(2, targetTokens.length);
+  if (bestMatch && maxScore >= threshold) {
+    // Format the name: "Apellidos + Nombres" -> usually it's "APELLIDO1 APELLIDO2 NOMBRE1 NOMBRE2"
+    // The user wants: "ambos apellidos + primer nombre" -> First 3 words
+    const parts = bestMatch.nombre.trim().split(/\s+/);
+    let newName = parts.slice(0, 3).join(" ");
+    // Capitalize properly
+    newName = newName.toLowerCase().replace(/(?:^|\s)\S/g, a => a.toUpperCase());
+
+    let newTurno = p.turno || "TARDE";
+    if (bestMatch.turno) {
+      let t = bestMatch.turno.toUpperCase();
+      if (t.indexOf("MAÑ") >= 0) newTurno = "MAÑANA";
+      else if (t.indexOf("TAR") >= 0) newTurno = "TARDE";
+    }
+
+    let newUbi = p.ubi || "";
+    if (bestMatch.punto) {
+      newUbi = bestMatch.punto;
+      if (bestMatch.sentido) newUbi += " · " + bestMatch.sentido;
+    }
+
+    // Save
+    p.nombre = newName;
+    p.turno = newTurno;
+    p.ubi = newUbi;
+    S.set("profile", p);
+    renderProfile();
+    if (typeof EventBus !== 'undefined') EventBus.emit('profileChanged', p);
+    showToast("Perfil auto-completado ✓");
+  }
+}
 
