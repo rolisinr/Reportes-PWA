@@ -45,6 +45,23 @@
     }
 
 // Welcome
+async function startWelcomeDownload() {
+  const btn = document.getElementById("w-btn-start");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Descargando...";
+  }
+  // Initialize connection (downloads config and prog_estado in background)
+  if (typeof initSheetConnection === 'function') {
+    await initSheetConnection();
+  }
+  
+  // Transition to step 2
+  document.getElementById("w-step1").style.display = "none";
+  document.getElementById("w-step2").style.display = "block";
+  document.getElementById("w-name").focus();
+}
+
 function renderWelcomeAutocomplete() {
   const inp = document.getElementById("w-name");
   const list = document.getElementById("w-autocomplete-list");

@@ -60,28 +60,37 @@
           <div class="welcome-title"><span>COV</span> Reporta </div>
           <p style="font-size:13px;color:var(--mut);margin-top:4px">Corredores Complementarios </p>
         </div>
-        <p class="welcome-sub">Para comenzar, ingresa tu nombre completo como aparece en los reportes.</p>
-        <div class="welcome-field" style="position:relative">
-          <div class="fl">Tu nombre</div>
-          <input class="big-input" id="w-name" type="text" autocomplete="off" placeholder="Escribe tu nombre..."
-            oninput="renderWelcomeAutocomplete()" onkeydown="if(event.key==='Enter')completeWelcome()">
-          <div id="w-autocomplete-list" class="autocomplete-items"></div>
+        
+        <div id="w-step1">
+          <p class="welcome-sub" style="margin-top:30px;margin-bottom:30px">Bienvenido. Presiona Empezar para descargar los datos de hoy.</p>
+          <button class="welcome-btn" id="w-btn-start" onclick="startWelcomeDownload()">Empezar →</button>
         </div>
-        <div id="w-manual-fields" style="display:none">
-          <div class="welcome-field" style="margin-top:-8px">
-            <div class="fl">Tu turno habitual</div>
-            <div class="turno-seg" id="w-turno">
-              <button class="turno-opt" data-v="MAÑANA" onclick="selWTurno(this)">Mañana</button>
-              <button class="turno-opt" data-v="TARDE" onclick="selWTurno(this)">Tarde</button>
+
+        <div id="w-step2" style="display:none">
+          <p class="welcome-sub">Para continuar, ingresa tu nombre completo como aparece en los reportes.</p>
+          <div class="welcome-field" style="position:relative">
+            <div class="fl">Tu nombre</div>
+            <input class="big-input" id="w-name" type="text" autocomplete="off" placeholder="Escribe tu nombre..."
+              oninput="renderWelcomeAutocomplete()" onkeydown="if(event.key==='Enter')completeWelcome()">
+            <div id="w-autocomplete-list" class="autocomplete-items"></div>
+          </div>
+          <div id="w-manual-fields" style="display:none">
+            <div class="welcome-field" style="margin-top:-8px">
+              <div class="fl">Tu turno habitual</div>
+              <div class="turno-seg" id="w-turno">
+                <button class="turno-opt" data-v="MAÑANA" onclick="selWTurno(this)">Mañana</button>
+                <button class="turno-opt" data-v="TARDE" onclick="selWTurno(this)">Tarde</button>
+              </div>
+            </div>
+            <div class="welcome-field" style="margin-top:-8px">
+              <div class="fl">Ubicación/Paradero</div>
+              <input class="big-input" id="w-ubi" type="text" placeholder="Ej: Tacna C/1 - Conde Superunda"
+                onkeydown="if(event.key==='Enter')completeWelcome()">
             </div>
           </div>
-          <div class="welcome-field" style="margin-top:-8px">
-            <div class="fl">Ubicación/Paradero</div>
-            <input class="big-input" id="w-ubi" type="text" placeholder="Ej: Tacna C/1 - Conde Superunda"
-              onkeydown="if(event.key==='Enter')completeWelcome()">
-          </div>
+          <button class="welcome-btn" onclick="completeWelcome()">Ingresar →</button>
         </div>
-        <button class="welcome-btn" onclick="completeWelcome()">Comenzar →</button>
+
       </div>
     </div>
 

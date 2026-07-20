@@ -18,6 +18,8 @@
         var nav = document.getElementById('bottom-nav');
         var isTop = ['s-cat', 's-prog', 's-history', 's-admin'].indexOf(id) >= 0;
         if (nav) nav.style.display = isTop ? 'flex' : 'none';
+        var hdr = document.querySelector('header');
+        if (hdr) hdr.style.display = isTop ? 'flex' : 'none';
         if (el && isTop) el.classList.add("has-bottom-nav");
       } catch (e) { }
     }
