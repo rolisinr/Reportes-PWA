@@ -65,6 +65,11 @@
             AppState.puntosBaseCache = cfg.puntos;
             localStorage.setItem('puntos_base_cache', JSON.stringify(cfg.puntos));
           }
+          if (cfg.prog && cfg.prog.length > 0) {
+            AppState.progCache = cfg.prog;
+            localStorage.setItem('prog_cache', JSON.stringify(cfg.prog));
+            if (typeof renderWelcomeAutocomplete === 'function') renderWelcomeAutocomplete();
+          }
         }
         if (reg) {
           AppState.isAdmin = reg.isAdmin === true;

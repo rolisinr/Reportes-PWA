@@ -27,6 +27,7 @@ const AppState = {
   pendingAvisos: [],
   isAdmin: false,
   userPerms: { prog: true, sync: true, admin: true, voz: true },
+  progCache: JSON.parse(localStorage.getItem('prog_cache') || '[]'),
 
   // User Profile / Settings
   wTurno: 'TARDE',

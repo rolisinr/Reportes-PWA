@@ -107,7 +107,24 @@ function getConfig() {
     }
   }
 
-  var res = {config: cfg, puntos: puntos};
+  var shProg = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Prog_Estado');
+  var prog = [];
+  if (shProg) {
+    var rowsProg = shProg.getDataRange().getValues();
+    for(var i=1; i<rowsProg.length; i++) {
+      if(!rowsProg[i][1]) continue;
+      prog.push({
+        nombre: String(rowsProg[i][1] || ''),
+        punto: String(rowsProg[i][2] || ''),
+        sentido: String(rowsProg[i][3] || ''),
+        funcion: String(rowsProg[i][4] || ''),
+        categoria: String(rowsProg[i][5] || ''),
+        turno: String(rowsProg[i][6] || '')
+      });
+    }
+  }
+
+  var res = {config: cfg, puntos: puntos, prog: prog};
   cache.put('covapp_config_v2', JSON.stringify(res), 300);
   return res;
 }

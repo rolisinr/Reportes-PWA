@@ -145,6 +145,7 @@ if (AppState.wBtn) { AppState.wBtn.classList.add("sel"); AppState.wTurno = detec
       } else {
         navStack.length = 0; navStack.push("s-welcome");
         showScreen("s-welcome");
+        initSheetConnection(); // Load programming for autocomplete
       }
 
       getDeviceId();

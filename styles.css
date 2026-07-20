@@ -3368,3 +3368,38 @@
       background: var(--bg-gradient) !important;
       background-attachment: fixed !important;
     }
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid var(--brd);
+  border-top: none;
+  z-index: 99;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--card);
+  border-radius: 0 0 var(--rs) var(--rs);
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.autocomplete-item {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--brd);
+  font-size: 14px;
+}
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+.autocomplete-item:hover {
+  background: var(--bg);
+}
+.autocomplete-sub {
+  font-size: 11px;
+  color: var(--mut);
+  margin-top: 2px;
+}
+#w-manual-fields {
+  animation: fadeIn 0.3s ease;
+}
