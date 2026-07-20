@@ -111,15 +111,40 @@ function getConfig() {
   var prog = [];
   if (shProg) {
     var rowsProg = shProg.getDataRange().getValues();
+    // Find most recent date
+    var recentDate = "";
+    if (rowsProg.length > 1) {
+      var fechas = [];
+      for(var i=1; i<rowsProg.length; i++) {
+        var f = rowFechaStr(rowsProg[i][0]);
+        if (f && fechas.indexOf(f) === -1) fechas.push(f);
+      }
+      if (fechas.length > 0) {
+        fechas.sort(function(a, b) {
+          var pa = a.split('/');
+          var pb = b.split('/');
+          if (pa.length === 3 && pb.length === 3) {
+            var da = new Date(pa[2], pa[1]-1, pa[0]).getTime();
+            var db = new Date(pb[2], pb[1]-1, pb[0]).getTime();
+            return da - db;
+          }
+          return a.localeCompare(b);
+        });
+        recentDate = fechas[fechas.length - 1];
+      }
+    }
+    
     for(var i=1; i<rowsProg.length; i++) {
-      if(!rowsProg[i][1]) continue;
+      if(!rowsProg[i][4]) continue;
+      if(recentDate && rowFechaStr(rowsProg[i][0]) !== recentDate) continue;
+      
       prog.push({
-        nombre: String(rowsProg[i][1] || ''),
-        punto: String(rowsProg[i][2] || ''),
-        sentido: String(rowsProg[i][3] || ''),
-        funcion: String(rowsProg[i][4] || ''),
-        categoria: String(rowsProg[i][5] || ''),
-        turno: String(rowsProg[i][6] || '')
+        nombre: String(rowsProg[i][4] || ''),
+        punto: String(rowsProg[i][5] || ''),
+        sentido: String(rowsProg[i][6] || ''),
+        funcion: String(rowsProg[i][7] || ''),
+        categoria: String(rowsProg[i][8] || ''),
+        turno: String(rowsProg[i][2] || '')
       });
     }
   }
@@ -442,19 +467,29 @@ function getProgEstado(params) {
   if(!fecha) {
     var fechas = [];
     for(var i=1; i<rows.length; i++){
-      if(String(rows[i][1])===corredor && String(rows[i][2])===turno){
+      if(String(rows[i][1]).toUpperCase()===corredor.toUpperCase() && String(rows[i][2]).toUpperCase()===turno.toUpperCase()){
         var f = rowFechaStr(rows[i][0]);
         if(f && fechas.indexOf(f)<0) fechas.push(f);
       }
     }
     if(!fechas.length) return {items:[]};
-    fechas.sort();
+    // Fix sorting for DD/MM/YYYY
+    fechas.sort(function(a, b) {
+      var pa = a.split('/');
+      var pb = b.split('/');
+      if (pa.length === 3 && pb.length === 3) {
+        var da = new Date(pa[2], pa[1]-1, pa[0]).getTime();
+        var db = new Date(pb[2], pb[1]-1, pb[0]).getTime();
+        return da - db;
+      }
+      return a.localeCompare(b);
+    });
     fecha = fechas[fechas.length-1]; // la más reciente
   }
 
   var items = [];
   for(var i=1; i<rows.length; i++){
-    if(rowFechaStr(rows[i][0])===fecha && String(rows[i][1])===corredor && String(rows[i][2])===turno){
+    if(rowFechaStr(rows[i][0])===fecha && String(rows[i][1]).toUpperCase()===corredor.toUpperCase() && String(rows[i][2]).toUpperCase()===turno.toUpperCase()){
       items.push({
         nombre_clave:String(rows[i][3]||''), nombre:String(rows[i][4]||''),
         punto:String(rows[i][5]||''),        sentido:String(rows[i][6]||''),
@@ -473,10 +508,9 @@ function saveProgEstado(data) {
     var sh=getOrCreateProgSheet();
     var fecha=String(data.fecha||''),corredor=String(data.corredor||''),turno=String(data.turno||'');
     var rows=sh.getDataRange().getValues();
-    // Borrar filas existentes para esta fecha+corredor+turno (de abajo hacia arriba)
     var toDel=[];
     for(var i=rows.length-1;i>=1;i--) {
-      if(rowFechaStr(rows[i][0])===fecha&&String(rows[i][1])===corredor&&String(rows[i][2])===turno)
+      if(rowFechaStr(rows[i][0])===fecha&&String(rows[i][1]).toUpperCase()===corredor.toUpperCase()&&String(rows[i][2]).toUpperCase()===turno.toUpperCase())
         toDel.push(i+1);
     }
     toDel.sort(function(a,b){return b-a;});
