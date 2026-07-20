@@ -63,7 +63,7 @@
           AppState.sheetConnected = true;
         }
         if (reg) {
-          AppState.isAdmin = reg.AppState.isAdmin === true;
+          AppState.isAdmin = reg.es_admin === true;
           // Permisos: false solo si el Sheet dice explícitamente 'NO'
           AppState.userPerms.prog = reg.perm_prog !== false;
           AppState.userPerms.sync = reg.perm_sync !== false;
@@ -145,7 +145,7 @@
           else lastStr = Math.round(mins / 1440) + 'd atrás';
         }
         html += '<div class="admin-cov-item">' +
-          '<div class="acov-name">' + (cov.AppState.isAdmin ? '🛡️ ' : '👤 ') + (cov.nombre || 'Sin nombre') + '</div>' +
+          '<div class="acov-name">' + (cov.es_admin ? '🛡️ ' : '👤 ') + (cov.nombre || 'Sin nombre') + '</div>' +
           '<div class="acov-sub">' + (cov.turno || '—') + ' · ' + (cov.ubi || 'Sin punto') + ' · ' + lastStr + '</div>' +
           '</div>';
       });
