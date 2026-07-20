@@ -116,6 +116,10 @@ function autoFillProfile() {
       if (bestMatch.sentido) newUbi += " · " + bestMatch.sentido;
     }
 
+    if (p.nombre === newName && p.turno === newTurno && p.ubi === newUbi) {
+      return; // No changes needed
+    }
+
     // Save
     p.nombre = newName;
     p.turno = newTurno;
@@ -123,7 +127,7 @@ function autoFillProfile() {
     S.set("profile", p);
     renderProfile();
     if (typeof EventBus !== 'undefined') EventBus.emit('profileChanged', p);
-    showToast("Perfil auto-completado ✓");
+    showToast("Perfil actualizado ✓");
 
     // Silently update the backend immediately so the Devices sheet gets the properly formatted name
     if (typeof sheetGet === 'function') {
