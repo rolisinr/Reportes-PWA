@@ -176,3 +176,11 @@ if (AppState.wBtn) { AppState.wBtn.classList.add("sel"); AppState.wTurno = detec
       });
     }
     DB.migrateFromLocalStorage().then(init);
+
+    // Auto-update location when returning to the app
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && typeof initSheetConnection === 'function') {
+        const p = getProfile();
+        if (p.nombre) initSheetConnection();
+      }
+    });

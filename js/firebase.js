@@ -25,6 +25,8 @@
               banner.dataset.id = 'fcm_' + Date.now();
               banner.classList.add('show');
             }
+            // Auto-update programming in background
+            if (typeof initSheetConnection === 'function') initSheetConnection();
           });
         }
         console.log('Firebase OK');
