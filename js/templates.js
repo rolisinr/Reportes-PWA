@@ -97,6 +97,26 @@ ${pnp}
           }
         },
         {
+          id: "segregados-garcilaso", icon: "🚧", name: "Segregados Garcilaso TM",
+          desc: "Estado del segregado en Garcilaso",
+          required: ["cuadra", "sentido", "estado"],
+          fields: [
+            { id: "sentido", label: "Sentido", type: "sel", opts: ["NORTE-SUR", "SUR-NORTE"] },
+            { id: "cuadra", label: "Cuadra", type: "text" },
+            { id: "estado", label: "Estado del segregado", type: "sel", opts: ["Activado", "Desactivado", "En mantenimiento"] }
+          ],
+          gen: f => {
+            return `*SEGREGADOS GARCILAZO TM:* 🚧
+
+*📆 FECHA:* ${today()}
+👮 *COV:* ${getCOV()}
+*🛣️ LUGAR:* Av: Garcilazo
+*♻️ SENTIDO:* ${f.sentido}
+*⚠️ SEGREGADO:* CUADRA ${f.cuadra}
+🚧 *Segregado:* ${f.estado}`;
+          }
+        },
+        {
           id: "situacion", icon: "🚨", name: "Situación Actual",
           desc: "Reporte rápido con observación puntual",
           required: ["obs"],

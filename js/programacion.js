@@ -644,8 +644,13 @@
         var cls = s === 'N/S' ? 'tag-ns' : (s === 'S/N' ? 'tag-sn' : 'tag');
         tags.push('<span class="tag ' + cls + '">' + escapeHTML(s) + '</span>');
       }
-      if (item.funcion && item.funcion.toLowerCase().indexOf('tranquera') < 0) {
-        tags.push('<span class="tag tag-funcion">' + escapeHTML(item.funcion) + '</span>');
+      if (item.funcion) {
+        var f = item.funcion.toLowerCase();
+        if (f.indexOf('tranquera') >= 0 && !f.match(/\d/)) {
+          // Hide plain 'tranquera' without numbers
+        } else {
+          tags.push('<span class="tag tag-funcion">' + escapeHTML(item.funcion) + '</span>');
+        }
       }
       return tags.join('');
     }

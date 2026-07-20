@@ -281,11 +281,15 @@
     function previewBuilder() {
       var tmpl = document.getElementById('b-template').value;
       var prev = tmpl
-        .replace(/\{hora_auto\}/g, nowTime())
-        .replace(/\{fecha_auto\}/g, today())
-        .replace(/\{cov\}/g, getCOV() || '[COV]');
+        .replace(/\{hora\}/gi, nowTime())
+        .replace(/\{hora_auto\}/gi, nowTime())
+        .replace(/\{fecha\}/gi, today())
+        .replace(/\{fecha_auto\}/gi, today())
+        .replace(/\{cov\}/gi, getCOV() || '[COV]')
+        .replace(/\{punto\}/gi, getProfile().ubi || '[Punto]')
+        .replace(/\{turno\}/gi, getProfile().turno || '[Turno]');
       builderFields.forEach(function (f) {
-        prev = prev.replace(new RegExp('\\{' + f.id + '\\}', 'g'), '[' + f.label + ']');
+        prev = prev.replace(new RegExp('\\{' + f.id + '\\}', 'gi'), '[' + f.label + ']');
       });
       document.getElementById('b-preview').textContent = prev || 'La vista previa aparece aquí…';
     }
@@ -312,11 +316,15 @@
         fields: tpl.fields.map(function (f) { return { id: f.id, label: f.label, type: 'text' }; }),
         gen: function (vals) {
           var msg = tpl.template
-            .replace(/\{hora_auto\}/g, nowTime())
-            .replace(/\{fecha_auto\}/g, today())
-            .replace(/\{cov\}/g, getCOV() || '');
+            .replace(/\{hora\}/gi, nowTime())
+            .replace(/\{hora_auto\}/gi, nowTime())
+            .replace(/\{fecha\}/gi, today())
+            .replace(/\{fecha_auto\}/gi, today())
+            .replace(/\{cov\}/gi, getCOV() || '')
+            .replace(/\{punto\}/gi, getProfile().ubi || '')
+            .replace(/\{turno\}/gi, getProfile().turno || '');
           tpl.fields.forEach(function (f) {
-            msg = msg.replace(new RegExp('\\{' + f.id + '\\}', 'g'), vals[f.id] || '');
+            msg = msg.replace(new RegExp('\\{' + f.id + '\\}', 'gi'), vals[f.id] || '');
           });
           return msg;
         }

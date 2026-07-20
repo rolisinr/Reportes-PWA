@@ -394,8 +394,16 @@
       <div id="b-fields-list"></div>
       <button class="add-field-btn" onclick="addBuilderField()">+ Agregar campo</button>
       <div class="sec-lbl">Mensaje plantilla</div>
-      <div style="font-size:11px;color:var(--mut);margin-bottom:6px">Usa {nombre_campo} para insertar valores. También
-        puedes usar {hora_auto}, {fecha_auto} y {cov}.</div>
+      <div style="font-size:12px;color:var(--mut);margin-bottom:6px;line-height:1.4">
+        Usa <b>{nombre_campo}</b> para insertar un campo. (ej: si tienes un campo "novedad", usa <code>{novedad}</code>).
+        <br><br>
+        <b>Variables automáticas:</b><br>
+        <code>{hora}</code> : Hora actual<br>
+        <code>{fecha}</code> : Fecha actual<br>
+        <code>{cov}</code> : Tu nombre completo<br>
+        <code>{punto}</code> : Tu ubicación<br>
+        <code>{turno}</code> : Tu turno actual
+      </div>
       <textarea class="fta" id="b-template" rows="5" oninput="previewBuilder()" style="margin-bottom:10px"></textarea>
       <div class="tpl-preview-box" id="b-preview">La vista previa aparece aquí…</div>
       <button class="add-ctpl-btn" onclick="saveCustomTpl()" style="margin-bottom:calc(12px + var(--safe))">✓ Guardar
