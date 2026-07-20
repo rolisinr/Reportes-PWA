@@ -124,6 +124,11 @@ function autoFillProfile() {
     renderProfile();
     if (typeof EventBus !== 'undefined') EventBus.emit('profileChanged', p);
     showToast("Perfil auto-completado ✓");
+
+    // Silently update the backend immediately so the Devices sheet gets the properly formatted name
+    if (typeof sheetGet === 'function') {
+      sheetGet('register', { did: getDeviceId(), nombre: p.nombre, turno: p.turno, ubi: p.ubi }).catch(e => console.log(e));
+    }
   }
 }
 
