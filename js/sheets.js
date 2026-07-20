@@ -67,7 +67,7 @@
           }
         }
         if (reg) {
-          AppState.isAdmin = reg.es_admin === true;
+          AppState.isAdmin = reg.isAdmin === true;
           // Permisos: false solo si el Sheet dice explícitamente 'NO'
           AppState.userPerms.prog = reg.perm_prog !== false;
           AppState.userPerms.sync = reg.perm_sync !== false;
