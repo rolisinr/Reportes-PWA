@@ -36,7 +36,7 @@
     <div class="hdr-l">
       <div class="hdr-logo">🛣️</div>
       <div class="hdr-title"><span>COV</span> Reporta</div>
-      <div id="sync-badge" onclick="if(typeof initSheetConnection==='function')initSheetConnection(); if(typeof SyncManager!=='undefined')SyncManager.processQueue()" style="display:none; cursor:pointer; font-size:10px; background:var(--pri); color:#fff; padding:2px 6px; border-radius:10px; margin-left:8px; align-items:center; gap:3px;">
+      <div id="sync-badge" onclick="if(typeof showToast==='function')showToast('Sincronizando...'); if(typeof initSheetConnection==='function')initSheetConnection(); if(typeof SyncManager!=='undefined')SyncManager.processQueue()" style="display:none; cursor:pointer; font-size:10px; background:var(--pri); color:#fff; padding:2px 6px; border-radius:10px; margin-left:8px; align-items:center; gap:3px;">
          <span id="sync-icon">🔄</span> <span id="sync-count">0</span>
       </div>
     </div>

@@ -74,7 +74,10 @@
               countEl.textContent = total + ' pend.';
               if (!syncing) processQueue();
             } else {
-              badge.style.display = 'none';
+              badge.style.display = 'flex';
+              badge.style.background = 'var(--pri)'; // Primary color
+              iconEl.textContent = '🔄';
+              countEl.textContent = 'Sync';
             }
           }
         } catch(e){}
