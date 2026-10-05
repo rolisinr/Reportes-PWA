@@ -87,7 +87,9 @@ function autoFillProfile() {
     targetTokens.forEach(t => {
       if (source.indexOf(t) >= 0) score++;
     });
-    if (score > maxScore) {
+    // Ante empate, preferir la fila del turno actual del perfil
+    const sameTurno = it => String(it.turno || "").toUpperCase().slice(0, 3) === String(p.turno || "").toUpperCase().slice(0, 3);
+    if (score > maxScore || (score === maxScore && score > 0 && bestMatch && sameTurno(item) && !sameTurno(bestMatch))) {
       maxScore = score;
       bestMatch = item;
     }

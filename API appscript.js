@@ -13,6 +13,14 @@
 var SHEET_ID = '17RIMxQ_eMNgv4-pjPUWO_1fyPuwFDyYv6UnuqjlfJhU';
 var FCM_PROJECT = 'appcov-7c5e4';
 
+// ── Índices de columnas (base 0). Para getRange usar DEV.x+1 ──
+// Si se reordenan las hojas, basta con cambiar estas constantes.
+var DEV = {did:0, nombre:1, turno:2, ubi:3, admin:4, registro:5, ultimo:6, token:7,
+           perm_prog:8, perm_sync:9, perm_admin:10, perm_voz:11};
+var PRG = {fecha:0, corredor:1, turno:2, clave:3, nombre:4, punto:5, sentido:6,
+           funcion:7, categoria:8};
+
+
 // ── Routing ──
 function doGet(e) {
   var params = e.parameter, action = params.action || '';
@@ -74,8 +82,8 @@ function ultimaFilaConDatos(sh) {
 function isAdminDid(did) {
   var rows = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Devices').getDataRange().getValues();
   for(var i=1; i<rows.length; i++) {
-    if(String(rows[i][0])===did)
-      return rows[i][4]===true || String(rows[i][4]).toUpperCase()==='TRUE';
+    if(String(rows[i][DEV.did])===did)
+      return rows[i][DEV.admin]===true || String(rows[i][DEV.admin]).toUpperCase()==='TRUE';
   }
   return false;
 }
@@ -116,35 +124,26 @@ function getConfig() {
     if (rowsProg.length > 1) {
       var fechas = [];
       for(var i=1; i<rowsProg.length; i++) {
-        var f = rowFechaStr(rowsProg[i][0]);
+        var f = rowFechaStr(rowsProg[i][PRG.fecha]);
         if (f && fechas.indexOf(f) === -1) fechas.push(f);
       }
       if (fechas.length > 0) {
-        fechas.sort(function(a, b) {
-          var pa = a.split('/');
-          var pb = b.split('/');
-          if (pa.length === 3 && pb.length === 3) {
-            var da = new Date(pa[2], pa[1]-1, pa[0]).getTime();
-            var db = new Date(pb[2], pb[1]-1, pb[0]).getTime();
-            return da - db;
-          }
-          return a.localeCompare(b);
-        });
+        fechas.sort(function(a, b) { return fechaClave(a) - fechaClave(b); });
         recentDate = fechas[fechas.length - 1];
       }
     }
     
     for(var i=1; i<rowsProg.length; i++) {
-      if(!rowsProg[i][4]) continue;
-      if(recentDate && rowFechaStr(rowsProg[i][0]) !== recentDate) continue;
+      if(!rowsProg[i][PRG.nombre]) continue;
+      if(recentDate && rowFechaStr(rowsProg[i][PRG.fecha]) !== recentDate) continue;
       
       prog.push({
-        nombre: String(rowsProg[i][4] || ''),
-        punto: String(rowsProg[i][5] || ''),
-        sentido: String(rowsProg[i][6] || ''),
-        funcion: String(rowsProg[i][7] || ''),
-        categoria: String(rowsProg[i][8] || ''),
-        turno: String(rowsProg[i][2] || '')
+        nombre: String(rowsProg[i][PRG.nombre] || ''),
+        punto: String(rowsProg[i][PRG.punto] || ''),
+        sentido: String(rowsProg[i][PRG.sentido] || ''),
+        funcion: String(rowsProg[i][PRG.funcion] || ''),
+        categoria: String(rowsProg[i][PRG.categoria] || ''),
+        turno: String(rowsProg[i][PRG.turno] || '')
       });
     }
   }
@@ -167,7 +166,7 @@ function registerDevice(p) {
 
   // 1. Check by did
   for(var i=1; i<rows.length; i++) {
-    if(String(rows[i][0])===did) {
+    if(String(rows[i][DEV.did])===did) {
       targetRow = i;
       break;
     }
@@ -178,7 +177,7 @@ function registerDevice(p) {
     var queryTokens = p.nombre.trim().toUpperCase().split(" ").filter(Boolean);
     if (queryTokens.length > 0) {
       for(var i=1; i<rows.length; i++) {
-        var rowName = String(rows[i][1]).trim().toUpperCase();
+        var rowName = String(rows[i][DEV.nombre]).trim().toUpperCase();
         if(rowName) {
           var score = 0;
           for(var j=0; j<queryTokens.length; j++) {
@@ -186,7 +185,7 @@ function registerDevice(p) {
           }
           if (score >= Math.min(2, queryTokens.length)) {
             targetRow = i;
-            sh.getRange(i+1, 1).setValue(did); // Update with new device ID
+            sh.getRange(i+1, DEV.did+1).setValue(did); // Update with new device ID
             break;
           }
         }
@@ -196,16 +195,16 @@ function registerDevice(p) {
 
   if (targetRow !== -1) {
     var i = targetRow;
-    sh.getRange(i+1,7).setValue(now);
-    if(p.nombre) sh.getRange(i+1,2).setValue(p.nombre);
-    if(p.turno)  sh.getRange(i+1,3).setValue(p.turno);
-    if(p.ubi)    sh.getRange(i+1,4).setValue(p.ubi);
-    var adm = rows[i][4]===true||String(rows[i][4]).toUpperCase()==='TRUE';
-    var pp  = String(rows[i][8] ||'').toUpperCase(); // I perm_prog
-    var ps  = String(rows[i][9] ||'').toUpperCase(); // J perm_sync
-    var pa  = String(rows[i][10]||'').toUpperCase(); // K perm_admin
-    var pv  = String(rows[i][11]||'').toUpperCase(); // L perm_voz
-    return {isAdmin:adm, nombre:String(rows[i][1]||''), existente:true,
+    sh.getRange(i+1, DEV.ultimo+1).setValue(now);
+    if(p.nombre) sh.getRange(i+1, DEV.nombre+1).setValue(p.nombre);
+    if(p.turno)  sh.getRange(i+1, DEV.turno+1).setValue(p.turno);
+    if(p.ubi)    sh.getRange(i+1, DEV.ubi+1).setValue(p.ubi);
+    var adm = rows[i][DEV.admin]===true||String(rows[i][DEV.admin]).toUpperCase()==='TRUE';
+    var pp  = String(rows[i][DEV.perm_prog] ||'').toUpperCase(); // I perm_prog
+    var ps  = String(rows[i][DEV.perm_sync] ||'').toUpperCase(); // J perm_sync
+    var pa  = String(rows[i][DEV.perm_admin]||'').toUpperCase(); // K perm_admin
+    var pv  = String(rows[i][DEV.perm_voz]||'').toUpperCase(); // L perm_voz
+    return {isAdmin:adm, nombre:String(rows[i][DEV.nombre]||''), existente:true,
       perm_prog: pp!=='NO', perm_sync: ps!=='NO',
       perm_admin:pa!=='NO', perm_voz:  pv!=='NO'};
   }
@@ -223,19 +222,19 @@ function updateDevice(data) {
   // Si hay un token FCM nuevo, limpiar ese token de otros dispositivos
   if(data.fcmToken) {
     for(var j=1; j<rows.length; j++) {
-      if(String(rows[j][7]) === data.fcmToken && String(rows[j][0]) !== data.did) {
-        sh.getRange(j+1, 8).setValue(''); // limpiar token duplicado
+      if(String(rows[j][DEV.token]) === data.fcmToken && String(rows[j][DEV.did]) !== data.did) {
+        sh.getRange(j+1, DEV.token+1).setValue(''); // limpiar token duplicado
       }
     }
   }
   
   for(var i=1; i<rows.length; i++) {
-    if(String(rows[i][0]) === data.did) {
-      if(data.nombre)   sh.getRange(i+1, 2).setValue(data.nombre);
-      if(data.turno)    sh.getRange(i+1, 3).setValue(data.turno);
-      if(data.ubi)      sh.getRange(i+1, 4).setValue(data.ubi);
-      if(data.fcmToken) sh.getRange(i+1, 8).setValue(data.fcmToken);
-      sh.getRange(i+1, 7).setValue(new Date().toISOString());
+    if(String(rows[i][DEV.did]) === data.did) {
+      if(data.nombre)   sh.getRange(i+1, DEV.nombre+1).setValue(data.nombre);
+      if(data.turno)    sh.getRange(i+1, DEV.turno+1).setValue(data.turno);
+      if(data.ubi)      sh.getRange(i+1, DEV.ubi+1).setValue(data.ubi);
+      if(data.fcmToken) sh.getRange(i+1, DEV.token+1).setValue(data.fcmToken);
+      sh.getRange(i+1, DEV.ultimo+1).setValue(new Date().toISOString());
       return {ok: true};
     }
   }
@@ -251,7 +250,7 @@ function setDevicePerm(data) {
   var sh = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Devices');
   var rows = sh.getDataRange().getValues();
   for(var i=1; i<rows.length; i++) {
-    if(String(rows[i][0])===data.targetDid) {
+    if(String(rows[i][DEV.did])===data.targetDid) {
       sh.getRange(i+1,col).setValue(data.value||'');
       return {ok:true, perm:data.perm, value:data.value};
     }
@@ -264,16 +263,16 @@ function getCOVs(adminDid) {
   var rows = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Devices').getDataRange().getValues();
   var covs = [];
   for(var j=1; j<rows.length; j++) {
-    if(!rows[j][0]) continue;
+    if(!rows[j][DEV.did]) continue;
     covs.push({
-      did:String(rows[j][0]), nombre:String(rows[j][1]||''),
-      turno:String(rows[j][2]||''), ubi:String(rows[j][3]||''),
-      es_admin:rows[j][4]===true||String(rows[j][4]).toUpperCase()==='TRUE',
-      ultimo:String(rows[j][6]||''), tieneToken:!!rows[j][7],
-      perm_prog: String(rows[j][8] ||'').toUpperCase()!=='NO',
-      perm_sync: String(rows[j][9] ||'').toUpperCase()!=='NO',
-      perm_admin:String(rows[j][10]||'').toUpperCase()!=='NO',
-      perm_voz:  String(rows[j][11]||'').toUpperCase()!=='NO'
+      did:String(rows[j][DEV.did]), nombre:String(rows[j][DEV.nombre]||''),
+      turno:String(rows[j][DEV.turno]||''), ubi:String(rows[j][DEV.ubi]||''),
+      es_admin:rows[j][DEV.admin]===true||String(rows[j][DEV.admin]).toUpperCase()==='TRUE',
+      ultimo:String(rows[j][DEV.ultimo]||''), tieneToken:!!rows[j][DEV.token],
+      perm_prog: String(rows[j][DEV.perm_prog] ||'').toUpperCase()!=='NO',
+      perm_sync: String(rows[j][DEV.perm_sync] ||'').toUpperCase()!=='NO',
+      perm_admin:String(rows[j][DEV.perm_admin]||'').toUpperCase()!=='NO',
+      perm_voz:  String(rows[j][DEV.perm_voz]||'').toUpperCase()!=='NO'
     });
   }
   return {covs:covs};
@@ -284,33 +283,12 @@ function getTokens(adminDid) {
   var rows = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Devices').getDataRange().getValues();
   var tokens = [];
   for(var j=1; j<rows.length; j++) {
-    if(rows[j][7]) tokens.push({did:String(rows[j][0]),nombre:String(rows[j][1]||''),token:String(rows[j][7])});
+    if(rows[j][DEV.token]) tokens.push({did:String(rows[j][DEV.did]),nombre:String(rows[j][DEV.nombre]||''),token:String(rows[j][DEV.token])});
   }
   return {tokens:tokens};
 }
 
 // ── AVISOS ──
-function getAvisos(did) {
-  var ss = SpreadsheetApp.openById(SHEET_ID);
-  var sh = ss.getSheetByName('Avisos');
-  if(!sh) return {avisos:[]};
-  var rows = sh.getDataRange().getValues();
-  var hoy = Utilities.formatDate(new Date(),'America/Lima','yyyy-MM-dd');
-  var avisos = [];
-  for(var i=1; i<rows.length; i++) {
-    if(!rows[i][0]) continue;
-    var activo = rows[i][3]===true||String(rows[i][3]).toUpperCase()==='TRUE';
-    if(!activo) continue;
-    var fechaProg = rows[i][6] ? String(rows[i][6]).slice(0,10) : '';
-    if(fechaProg && fechaProg > hoy) continue;
-    var para = String(rows[i][4]||'todos');
-    var leidos = String(rows[i][5]||'');
-    if((para==='todos'||para.indexOf(did)>=0) && leidos.indexOf(did)<0)
-      avisos.push({id:String(rows[i][0]),mensaje:String(rows[i][1]),fecha:String(rows[i][2])});
-  }
-  return {avisos:avisos};
-}
-
 function createAviso(data) {
   if(!isAdminDid(data.did)) return {error:'No autorizado'};
   var ss = SpreadsheetApp.openById(SHEET_ID);
@@ -345,7 +323,7 @@ function markRead(data) {
       var quien = (data.nombre||'usuario') + '(' + id4 + ')';
       if(cur.indexOf(id4) >= 0) return {ok:true}; // ya estaba marcado
       var nuevo = cur ? cur + ', ' + quien : quien;
-      sh.getRange(i+1,6).setValue(nuevo);
+      sh.getRange(i+1,6).setValue(nuevo); // Avisos col F: leido_por
 
       // Auto-desactivar si todos los dispositivos ya leyeron
       var devSh = ss.getSheetByName('Devices');
@@ -369,6 +347,8 @@ function markRead(data) {
 }
 
 function getAvisos(did) {
+  did = String(did||'');
+  if(!did) return {avisos:[]}; // sin device_id indexOf('') marcaría todo como leído
   var ss = SpreadsheetApp.openById(SHEET_ID);
   var sh = ss.getSheetByName('Avisos');
   if(!sh) return {avisos:[]};
@@ -422,8 +402,8 @@ function sendPushAll(data) {
         lastError = r.getContentText().slice(0,300); // ← SOLO ESTO ES NUEVO
         if(code===404 || code===400) {
           for(var i=1;i<rows.length;i++){
-            if(String(rows[i][0])===t.did) {
-              sh.getRange(i+1,8).setValue('');
+            if(String(rows[i][DEV.did])===t.did) {
+              sh.getRange(i+1, DEV.token+1).setValue('');
               break;
             }
           }
@@ -449,6 +429,14 @@ function getOrCreateProgSheet() {
     sh.setFrozenRows(1);
   }
   return sh;
+}
+
+// Convierte 'yyyy-MM-dd' o 'DD/MM/YYYY' en un número comparable (yyyymmdd)
+function fechaClave(str) {
+  var s = String(str||'').trim(), m;
+  if((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return +m[1]*10000 + +m[2]*100 + +m[3];
+  if((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return +m[3]*10000 + +m[2]*100 + +m[1];
+  return 0;
 }
 
 function rowFechaStr(val) {
@@ -527,6 +515,7 @@ function saveProgEstado(data) {
       sh.getRange(lr+1,1,nr.length,13).setValues(nr);
       sh.getRange(lr+1,1,nr.length,1).setNumberFormat('@');
     }
+    CacheService.getScriptCache().remove('covapp_config_v2'); // la programación cambió: invalidar caché
     return {ok:true,count:items.length};
   });
 }

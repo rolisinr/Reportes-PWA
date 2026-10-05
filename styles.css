@@ -3403,3 +3403,8 @@
 #w-manual-fields {
   animation: fadeIn 0.3s ease;
 }
+
+
+/* Accesibilidad: el zoom del usuario está habilitado, así que los campos usan
+   mínimo 16px para que iOS no haga zoom automático al enfocarlos */
+input, select, textarea { font-size: max(16px, var(--fs)); }

@@ -6,13 +6,33 @@ importScripts('./js/db.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-const CACHE = 'cov-reportes-swr-v122';
+// >>> AUTO-GENERADO por scripts/update-sw.js (no editar a mano) >>>
+const CACHE = 'cov-reportes-swr-7db45be9';
 const ASSETS = [
-  './', './index.html', './styles.css', './manifest.json', './icon-192.png', './icon-512.png',
-  './js/config.js', './js/state.js', './js/db.js', './js/utils.js', './js/navigation.js', './js/profile.js', './js/history.js',
-  './js/templates.js', './js/app.js', './js/programacion.js', './js/ui.js',
-  './js/admin.js', './js/ia.js', './js/sheets.js', './js/firebase.js', './js/custom-tpl.js'
+  './',
+  './index.html',
+  './styles.css',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  './js/admin.js',
+  './js/app.js',
+  './js/config.js',
+  './js/custom-tpl.js',
+  './js/db.js',
+  './js/firebase.js',
+  './js/history.js',
+  './js/ia.js',
+  './js/navigation.js',
+  './js/profile.js',
+  './js/programacion.js',
+  './js/sheets.js',
+  './js/state.js',
+  './js/templates.js',
+  './js/ui.js',
+  './js/utils.js'
 ];
+// <<< AUTO-GENERADO <<<
 
 // Firebase init en SW
 firebase.initializeApp(CONFIG.FIREBASE);

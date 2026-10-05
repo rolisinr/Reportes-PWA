@@ -35,9 +35,30 @@ function quickService(type) {
     // FORM CACHE (2 horas)
     // ═══════════════════════════════════════════
     const CACHE_TTL = 2 * 60 * 60 * 1000; // 2 horas
+    // Valor que el perfil aporta a un campo con autofill ("" si no tiene)
+    function getAutoVal(f, p) {
+      p = p || getProfile();
+      if (f.autofill === "ubi") return p.ubi || "";
+      if (f.autofill === "cov") return p.nombre || "";
+      if (f.autofill === "turno" || f.id === "turno") return p.turno || "TARDE";
+      return "";
+    }
+    // Guarda el borrador junto con el autofill vigente, para distinguir
+    // lo que escribió el usuario de lo que puso el perfil (y que puede cambiar).
     function saveFormCache(tplId) {
       const vals = getVals();
-      S.set("fc_" + tplId, { vals, ts: Date.now() });
+      S.set("fc_" + tplId, { vals, auto: Object.assign({}, AppState.formAuto), ts: Date.now() });
+    }
+    // Valor inicial de un campo: borrador del usuario, salvo que sea el autofill
+    // viejo sin editar; en ese caso se usa el valor actual del perfil.
+    function resolveFieldVal(f, cache, p) {
+      const autoVal = getAutoVal(f, p);
+      const cachedVal = cache && cache.vals ? cache.vals[f.id] : "";
+      if (!cachedVal) return autoVal;
+      if (!f.autofill || !autoVal) return cachedVal;
+      // Borrador antiguo (sin registro de autofill) o campo que el usuario no tocó
+      const untouched = !cache.auto || cachedVal === cache.auto[f.id];
+      return untouched ? autoVal : cachedVal;
     }
     function loadFormCache(tplId) {
       const c = S.get("fc_" + tplId);
@@ -353,13 +374,11 @@ function showTpl(cat) {
 
       const p = getProfile();
       const container = document.getElementById("fields");
+      // Autofill aplicado a cada campo (para saber luego si el usuario lo editó)
+      AppState.formAuto = {};
+      tpl.fields.forEach(f => { if (f.autofill) AppState.formAuto[f.id] = getAutoVal(f, p); });
       container.innerHTML = tpl.fields.map(f => {
-        let autoVal = "";
-        if (f.autofill === "ubi") autoVal = p.ubi || "";
-        else if (f.autofill === "cov") autoVal = p.nombre || "";
-        else if (f.autofill === "turno" || f.id === "turno") autoVal = p.turno || "TARDE";
-        const cachedVal = cache && cache.vals ? cache.vals[f.id] : "";
-        const val = cachedVal || autoVal;
+        const val = resolveFieldVal(f, cache, p);
 
         let inp = "";
         if (f.type === "sel") {
@@ -414,10 +433,7 @@ function showTpl(cat) {
         if (el.tagName === "SELECT") { el.selectedIndex = 0; }
         else if (el.tagName === "TEXTAREA") { el.value = ""; }
         else {
-          let def = "";
-          if (f.autofill === "ubi") def = p.ubi || "";
-          else if (f.autofill === "cov") def = p.nombre || "";
-          el.value = def;
+          el.value = getAutoVal(f, p);
         }
         el.classList.remove("invalid");
         const lbl = document.getElementById("lbl-" + f.id);
@@ -480,3 +496,24 @@ function showTpl(cat) {
       telegramShare(txt, AppState.curCat);
     }
 
+
+
+// Si el perfil cambia (p. ej. nueva ubicación desde la programación) con un
+// formulario abierto, actualiza los campos con autofill que el usuario no editó.
+if (typeof EventBus !== 'undefined') {
+  EventBus.on('profileChanged', function (p) {
+    if (!AppState.curTpl || !AppState.formAuto) return;
+    let changed = false;
+    AppState.curTpl.fields.forEach(f => {
+      if (!f.autofill) return;
+      const el = document.getElementById("f-" + f.id);
+      const newAuto = getAutoVal(f, p);
+      if (!el || !newAuto) return;
+      if (!el.value || el.value === AppState.formAuto[f.id]) {
+        if (el.value !== newAuto) { el.value = newAuto; changed = true; }
+        AppState.formAuto[f.id] = newAuto;
+      }
+    });
+    if (changed) { upd(); saveFormCache(AppState.curTpl.id); }
+  });
+}

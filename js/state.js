@@ -37,6 +37,7 @@ const AppState = {
 
   // UI State
   curTpl: null,
+  formAuto: {},
   curCat: null,
   quickMsg: null,
 

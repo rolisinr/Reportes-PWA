@@ -55,7 +55,8 @@
     function checkNotifBanner() {
       if (!("Notification" in window)) return;
       if (Notification.permission === "default") {
-        document.getElementById("notif-banner").classList.add("show");
+        const banner = document.getElementById("notif-banner");
+        if (banner) banner.classList.add("show");
       }
     }
     // requestNotifPerm() — definida en FASE 4 (L4169) con soporte FCM completo
