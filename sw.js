@@ -7,7 +7,7 @@ importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
 // >>> AUTO-GENERADO por scripts/update-sw.js (no editar a mano) >>>
-const CACHE = 'cov-reportes-swr-7db45be9';
+const CACHE = 'cov-reportes-swr-a2189597';
 const ASSETS = [
   './',
   './index.html',
@@ -24,6 +24,7 @@ const ASSETS = [
   './js/history.js',
   './js/ia.js',
   './js/navigation.js',
+  './js/nombres.js',
   './js/profile.js',
   './js/programacion.js',
   './js/sheets.js',

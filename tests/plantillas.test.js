@@ -94,3 +94,32 @@ test('API de borradores completa: guardar, cargar, expirar y borrar', () => {
   app.run('clearFormCache("t9")');
   assert.strictEqual(app.run('loadFormCache("t9")'), null);
 });
+
+test('coherencia: todo campo de cada plantilla aparece en el texto y gen solo usa campos existentes', () => {
+  const app = load();
+  app.ctx.problemas = [];
+  app.run(`
+    Object.keys(TPLS).forEach(cat => TPLS[cat].forEach(t => {
+      const ids = t.fields.map(f => f.id);
+      // se prueba con la primera y la última opción de cada select (hay campos condicionales)
+      const mk = i => { const v = {}; t.fields.forEach(f => v[f.id] = f.type === "sel" ? f.opts[i < 0 ? f.opts.length - 1 : 0] : "zz_" + f.id + "_zz"); return v; };
+      const txt = (t.gen(mk(0)) + " " + t.gen(mk(-1))).toLowerCase();
+      if (/undefined|NaN|\\[object/.test(txt)) problemas.push(t.id + ": imprime undefined/NaN");
+      t.fields.forEach(f => { if (f.type !== "sel" && !txt.includes("zz_" + f.id + "_zz")) problemas.push(t.id + ": el campo '" + f.id + "' no aparece"); });
+      (t.required || []).forEach(r => { if (!ids.includes(r)) problemas.push(t.id + ": required '" + r + "' no es un campo"); });
+      [...t.gen.toString().matchAll(/\\bf\\.(\\w+)/g)].forEach(m => { if (!ids.includes(m[1])) problemas.push(t.id + ": gen usa f." + m[1] + " inexistente"); });
+    }));`);
+  assert.strictEqual(app.ctx.problemas.join('\n'), '');
+});
+
+test('Informe de Vía: la ubicación del campo se refleja en la vista previa', () => {
+  const app = load();
+  const txt = app.run('const t = TPLS.vias.find(t => t.id === "informe-via"); t.gen({ubicacion:"Av. Garcilaso c.5", ns:"fluido", sn:"cargado", sem:"OPERATIVOS", pnp:"NO", seg:"con normalidad", rec:"SÍ"})');
+  assert.ok(txt.includes('Lo que respecta: Av. Garcilaso c.5'));
+});
+
+test('Situación Actual: usa la ubicación del campo (antes imprimía undefined)', () => {
+  const app = load();
+  const txt = app.run('TPLS.vias.find(t => t.id === "situacion").gen({ubicacion:"Plaza Norte", sent:"Ambos", obs:"x", media:"sin adjunto"})');
+  assert.ok(txt.includes('Plaza Norte') && !txt.includes('undefined'));
+});

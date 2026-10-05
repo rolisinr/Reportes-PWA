@@ -1,3 +1,3 @@
 #!/bin/sh
 # Mantiene sw.js (lista de assets + versión de caché) sincronizado automáticamente
-node scripts/update-sw.js >/dev/null && git add sw.js
+node scripts/update-sw.js >/dev/null && git add sw.js 'API appscript.js'

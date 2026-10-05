@@ -21,6 +21,91 @@ var PRG = {fecha:0, corredor:1, turno:2, clave:3, nombre:4, punto:5, sentido:6,
            funcion:7, categoria:8};
 
 
+// >>> NOMBRES >>>
+var NOMBRE_PARTICULAS = ['DE', 'DEL', 'LA', 'LAS', 'LOS', 'Y'];
+
+// Normaliza: mayúsculas, sin tildes ni signos, sin partículas ("DE LA CRUZ" -> "CRUZ")
+function nombreTokens(nombre) {
+  var s = String(nombre || '').toUpperCase();
+  s = (s.normalize ? s.normalize('NFD') : s).replace(/[̀-ͯ]/g, '');
+  s = s.replace(/[^A-Z0-9\s]/g, ' ');
+  return s.split(/\s+/).filter(function (t) {
+    return t && NOMBRE_PARTICULAS.indexOf(t) < 0;
+  });
+}
+
+// Clave canónica de un nombre (orden original, sin tildes ni signos)
+function nombreClave(nombre) { return nombreTokens(nombre).join(' '); }
+
+function distanciaEdicion(a, b) {
+  var m = a.length, n = b.length, prev = [], cur, i, j;
+  for (j = 0; j <= n; j++) prev[j] = j;
+  for (i = 1; i <= m; i++) {
+    cur = [i];
+    for (j = 1; j <= n; j++) {
+      cur[j] = a.charAt(i - 1) === b.charAt(j - 1)
+        ? prev[j - 1]
+        : 1 + Math.min(prev[j], cur[j - 1], prev[j - 1]);
+    }
+    prev = cur;
+  }
+  return prev[n];
+}
+
+// Dos palabras son la misma si son iguales o difieren por un error de tipeo
+// (solo en palabras largas, para no confundir apellidos cortos distintos)
+function palabraIgual(a, b) {
+  if (a === b) return true;
+  var largo = Math.min(a.length, b.length);
+  if (largo < 5) return false;
+  return distanciaEdicion(a, b) <= (largo >= 9 ? 2 : 1);
+}
+
+// Cuántas palabras de la lista corta están en la larga (sin reutilizar palabras)
+function palabrasEnComun(corta, larga) {
+  var libres = larga.slice(), n = 0, i, j;
+  for (i = 0; i < corta.length; i++) {
+    for (j = 0; j < libres.length; j++) {
+      if (libres[j] !== null && palabraIgual(corta[i], libres[j])) { libres[j] = null; n++; break; }
+    }
+  }
+  return n;
+}
+
+// Grado de coincidencia entre dos nombres:
+//   3 = mismas palabras (en cualquier orden, tolerando tipeos)
+//   2 = uno contiene al otro (p. ej. "GARCIA JUAN" dentro de "GARCIA LOPEZ JUAN CARLOS")
+//   0 = personas distintas (comparten solo algunas palabras)
+function coincidenciaNombre(a, b) {
+  var ta = nombreTokens(a), tb = nombreTokens(b);
+  var corta = ta.length <= tb.length ? ta : tb;
+  var larga = ta.length <= tb.length ? tb : ta;
+  if (corta.length < 2) return 0;
+  if (palabrasEnComun(corta, larga) !== corta.length) return 0;
+  return corta.length === larga.length ? 3 : 2;
+}
+
+// Busca el COV de la base que corresponde a "nombre".
+// Devuelve {match, ambiguo}. Si dos o más COVs distintos encajan igual de bien
+// NO se elige ninguno (ambiguo=true) para no fusionar personas diferentes.
+function buscarCOV(nombre, base) {
+  var clave = nombreClave(nombre), mejor = 0, candidatos = [], i, b, g;
+  if (!clave) return { match: null, ambiguo: false };
+  for (i = 0; i < base.length; i++) {
+    b = base[i];
+    if (nombreClave(b.nombre_clave || b.nombre_completo) === clave) return { match: b, ambiguo: false };
+  }
+  for (i = 0; i < base.length; i++) {
+    b = base[i];
+    g = coincidenciaNombre(nombre, b.nombre_completo || b.nombre_clave);
+    if (g > mejor) { mejor = g; candidatos = [b]; }
+    else if (g === mejor && g > 0) candidatos.push(b);
+  }
+  if (candidatos.length === 1) return { match: candidatos[0], ambiguo: false };
+  return { match: null, ambiguo: candidatos.length > 1 };
+}
+// <<< NOMBRES <<<
+
 // ── Routing ──
 function doGet(e) {
   var params = e.parameter, action = params.action || '';
@@ -172,24 +257,17 @@ function registerDevice(p) {
     }
   }
 
-  // 2. If not found by did, check by nombre using fuzzy match
+  // 2. Si no está por did, buscar por nombre (mismas palabras en otro orden, tipeos o
+  //    nombre contenido). Si hay más de una persona posible NO se reasigna (evita mezclar).
   if (targetRow === -1 && p.nombre) {
-    var queryTokens = p.nombre.trim().toUpperCase().split(" ").filter(Boolean);
-    if (queryTokens.length > 0) {
-      for(var i=1; i<rows.length; i++) {
-        var rowName = String(rows[i][DEV.nombre]).trim().toUpperCase();
-        if(rowName) {
-          var score = 0;
-          for(var j=0; j<queryTokens.length; j++) {
-            if(rowName.indexOf(queryTokens[j]) >= 0) score++;
-          }
-          if (score >= Math.min(2, queryTokens.length)) {
-            targetRow = i;
-            sh.getRange(i+1, DEV.did+1).setValue(did); // Update with new device ID
-            break;
-          }
-        }
-      }
+    var cand = [];
+    for(var i=1; i<rows.length; i++) {
+      if(String(rows[i][DEV.nombre]||'').trim()) cand.push({nombre_completo:String(rows[i][DEV.nombre]), fila:i});
+    }
+    var rr = buscarCOV(p.nombre, cand);
+    if (rr.match) {
+      targetRow = rr.match.fila;
+      sh.getRange(targetRow+1, DEV.did+1).setValue(did); // Update with new device ID
     }
   }
 
@@ -439,8 +517,30 @@ function fechaClave(str) {
   return 0;
 }
 
+// ¿La celda de fecha corresponde a "fecha"? Sin importar si Sheets la guardó como
+// Date, 'yyyy-MM-dd' o 'DD/MM/YYYY' (antes la comparación de texto fallaba y las
+// filas viejas nunca se borraban).
+function mismaFecha(celda, fecha) {
+  var a = fechaClave(rowFechaStr(celda)), b = fechaClave(fecha);
+  return (a && b) ? a === b : rowFechaStr(celda) === String(fecha||'').slice(0,10);
+}
+
+// Fecha como DD/MM/YYYY (formato de la app) aunque Sheets la haya convertido en Date
+function fechaDMY(val) {
+  if(esFecha(val)) return Utilities.formatDate(val,'America/Lima','dd/MM/yyyy');
+  return String(val||'');
+}
+
+// Hora como HH:mm aunque Sheets la haya convertido en Date (p. ej. "10:30")
+function horaStr(val) {
+  if(esFecha(val)) return Utilities.formatDate(val,'America/Lima','HH:mm');
+  return String(val||'');
+}
+
+function esFecha(v) { return Object.prototype.toString.call(v)==='[object Date]'; }
+
 function rowFechaStr(val) {
-  if(val instanceof Date) return Utilities.formatDate(val,'America/Lima','yyyy-MM-dd');
+  if(esFecha(val)) return Utilities.formatDate(val,'America/Lima','yyyy-MM-dd');
   return String(val||'').slice(0,10);
 }
 
@@ -477,13 +577,13 @@ function getProgEstado(params) {
 
   var items = [];
   for(var i=1; i<rows.length; i++){
-    if(rowFechaStr(rows[i][0])===fecha && String(rows[i][1]).toUpperCase()===corredor.toUpperCase() && String(rows[i][2]).toUpperCase()===turno.toUpperCase()){
+    if(mismaFecha(rows[i][0],fecha) && String(rows[i][1]).toUpperCase()===corredor.toUpperCase() && String(rows[i][2]).toUpperCase()===turno.toUpperCase()){
       items.push({
         nombre_clave:String(rows[i][3]||''), nombre:String(rows[i][4]||''),
         punto:String(rows[i][5]||''),        sentido:String(rows[i][6]||''),
         funcion:String(rows[i][7]||''),      categoria:String(rows[i][8]||''),
-        qap_estado:String(rows[i][9]||''),   qap_hora_ini:String(rows[i][10]||''),
-        qap_hora_fin:String(rows[i][11]||''),qap_orden:rows[i][12]||''
+        qap_estado:String(rows[i][9]||''),   qap_hora_ini:horaStr(rows[i][10]),
+        qap_hora_fin:horaStr(rows[i][11]),qap_orden:rows[i][12]||''
       });
     }
   }
@@ -491,32 +591,73 @@ function getProgEstado(params) {
 }
 
 
+// Lee la base de COVs de un corredor: [{nombre_completo, nombre_clave}]
+function leerBaseCOVs(corredor) {
+  var sh = SpreadsheetApp.openById(SHEET_ID).getSheetByName('COVs_Base');
+  var base = [];
+  if(!sh) return base;
+  var rows = sh.getDataRange().getValues();
+  for(var i=1;i<rows.length;i++) {
+    if(String(rows[i][2])===corredor && (rows[i][0]||rows[i][1]))
+      base.push({nombre_completo:String(rows[i][0]||''), nombre_clave:String(rows[i][1]||'')});
+  }
+  return base;
+}
+
+// Reemplaza (no acumula): borra las filas existentes de fecha+corredor+turno y escribe las nuevas.
+// Los nombres se normalizan contra COVs_Base para no crear variantes ni nombres combinados.
 function saveProgEstado(data) {
   return conLock(function() {
     var sh=getOrCreateProgSheet();
     var fecha=String(data.fecha||''),corredor=String(data.corredor||''),turno=String(data.turno||'');
+    if(!fecha||!corredor||!turno) return {error:'Faltan fecha, corredor o turno'};
     var rows=sh.getDataRange().getValues();
-    var toDel=[];
-    for(var i=rows.length-1;i>=1;i--) {
-      if(rowFechaStr(rows[i][0])===fecha&&String(rows[i][1]).toUpperCase()===corredor.toUpperCase()&&String(rows[i][2]).toUpperCase()===turno.toUpperCase())
-        toDel.push(i+1);
+
+    // 1. Borrar filas anteriores del mismo día/corredor/turno (en bloques contiguos, de abajo hacia arriba)
+    var filas=[], eliminadas=0;
+    for(var i=1;i<rows.length;i++) {
+      if(mismaFecha(rows[i][0],fecha) && String(rows[i][1]).toUpperCase()===corredor.toUpperCase()
+         && String(rows[i][2]).toUpperCase()===turno.toUpperCase()) filas.push(i+1);
     }
-    toDel.sort(function(a,b){return b-a;});
-    toDel.forEach(function(r){sh.deleteRow(r);});
-    // Insertar filas nuevas en bloque
-    var items=data.items||[];
+    for(var k=filas.length-1;k>=0;k--) {
+      var fin=filas[k], ini=fin;
+      while(k>0 && filas[k-1]===ini-1) { k--; ini=filas[k]; }
+      sh.deleteRows(ini, fin-ini+1);
+      eliminadas += fin-ini+1;
+    }
+
+    // 2. Normalizar nombres contra la base y quitar repetidos (gana la última aparición)
+    var base=leerBaseCOVs(corredor), renombres={}, vistos={}, items=[];
+    (data.items||[]).forEach(function(it){
+      var original=String(it.nombre_clave||''), nombre=String(it.nombre||''), clave=original;
+      if(nombre||clave) {
+        var r=buscarCOV(nombre||clave, base);
+        if(r.match) {
+          nombre=r.match.nombre_completo; clave=r.match.nombre_clave;
+          if(original && original!==clave) renombres[original]={nombre_clave:clave,nombre:nombre};
+        }
+      }
+      var k=nombreClave(clave||nombre);
+      var fila={nombre_clave:clave,nombre:nombre,it:it};
+      if(k && vistos[k]!==undefined) items[vistos[k]]=fila; else { if(k) vistos[k]=items.length; items.push(fila); }
+    });
+
+    // 3. Escribir en bloque. El formato de texto va ANTES de los valores: si va después,
+    //    Sheets ya convirtió '05/10/2026' en Date y '10:30' en hora.
     if(items.length>0) {
-      var nr=items.map(function(it){
-        return [fecha,corredor,turno,it.nombre_clave||'',it.nombre||'',
+      var nr=items.map(function(f){
+        var it=f.it;
+        return [fecha,corredor,turno,f.nombre_clave,f.nombre,
           it.punto||'',it.sentido||'',it.funcion||'',it.categoria||'',
           it.qap_estado||'',it.qap_hora_ini||'',it.qap_hora_fin||'',it.qap_orden||''];
       });
       var lr=ultimaFilaConDatos(sh);
-      sh.getRange(lr+1,1,nr.length,13).setValues(nr);
       sh.getRange(lr+1,1,nr.length,1).setNumberFormat('@');
+      sh.getRange(lr+1,11,nr.length,2).setNumberFormat('@');
+      sh.getRange(lr+1,1,nr.length,13).setValues(nr);
     }
     CacheService.getScriptCache().remove('covapp_config_v2'); // la programación cambió: invalidar caché
-    return {ok:true,count:items.length};
+    return {ok:true,count:items.length,eliminadas:eliminadas,renombres:renombres};
   });
 }
 
@@ -531,7 +672,7 @@ function getCOVsBaseSheet(params) {
       covs.push({nombre_completo:String(rows[i][0]||''),nombre_clave:String(rows[i][1]||''),
         corredor:String(rows[i][2]||''),
         activo:rows[i][3]===true||String(rows[i][3]).toUpperCase()==='TRUE',
-        ultima_aparicion:String(rows[i][4]||''),obs:String(rows[i][5]||'')});
+        ultima_aparicion:fechaDMY(rows[i][4]),obs:String(rows[i][5]||'')});
   }
   return {covs:covs};
 }
@@ -543,29 +684,41 @@ function saveCOVsBaseSheet(data) {
     if(!sh){
       sh=ss.insertSheet('COVs_Base');
       sh.appendRow(['nombre_completo','nombre_clave','corredor','activo','ultima_aparicion','obs']);
+      sh.getRange('E:E').setNumberFormat('@'); // fechas como texto (DD/MM/YYYY)
       sh.setFrozenRows(1);
     }
-    var corredor=data.corredor||'',covs=data.covs||[];
-    var rows=sh.getDataRange().getValues(),existMap={};
+    var corredor=String(data.corredor||''),covs=data.covs||[];
+    var rows=sh.getDataRange().getValues(), base=[];
     for(var i=1;i<rows.length;i++) {
-      if(String(rows[i][2])===corredor) existMap[String(rows[i][1])]=i+1;
+      if(String(rows[i][2])===corredor)
+        base.push({nombre_completo:String(rows[i][0]||''),nombre_clave:String(rows[i][1]||''),fila:i+1});
     }
+    var actualizados=0, nuevos=0, omitidos=[], alias={};
     covs.forEach(function(cov){
-      if(existMap[cov.nombre_clave]) {
-        // Solo actualizar cols C-F; NO tocar nombre ni nombre_clave
-        sh.getRange(existMap[cov.nombre_clave],3,1,4).setValues([[
-          cov.corredor,cov.activo,cov.ultima_aparicion,cov.obs]]);
-      } else {
+      var r=buscarCOV(cov.nombre_clave||cov.nombre_completo, base);
+      if(r.match) {
+        // Existe (misma clave o mismo nombre en otro orden / con tipeos): actualizar
+        // solo C-F; NO tocar nombre_completo ni nombre_clave de la base.
+        if(r.match.nombre_clave!==cov.nombre_clave) alias[cov.nombre_clave]=r.match.nombre_clave;
+        sh.getRange(r.match.fila,5).setNumberFormat('@');
+        sh.getRange(r.match.fila,3,1,4).setValues([[corredor,cov.activo,String(cov.ultima_aparicion||''),cov.obs||'']]);
+        actualizados++;
+      } else if(r.ambiguo) {
+        omitidos.push(cov.nombre_completo||cov.nombre_clave); // varias personas posibles: no crear
+      } else if(cov.nombre_completo||cov.nombre_clave) {
         var lr=ultimaFilaConDatos(sh);
+        sh.getRange(lr+1,5).setNumberFormat('@');
         sh.getRange(lr+1,1,1,6).setValues([[
-          cov.nombre_completo,cov.nombre_clave,cov.corredor,
-          cov.activo,cov.ultima_aparicion,cov.obs]]);
+          cov.nombre_completo,cov.nombre_clave,corredor,
+          cov.activo,String(cov.ultima_aparicion||''),cov.obs||'']]);
+        base.push({nombre_completo:cov.nombre_completo,nombre_clave:cov.nombre_clave,fila:lr+1});
+        nuevos++;
       }
     });
     // Ordenar A-Z por nombre_completo
     var lr2=sh.getLastRow();
     if(lr2>2) sh.getRange(2,1,lr2-1,6).sort(1);
-    return {ok:true,count:covs.length};
+    return {ok:true,count:covs.length,actualizados:actualizados,nuevos:nuevos,omitidos:omitidos,alias:alias};
   });
 }
 

@@ -99,10 +99,9 @@ function quickService(type) {
             const pnp = f.pnp === "SÍ"
               ? `- ${B("SÍ contamos")} con presencia de EFECTIVO POLICIAL${f.pnp_det ? " (" + f.pnp_det + ")" : ""}`
               : `- ${B("NO contamos")} con presencia de EFECTIVO POLICIAL`;
-            const rec = f.rec === "No aplica" ? "" :
-              f.rec === "SÍ"
-                ? `\n- Personal de recaudo${f.rec_par ? " en paradero " + f.rec_par.toUpperCase() : " en el punto"}`
-                : `\n- NO contamos con personal de recaudo en el punto`;
+            const rec = f.rec === "SÍ"
+              ? `\n- Personal de recaudo en el punto`
+              : `\n- NO contamos con personal de recaudo en el punto`;
             return `🛣️${B("INFORME DE VIAS")}🛣️
 🙋‍♂️ ${B("COV:")} ${getCOV()}
 📆 ${B("FECHA:")} ${today()}
@@ -140,7 +139,7 @@ ${pnp}
         {
           id: "situacion", icon: "🚨", name: "Situación Actual",
           desc: "Reporte rápido con observación puntual",
-          required: ["obs"],
+          required: ["ubicacion", "obs"],
           fields: [
             { id: "ubicacion", label: "Ubicación", type: "text", autofill: "ubi" },
             { id: "sent", label: "Sentido", type: "sel", opts: ["Ambos", "S/N", "N/S", "E/O", "O/E"] },
@@ -148,14 +147,13 @@ ${pnp}
             { id: "media", label: "Adjunto", type: "sel", opts: ["sin adjunto", "📷 SE ADJUNTA IMAGENES 📸", "📹SE ADJUNTA VIDEO 📹", "Se adjunta FOTO Y VIDEO📷"] },
           ],
           gen: f => {
-            const ubiLine = f.ubicacion ? `\n📍 ${B("UBICACION:")} ${f.ubicacion}` : "";
             const mediaLine = f.media !== "sin adjunto" ? `\n ${f.media}` : "";
             return `🚨 ${B("SITUACION ACTUAL")} - ${B(getCorredor())}
 🙋‍♂️ ${B("COV:")} ${getCOV()}
 📆 ${B("FECHA:")} ${today()}
 🕒 ${B("HORA:")} ${nowTime()}
 
-📍 ${B("UBICACION:")} ${f.ubi}
+📍 ${B("UBICACION:")} ${f.ubicacion}
 🔁  ${B("SENTIDO:")} ${f.sent}
 
 ✍🏼  ${B("OBSERVACION:")} 
@@ -421,6 +419,13 @@ function showTpl(cat) {
       const el = document.getElementById("prev");
       if (!AppState.curTpl) return;
       try { el.textContent = AppState.curTpl.gen(getVals()); } catch (e) { el.textContent = ""; }
+      AppState.prevEdited = false;
+    }
+
+    // La vista previa es editable: si el usuario no la tocó, se regenera al copiar/compartir
+    // para que la hora y la ubicación reflejen el estado actual del formulario.
+    function refreshPrevIfPristine() {
+      if (AppState.curTpl && !AppState.prevEdited) upd();
     }
 
     function resetForm() {
@@ -477,6 +482,7 @@ function showTpl(cat) {
 
     function doCopy() {
       if (!validate()) { showToast("⚠️ Completa los campos obligatorios"); return; }
+      refreshPrevIfPristine();
       const txt = document.getElementById("prev").innerText;
       if (!txt.trim()) return;
       copyText(txt);
@@ -490,6 +496,7 @@ function showTpl(cat) {
 
     function doTelegram() {
       if (!validate()) { showToast("⚠️ Completa los campos obligatorios"); return; }
+      refreshPrevIfPristine();
       const txt = document.getElementById("prev").innerText;
       if (!txt.trim()) return;
       addToHistory(AppState.curTpl.name, AppState.curCat, txt);
@@ -517,3 +524,8 @@ if (typeof EventBus !== 'undefined') {
     if (changed) { upd(); saveFormCache(AppState.curTpl.id); }
   });
 }
+
+(function () {
+  const prevEl = document.getElementById("prev");
+  if (prevEl && prevEl.addEventListener) prevEl.addEventListener("input", () => { AppState.prevEdited = true; });
+})();

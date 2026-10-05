@@ -290,50 +290,9 @@
       return dp[m][n];
     }
 
+    // Cotejo de nombres: ver js/nombres.js (buscarCOV). Devuelve el COV de la base o null.
     function fuzzyMatch(nombre, base) {
-      var normName = quitaTildes(nombre || '').toUpperCase().trim();
-      var parts = normName.split(/\s+/).filter(Boolean);
-      if (parts.length < 2) return null; // Exige al menos 2 palabras
-      
-      var firstLetter = parts[0].charAt(0);
-      var best = null;
-      var bestScore = -1;
-      
-      base.forEach(function(b) {
-        var bNorm = quitaTildes(b.nombre_completo || '').toUpperCase().trim();
-        var bParts = bNorm.split(/\s+/).filter(Boolean);
-        var origBPartsLen = bParts.length;
-        // Filtro rápido: deben empezar con la misma letra inicial del primer apellido
-        if (!origBPartsLen || bParts[0].charAt(0) !== firstLetter) return; 
-        
-        var matchCount = 0;
-        parts.forEach(function(p) {
-          if (p.length < 2) return;
-          for (var i = 0; i < bParts.length; i++) {
-            if (bParts[i].length < 2) continue;
-            // Tolerancia: 2 errores si la palabra es larga, 1 si es mediana, 0 si es muy corta
-            var maxDist = p.length >= 5 ? 2 : (p.length >= 3 ? 1 : 0);
-            if (levenshtein(p, bParts[i]) <= maxDist) {
-              matchCount++;
-              bParts[i] = ''; // vaciar para evitar doble coincidencia
-              break;
-            }
-          }
-        });
-        
-        var minWords = Math.min(parts.length, origBPartsLen);
-        // Exigir al menos 2 palabras coincidentes y que representen la mayoría del nombre
-        if (matchCount >= 2 && matchCount >= minWords - 1) { 
-          // Score prioriza más coincidencias y castiga diferencias de longitud (palabras extra)
-          var totalScore = matchCount - (Math.abs(parts.length - origBPartsLen) * 0.1);
-          if (totalScore > bestScore) {
-            bestScore = totalScore;
-            best = b;
-          }
-        }
-      });
-      
-      return best;
+      return buscarCOV(nombre, base).match;
     }
 
     function fuzzyMatchPunto(rawPunto, sentido) {
@@ -394,10 +353,15 @@
     }
 
     function makeNameKey(nombre) {
-      var parts = quitaTildes(nombre || '').trim().toUpperCase().split(/\s+/).filter(Boolean);
-      if (parts.length === 0) return '';
-      // Retorna el nombre completo normalizado, eliminando el viejo modelo de (Primero + Último) que causaba colisiones
-      return parts.join(' ');
+      return nombreClave(nombre);
+    }
+
+    // 'DD/MM/YYYY' o 'yyyy-MM-dd' -> ms (new Date('05/10/2026') lo leería como mayo)
+    function fechaAMs(str) {
+      var m = String(str || '').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (m) return new Date(+m[3], +m[2] - 1, +m[1]).getTime();
+      m = String(str || '').match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      return m ? new Date(+m[1], +m[2] - 1, +m[3]).getTime() : NaN;
     }
 
     function isSinQAP(item) {
@@ -442,14 +406,19 @@
           baseMap[key].ultima_aparicion = hoy;
           baseMap[key].activo = true;
         } else {
-          // 2. Matching difuso (mismo apellido, nombre similar)
-          var fuzzy = fuzzyMatch(item.nombre, base);
+          // 2. Mismas palabras en otro orden / con tipeos, o uno contiene al otro.
+          //    Si hay más de un candidato posible NO se fusiona (evita nombres combinados).
+          var res = buscarCOV(item.nombre, base);
+          var fuzzy = res.match;
           if (fuzzy) {
             // Corregir nombre con el canónico de la base
             item.nombre = fuzzy.nombre_completo;
             item.nombre_clave = fuzzy.nombre_clave;
             fuzzy.ultima_aparicion = hoy;
             fuzzy.activo = true;
+          } else if (res.ambiguo) {
+            // Varias personas posibles: se deja tal cual y se avisa, sin crear ni fusionar
+            item.nombre_dudoso = true;
           } else if (item.nombre) {
             // Nuevo COV — agregar a la base (solo si no existe ya por ese key)
             if (!baseMap[key]) {
@@ -472,7 +441,7 @@
       var hoyMs = new Date().getTime();
       base.forEach(function (b) {
         if (b.ultima_aparicion) {
-          var dias = (hoyMs - new Date(b.ultima_aparicion).getTime()) / 86400000;
+          var dias = (hoyMs - fechaAMs(b.ultima_aparicion)) / 86400000;
           if (dias > 45) b.activo = false;
         }
       });
@@ -485,6 +454,10 @@
       });
 
       saveCOVsBase(base, corredor);
+      var dudosos = items.filter(function (it) { return it.nombre_dudoso; });
+      if (dudosos.length && typeof showToast === 'function') {
+        showToast('⚠️ Revisa estos nombres (coinciden con varios COVs): ' + dudosos.map(function (d) { return d.nombre; }).join(', '));
+      }
       return items;
     }
 
@@ -878,11 +851,21 @@
           action: 'prog_estado',
           did: getDeviceId(),
           corredor: corredor,
-          turno: data.turno || '',
+          turno: data.turno || getProfile().turno || '',
           fecha: data.fecha || today(),
           items: payload
         });
-        if (res && res.ok) showToast('✓ Subido: ' + (res.count || payload.length) + ' COVs');
+        if (res && res.ok) {
+          // El Sheet unifica nombres con la base: aplicar sus correcciones a la prog local
+          var ren = res.renombres || {};
+          data.items.forEach(function (item) {
+            var r = ren[item.nombre_clave];
+            if (r) { item.nombre_clave = r.nombre_clave; item.nombre = r.nombre; }
+          });
+          saveProgHoy(data);
+          renderProgContent();
+          showToast('✓ Subido: ' + (res.count || payload.length) + ' COVs' + (res.eliminadas ? ' (reemplazó ' + res.eliminadas + ' filas)' : ''));
+        }
         else showToast('⚠️ ' + (res && res.error || 'Error al subir'));
       } catch (e) {
         showToast('⚠️ ' + (e.message || 'Error de red'));

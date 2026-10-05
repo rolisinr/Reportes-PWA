@@ -28,7 +28,23 @@ ${list}
 // <<< AUTO-GENERADO <<<`;
 }
 
+// Copia el bloque compartido js/nombres.js -> API appscript.js
+const NOMBRES_RE = /\/\/ >>> NOMBRES >>>[\s\S]*?\/\/ <<< NOMBRES <<</;
+function nombresBlock() {
+  return fs.readFileSync(path.join(ROOT, 'js/nombres.js'), 'utf8').match(NOMBRES_RE)[0];
+}
+function syncNombres(check) {
+  const apiPath = path.join(ROOT, 'API appscript.js');
+  const api = fs.readFileSync(apiPath, 'utf8');
+  const next = api.replace(NOMBRES_RE, () => nombresBlock());
+  if (next === api) return;
+  if (check) { console.error('"API appscript.js" desactualizado respecto a js/nombres.js: ejecuta "node scripts/update-sw.js"'); process.exit(1); }
+  fs.writeFileSync(apiPath, next);
+  console.log('API appscript.js actualizado (bloque NOMBRES)');
+}
+
 function run(check) {
+  syncNombres(check);
   const swPath = path.join(ROOT, 'sw.js');
   const sw = fs.readFileSync(swPath, 'utf8');
   const re = /\/\/ >>> AUTO-GENERADO[\s\S]*?\/\/ <<< AUTO-GENERADO <<</;

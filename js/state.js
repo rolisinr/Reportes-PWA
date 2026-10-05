@@ -38,6 +38,7 @@ const AppState = {
   // UI State
   curTpl: null,
   formAuto: {},
+  prevEdited: false,
   curCat: null,
   quickMsg: null,
 
